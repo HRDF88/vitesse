@@ -3,9 +3,9 @@
 
     <style name="Theme.vitesse." parent="android:Theme.Material.Light.NoActionBar">
         <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorActivatedHighlight">@color/primary_variant</item>
         <item name="android:textColorPrimary">@color/on_primary</item>
-        <item name="android:colorControlActivated">@color/secondary_variant</item>
+        <item name="android:colorSecondary">@color/secondary</item>
         <item name="android:textColorSecondary">@color/on_secondary</item>
+        <item name="android:textColorSecondaryInverse">@color/secondary_variant</item>
     </style>
 </resources>
