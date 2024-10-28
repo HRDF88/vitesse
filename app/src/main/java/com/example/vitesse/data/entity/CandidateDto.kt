@@ -1,6 +1,5 @@
 package com.example.vitesse.data.entity
 
-import android.graphics.Picture
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
@@ -47,6 +46,6 @@ data class CandidateDto(
     var note: String,
 
     @ColumnInfo(name = "ProfilePicture")
-    var profilePicture: Picture
+    var profilePicture: String
 
     )

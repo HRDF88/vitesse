@@ -21,12 +21,12 @@ data class Candidate(
     val id: Long,
     var firstName: String,
     var surName: String,
-    val phoneNumbers: Int,
+    val phoneNumbers: Long,
     val email: String,
     val dateOfBirth: LocalDateTime,
     val expectedSalaryEuros: Int,
     val note: String,
-    val profilePicture: Picture
+    val profilePicture: String
 ) {
     /**
      * Creates a CandidateDto object from a Candidate object.

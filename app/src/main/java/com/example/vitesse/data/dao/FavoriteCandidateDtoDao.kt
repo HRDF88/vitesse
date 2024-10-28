@@ -24,7 +24,7 @@ interface FavoriteCandidateDtoDao {
      * @return a Flow emitting a list of all favoriteCandidate entries.
      */
     @Query(value = "SELECT * FROM favoritecandidate")
-    suspend fun getAllFavoriteCandidate(): Flow<List<FavoriteCandidateDto>>
+    fun getAllFavoriteCandidate(): Flow<List<FavoriteCandidateDto>>
 
     /**
      * Delete an favorite Candidate entry from the database by its ID.

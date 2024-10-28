@@ -25,7 +25,7 @@ interface CandidateDtoDao {
      * @return A flow of a list of CandidateDto objects representing all candidate.
      */
     @Query(value = "SELECT * FROM candidate")
-    suspend fun getAllCandidate(): Flow<List<CandidateDto>>
+    fun getAllCandidate(): Flow<List<CandidateDto>>
 
     /**
      * Deletes a candidate from the database by ID.

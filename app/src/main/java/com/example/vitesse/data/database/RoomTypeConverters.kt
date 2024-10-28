@@ -1,7 +1,5 @@
 package com.example.vitesse.data.database
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.room.TypeConverter
 import java.time.Instant
 import java.time.LocalDateTime
@@ -14,7 +12,7 @@ object RoomTypeConverters {
      * @param value The timestamp value in milliseconds.
      * @return The equivalent LocalDateTime object.
      */
-    @RequiresApi(Build.VERSION_CODES.O)
+
     @TypeConverter
     @JvmStatic
     fun fromTimestamp(value: Long?): LocalDateTime? {
@@ -29,7 +27,7 @@ object RoomTypeConverters {
      * @param value The LocalDateTime object.
      * @return The equivalent timestamp value in milliseconds.
      */
-    @RequiresApi(Build.VERSION_CODES.O)
+
     @TypeConverter
     @JvmStatic
     fun toTimestamp(value: LocalDateTime?): Long? {
