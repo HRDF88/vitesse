@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vitesse</string>
+    <string name="fistname">Prénom</string>
+    <string name="lastname">Nom</string>
+    <string name="note">Note</string>
 </resources>
