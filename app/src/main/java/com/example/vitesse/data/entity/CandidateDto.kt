@@ -17,6 +17,7 @@ import java.time.LocalDateTime
  * @param expectedSalaryEuros the expected salary in euros of the candidate
  * @param note the note regarding the candidate
  * @param profilePicture the profile picture of the candidate
+ * @param favorite if the candidate is a favorite candidate
  */
 @Entity(tableName = "Candidate")
 data class CandidateDto(
@@ -46,6 +47,9 @@ data class CandidateDto(
     var note: String,
 
     @ColumnInfo(name = "ProfilePicture")
-    var profilePicture: String
+    var profilePicture: String,
+
+    @ColumnInfo(name = "Favorite")
+    var favorite : Boolean
 
     )

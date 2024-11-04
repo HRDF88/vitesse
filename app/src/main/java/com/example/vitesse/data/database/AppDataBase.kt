@@ -7,9 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.vitesse.data.dao.CandidateDtoDao
-import com.example.vitesse.data.dao.FavoriteCandidateDtoDao
 import com.example.vitesse.data.entity.CandidateDto
-import com.example.vitesse.data.entity.FavoriteCandidateDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlin.reflect.KParameter

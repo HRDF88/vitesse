@@ -26,7 +26,8 @@ data class Candidate(
     val dateOfBirth: LocalDateTime,
     val expectedSalaryEuros: Int,
     val note: String,
-    val profilePicture: String
+    val profilePicture: String,
+    val favorite : Boolean
 ) {
     /**
      * Creates a CandidateDto object from a Candidate object.
@@ -41,7 +42,9 @@ data class Candidate(
             dateOfBirth = this.dateOfBirth,
             expectedSalaryEuros = expectedSalaryEuros,
             note = this.note,
-            profilePicture = this.profilePicture
+            profilePicture = this.profilePicture,
+            favorite = this.favorite
+
         )
     }
 
@@ -63,6 +66,7 @@ data class Candidate(
                 expectedSalaryEuros = candidateDto.expectedSalaryEuros,
                 note = candidateDto.note,
                 profilePicture = candidateDto.profilePicture,
+                favorite = candidateDto.favorite
             )
         }
     }

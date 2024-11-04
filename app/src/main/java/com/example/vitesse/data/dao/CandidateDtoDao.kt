@@ -51,6 +51,30 @@ interface CandidateDtoDao {
      */
     @Update
     suspend fun updateCandidate(candidate: CandidateDto)
+
+    /**
+     * Retrieves a favorite candidate from the database.
+     *
+     * @return A flow of a list of CandidateDto objects representing all favorites candidates.
+     */
+    @Query(value = "SELECT* FROM candidate WHERE favorite=1")
+    suspend fun getFavoriteCandidate(): Flow<List<CandidateDto>>
+
+    /**
+     * Adds a candidate to the list of favorites.
+     *
+     * @param id The ID of the candidate to add to favorites.
+     */
+    @Query(value = "UPDATE candidate SET favorite=1 WHERE id =:id")
+    suspend fun addCandidateToFavorite(id:Long)
+
+    /**
+     * Deletes a candidate from the list of favorites.
+     *
+     * @param id The ID of the candidate to remove from favorites.
+     */
+    @Query(value = "UPDATE candidate SET favorite=0 WHERE id =:id")
+    suspend fun deleteCandidateToFavorite(id:Long)
 }
 
 

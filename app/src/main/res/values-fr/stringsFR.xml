@@ -4,4 +4,10 @@
     <string name="fistname">Prénom</string>
     <string name="lastname">Nom</string>
     <string name="note">Note</string>
+    <string name="error_load_favorite_candidate">Impossible de charger les candidats favoris.</string>
+    <string name="error_add_favorite_candidate">Impossible d\'ajouter le candidat en favoris.</string>
+    <string name="error_delete_favorite_candidate">Impossible de supprimer le candidat en favoris.</string>
+    <string name="error_load_candidate">Impossible de charger les candidats.</string>
+    <string name="error_add_candidate">Impossible d\'ajouter le candidat.</string>
+    <string name="error_delete_candidate">Impossible de supprimer le candidat.</string>
 </resources>

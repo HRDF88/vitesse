@@ -71,4 +71,43 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
     override suspend fun updateCandidate(candidate: CandidateDto) {
         candidateDao.updateCandidate(candidate)
     }
+
+    /**
+     * Retrieves all favorite candidates from the database.
+     *
+     * @return the list of all favorite candidates.
+     */
+    override suspend fun getFavoriteCandidate(): List<Candidate> {
+        return candidateDao.getFavoriteCandidate()
+            .first()
+            .map { candidateDto ->
+                Candidate.fromDto(candidateDto)
+            }
+    }
+
+    /**
+     * Adds a candidate to the list of favorites.
+     *
+     * @param candidate The candidate object to add to favorites.
+     */
+    override suspend fun addCandidateToFavorite(candidate: Candidate){
+        candidate.id?.let{
+            candidateDao.addCandidateToFavorite(
+                id= candidate.id
+            )
+        }
+    }
+
+    /**
+     * Deletes a candidate to the list of favorites.
+     *
+     * @param candidate The candidate object to delete to favorites.
+     */
+    override suspend fun deleteCandidateToFavorite(candidate: Candidate){
+        candidate.id?.let{
+            candidateDao.deleteCandidateToFavorite(
+                id = candidate.id
+            )
+        }
+    }
 }

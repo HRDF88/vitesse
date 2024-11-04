@@ -42,4 +42,25 @@ interface CandidateRepositoryInterface {
      * @param candidate The candidate to update, represented as a CandidateDto object.
      */
     suspend fun updateCandidate(candidate: CandidateDto)
+
+    /**
+     * Gets all favorite candidates.
+     *
+     * @return the list of favorite candidate Candidate objects.
+     */
+    suspend fun getFavoriteCandidate(): List<Candidate>
+
+    /**
+     * Adds a candidate to the list of favorites.
+     *
+     * @param candidate The candidate object to add to favorites.
+     */
+    suspend fun addCandidateToFavorite(candidate: Candidate)
+
+    /**
+     * Deletes a candidate to the list of favorites.
+     *
+     * @param candidate The candidate object to delete to favorites.
+     */
+    suspend fun deleteCandidateToFavorite(candidate: Candidate)
 }
