@@ -22,14 +22,14 @@ import kotlin.reflect.KParameter
 
  */
 @Database(
-    entities = [CandidateDto::class, FavoriteCandidateDto::class],
+    entities = [CandidateDto::class],
     version = 1,
     exportSchema = false
 )
 @TypeConverters(RoomTypeConverters::class)
 abstract class AppDataBase : RoomDatabase() {
     abstract fun candidateDtoDao(): CandidateDtoDao
-    abstract fun favoriteCandidateDtoDao(): FavoriteCandidateDtoDao
+
 
     private class AppDatabaseCallback(
         private val scope: CoroutineScope
