@@ -18,8 +18,6 @@ import kotlin.reflect.KParameter
  * It also provides DAO (Data Access Object) methods for accessing the specific entity tables.
  *
  * @property candidateDtoDao The DAO for accessing CandidateDto data.
- * @property favoriteCandidateDtoDao The DAO for accessing FavoriteDto data.
-
  */
 @Database(
     entities = [CandidateDto::class],

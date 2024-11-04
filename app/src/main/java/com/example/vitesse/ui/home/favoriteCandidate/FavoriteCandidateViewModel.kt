@@ -8,7 +8,6 @@ import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.domain.usecase.candidate.AddCandidateToFavoriteUseCase
 import com.example.vitesse.domain.usecase.candidate.DeleteCandidateToFavoriteUseCase
 import com.example.vitesse.domain.usecase.candidate.GetFavoriteCandidateUseCase
-import com.example.vitesse.ui.home.candidate.CandidateUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

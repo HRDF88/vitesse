@@ -58,7 +58,7 @@ interface CandidateDtoDao {
      * @return A flow of a list of CandidateDto objects representing all favorites candidates.
      */
     @Query(value = "SELECT* FROM candidate WHERE favorite=1")
-    suspend fun getFavoriteCandidate(): Flow<List<CandidateDto>>
+    fun getFavoriteCandidate(): Flow<List<CandidateDto>>
 
     /**
      * Adds a candidate to the list of favorites.

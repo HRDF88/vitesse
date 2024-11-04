@@ -4,7 +4,10 @@ import android.content.Context
 import com.example.vitesse.data.dao.CandidateDtoDao
 import com.example.vitesse.data.database.AppDataBase
 import com.example.vitesse.data.repository.CandidateRepository
+import com.example.vitesse.data.repository.CurrencyChangeRepository
 import com.example.vitesse.data.repositoryInterfaces.CandidateRepositoryInterface
+import com.example.vitesse.data.repositoryInterfaces.CurrencyChangeRepositoryInterface
+import com.example.vitesse.data.webService.CurrencyChangeApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -69,5 +72,11 @@ class AppModule {
     @Singleton
     fun provideCandidateRepository(candidateDtoDao: CandidateDtoDao): CandidateRepositoryInterface {
         return CandidateRepository(candidateDtoDao)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCurrencyChangeRepository(currencyChangeApiService: CurrencyChangeApiService) : CurrencyChangeRepositoryInterface{
+        return CurrencyChangeRepository(currencyChangeApiService)
     }
 }
