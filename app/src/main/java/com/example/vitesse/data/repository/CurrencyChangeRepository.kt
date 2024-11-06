@@ -1,7 +1,7 @@
 package com.example.vitesse.data.repository
 
 import com.example.vitesse.data.repositoryInterfaces.CurrencyChangeRepositoryInterface
-import com.example.vitesse.data.webService.CurrencyChangeApiService
+import com.example.vitesse.data.webservice.CurrencyChangeApiService
 import com.example.vitesse.domain.model.CurrencyConversionParams
 import javax.inject.Inject
 

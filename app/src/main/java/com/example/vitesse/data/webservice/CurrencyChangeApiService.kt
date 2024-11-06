@@ -1,4 +1,4 @@
-package com.example.vitesse.data.webService
+package com.example.vitesse.data.webservice
 
 import com.example.vitesse.domain.model.CurrencyExchangeResponse
 import retrofit2.http.GET

@@ -5,8 +5,13 @@
     <string name="lastname">Nom</string>
     <string name="phone">Téléphone</string>
     <string name="mail">Courriel</string>
+    <string name="call">Appel</string>
+    <string name="sms">SMS</string>
     <string name="salary">Prétentions salariales</string>
     <string name="note">Note</string>
+    <string name="notes">Notes</string>
+    <string name="about">A propos</string>
+    <string name="or">Soit £</string>
     <string name="error_load_favorite_candidate">Impossible de charger les candidats favoris.</string>
     <string name="error_add_favorite_candidate">Impossible d\'ajouter le candidat en favoris.</string>
     <string name="error_delete_favorite_candidate">Impossible de supprimer le candidat en favoris.</string>

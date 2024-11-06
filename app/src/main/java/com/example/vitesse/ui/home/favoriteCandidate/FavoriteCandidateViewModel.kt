@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 /**
- * The view model class for managing candidates.
+ * The view model class for managing favorite candidates.
  */
 @HiltViewModel
 class FavoriteCandidateViewModel @Inject constructor(

@@ -32,7 +32,7 @@ data class CandidateDto(
     var surName: String,
 
     @ColumnInfo(name = "phoneNumbers")
-    var phoneNumbers: Long,//mettre string
+    var phoneNumbers: String,
 
     @ColumnInfo(name = "email")
     var email: String,

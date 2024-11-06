@@ -1,6 +1,5 @@
 package com.example.vitesse.domain.model
 
-import android.graphics.Picture
 import com.example.vitesse.data.entity.CandidateDto
 import java.time.LocalDateTime
 
@@ -21,7 +20,7 @@ data class Candidate(
     val id: Long,
     var firstName: String,
     var surName: String,
-    val phoneNumbers: Long,
+    val phoneNumbers: String,
     val email: String,
     val dateOfBirth: LocalDateTime,
     val expectedSalaryEuros: Int,

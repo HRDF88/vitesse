@@ -4,8 +4,13 @@
     <string name="lastname">Lastname</string>
     <string name="phone">Phone</string>
     <string name="mail">E-mail</string>
+    <string name="call">Call</string>
+    <string name="sms">SMS</string>
     <string name="salary">Salary expectations</string>
     <string name="note">Note</string>
+    <string name="notes">Notes</string>
+    <string name="about">About</string>
+    <string name="or">Or £</string>
     <string name="error_load_favorite_candidate">Unable to load favorite candidates.</string>
     <string name="error_add_favorite_candidate">Impossible to add the candidate to favorites.</string>
     <string name="error_delete_favorite_candidate">Impossible to delete the candidate from favorites.</string>

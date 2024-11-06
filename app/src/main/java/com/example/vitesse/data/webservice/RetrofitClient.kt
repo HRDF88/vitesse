@@ -1,4 +1,4 @@
-package com.example.vitesse.data.webService
+package com.example.vitesse.data.webservice
 
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory

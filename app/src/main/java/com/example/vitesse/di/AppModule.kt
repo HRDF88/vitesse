@@ -7,7 +7,7 @@ import com.example.vitesse.data.repository.CandidateRepository
 import com.example.vitesse.data.repository.CurrencyChangeRepository
 import com.example.vitesse.data.repositoryInterfaces.CandidateRepositoryInterface
 import com.example.vitesse.data.repositoryInterfaces.CurrencyChangeRepositoryInterface
-import com.example.vitesse.data.webService.CurrencyChangeApiService
+import com.example.vitesse.data.webservice.CurrencyChangeApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

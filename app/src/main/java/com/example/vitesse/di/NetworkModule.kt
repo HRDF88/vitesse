@@ -1,7 +1,7 @@
 package com.example.vitesse.di
 
-import com.example.vitesse.data.webService.CurrencyChangeApiService
-import com.example.vitesse.data.webService.RetrofitClient
+import com.example.vitesse.data.webservice.CurrencyChangeApiService
+import com.example.vitesse.data.webservice.RetrofitClient
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
