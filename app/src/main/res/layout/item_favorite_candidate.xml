@@ -33,7 +33,7 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="6dp"
                     android:textSize="14sp"
-                    android:text="@string/fistname" />
+                    android:text="@string/firstname" />
 
                 <TextView
                     android:id="@+id/favorite_lastname"

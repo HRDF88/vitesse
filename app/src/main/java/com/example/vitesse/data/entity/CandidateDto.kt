@@ -25,31 +25,31 @@ data class CandidateDto(
     @ColumnInfo(name = "id")
     var id: Long = 0,
 
-    @ColumnInfo(name = "FirstName")
+    @ColumnInfo(name = "firstName")
     var firstName: String,
 
-    @ColumnInfo(name = "SurName")
+    @ColumnInfo(name = "surName")
     var surName: String,
 
-    @ColumnInfo(name = "PhoneNumbers")
-    var phoneNumbers: Long,
+    @ColumnInfo(name = "phoneNumbers")
+    var phoneNumbers: Long,//mettre string
 
-    @ColumnInfo(name = "Email")
+    @ColumnInfo(name = "email")
     var email: String,
 
-    @ColumnInfo(name = "DateOfBirth")
+    @ColumnInfo(name = "dateOfBirth")
     var dateOfBirth: LocalDateTime,
 
-    @ColumnInfo(name = "ExpectedSalaryEuros")
+    @ColumnInfo(name = "expectedSalaryEuros")
     var expectedSalaryEuros: Int,
 
-    @ColumnInfo(name = "Note")
+    @ColumnInfo(name = "note")
     var note: String,
 
-    @ColumnInfo(name = "ProfilePicture")
+    @ColumnInfo(name = "profilePicture")
     var profilePicture: String,
 
-    @ColumnInfo(name = "Favorite")
+    @ColumnInfo(name = "favorite")
     var favorite : Boolean
 
     )

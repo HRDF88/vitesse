@@ -87,7 +87,6 @@ dependencies {
     implementation("androidx.activity:activity-ktx:1.9.2")
     implementation("androidx.fragment:fragment-ktx:1.8.4")
     implementation ("androidx.databinding:databinding-runtime:7.1.0")
-
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
 
     //Tests
