@@ -14,6 +14,8 @@ import com.example.vitesse.domain.model.Candidate
 class CandidateAdapter(private var candidate: List<Candidate>) :
     RecyclerView.Adapter<CandidateAdapter.CandidateViewHolder>() {
 
+    private var filteredCandidates: List<Candidate> = candidate
+
     /**
      * Create View Holder.
      */
@@ -28,14 +30,14 @@ class CandidateAdapter(private var candidate: List<Candidate>) :
      * Holder values of  elements on View Holder.
      */
     override fun onBindViewHolder(holder: CandidateAdapter.CandidateViewHolder, position: Int) {
-        val candidate = candidate[position]
+        val candidate = filteredCandidates[position]
         holder.tvFirstName.text = candidate.firstName
         holder.tvLastName.text = candidate.surName
         holder.tvNote.text = candidate.note
 
     }
 
-    override fun getItemCount() = candidate.size
+    override fun getItemCount() = filteredCandidates.size
 
     /**
      * Binding XML elements of View Holder.
@@ -50,8 +52,26 @@ class CandidateAdapter(private var candidate: List<Candidate>) :
      * Update DATA for recycler view.
      */
     @SuppressLint("NotifyDatasetChanged")
-    fun uptdateData(newCandidate: List<Candidate>) {
+    fun updateData(newCandidate: List<Candidate>) {
         this.candidate = newCandidate
+        this.filteredCandidates = newCandidate
+        notifyDataSetChanged()
+    }
+
+    /**
+     * Update filtered list based on search query.
+     */
+    fun filter(query: String) {
+        filteredCandidates = if (query.isEmpty()) {
+            candidate
+        } else {
+            candidate.filter {
+                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(
+                    query,
+                    ignoreCase = true
+                )
+            }
+        }
         notifyDataSetChanged()
     }
 

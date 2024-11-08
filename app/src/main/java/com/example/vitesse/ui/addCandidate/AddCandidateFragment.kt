@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.Toolbar
 import androidx.fragment.app.Fragment
+import com.example.vitesse.MainActivity
 import com.example.vitesse.R
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -39,6 +40,7 @@ class AddCandidateFragment : Fragment() {
             setNavigationOnClickListener {
                 // Retour en arrière lorsque l'utilisateur appuie sur la flèche de retour
                 requireActivity().onBackPressedDispatcher.onBackPressed()
+
             }
         }
     }

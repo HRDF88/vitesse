@@ -12,9 +12,11 @@ import com.example.vitesse.domain.model.Candidate
  * Adapter class for the RecyclerView that displays a list of favorite candidates.
  */
 class FavoriteCandidateAdapter(
-    private var favoriteCandidate:List<Candidate> = emptyList()
+    private var favoriteCandidate: List<Candidate> = emptyList()
 ) :
     RecyclerView.Adapter<FavoriteCandidateAdapter.FavoriteCandidateViewHolder>() {
+
+    private var filteredFavoriteCandidates: List<Candidate> = favoriteCandidate
 
     /**
      * Create View Holder.
@@ -33,7 +35,7 @@ class FavoriteCandidateAdapter(
         holder: FavoriteCandidateAdapter.FavoriteCandidateViewHolder,
         position: Int
     ) {
-        val favoriteCandidate = favoriteCandidate[position]
+        val favoriteCandidate = filteredFavoriteCandidates[position]
 
         holder.tvFirstName.text = favoriteCandidate.firstName
         holder.tvLastName.text = favoriteCandidate.surName
@@ -44,7 +46,7 @@ class FavoriteCandidateAdapter(
     /**
      * Gets item size to display.
      */
-    override fun getItemCount() = favoriteCandidate.size
+    override fun getItemCount() = filteredFavoriteCandidates.size
 
     /**
      * Binding XML elements of View Holder.
@@ -59,8 +61,26 @@ class FavoriteCandidateAdapter(
      * Update DATA for recycler view.
      */
     @SuppressLint("NotifyDatasetChanged")
-    fun uptdateData(newFavoriteCandidate: List<Candidate>) {
+    fun updateData(newFavoriteCandidate: List<Candidate>) {
         favoriteCandidate = newFavoriteCandidate
+        filteredFavoriteCandidates = newFavoriteCandidate // Réinitialiser la liste filtrée
         notifyDataSetChanged()
+    }
+
+    /**
+     * Update the filtered list based on search query.
+     */
+    fun filter(query: String) {
+        filteredFavoriteCandidates = if (query.isEmpty()) {
+            favoriteCandidate // Réinitialiser à la liste complète des favoris si la recherche est vide
+        } else {
+            favoriteCandidate.filter {
+                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(
+                    query,
+                    ignoreCase = true
+                )
+            }
+        }
+        notifyDataSetChanged() // Notifier l'adapter que la liste filtrée a changé
     }
 }
