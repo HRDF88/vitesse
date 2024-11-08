@@ -16,7 +16,7 @@ object RetrofitClient {
     private val login = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
     private val apiKeyInterceptor = Interceptor { chain ->
         val url = chain.request().url.newBuilder()
-            .addQueryParameter("key", "sk-ek3E67288afd60804445")
+            .addQueryParameter("key", "sk-ek3E67288afd60804445")// a mettre en local properties.
             .build()
         val request = chain.request().newBuilder().url(url).build()
         chain.proceed(request)

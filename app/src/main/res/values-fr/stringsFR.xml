@@ -12,6 +12,9 @@
     <string name="notes">Notes</string>
     <string name="about">A propos</string>
     <string name="or">Soit £</string>
+    <string name="all">Tous</string>
+    <string name="favorite">Favoris</string>
+    <string name="search">Rechercher un candidat</string>
     <string name="error_load_favorite_candidate">Impossible de charger les candidats favoris.</string>
     <string name="error_add_favorite_candidate">Impossible d\'ajouter le candidat en favoris.</string>
     <string name="error_delete_favorite_candidate">Impossible de supprimer le candidat en favoris.</string>

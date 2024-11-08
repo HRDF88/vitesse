@@ -12,8 +12,7 @@ import com.example.vitesse.domain.model.Candidate
  * Adapter class for the RecyclerView that displays a list of favorite candidates.
  */
 class FavoriteCandidateAdapter(
-    private val favoriteCandidateViewModel: FavoriteCandidateViewModel,
-    private var favoriteCandidate: List<Candidate> = favoriteCandidateViewModel.favoriteCandidateFlow.value
+    private var favoriteCandidate:List<Candidate> = emptyList()
 ) :
     RecyclerView.Adapter<FavoriteCandidateAdapter.FavoriteCandidateViewHolder>() {
 
