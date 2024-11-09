@@ -7,12 +7,16 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
+import com.example.vitesse.ui.interfaceUi.FilterableInterface
 
 /**
  * Adapter class for the RecyclerView that displays a list of all candidates.
  */
-class CandidateAdapter(private var candidate: List<Candidate>) :
-    RecyclerView.Adapter<CandidateAdapter.CandidateViewHolder>() {
+class CandidateAdapter(
+    private var candidate: List<Candidate>,
+    private val onItemClick: (Candidate) -> Unit
+) :
+    RecyclerView.Adapter<CandidateAdapter.CandidateViewHolder>(), FilterableInterface {
 
     private var filteredCandidates: List<Candidate> = candidate
 
@@ -35,6 +39,10 @@ class CandidateAdapter(private var candidate: List<Candidate>) :
         holder.tvLastName.text = candidate.surName
         holder.tvNote.text = candidate.note
 
+        // Set click listener on the item view
+        holder.itemView.setOnClickListener {
+            onItemClick(candidate) // Appeler le callback avec le candidat cliqué
+        }
     }
 
     override fun getItemCount() = filteredCandidates.size
@@ -61,7 +69,7 @@ class CandidateAdapter(private var candidate: List<Candidate>) :
     /**
      * Update filtered list based on search query.
      */
-    fun filter(query: String) {
+    override fun filter(query: String) {
         filteredCandidates = if (query.isEmpty()) {
             candidate
         } else {

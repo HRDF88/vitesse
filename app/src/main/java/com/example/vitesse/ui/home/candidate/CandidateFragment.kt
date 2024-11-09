@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
+import com.example.vitesse.ui.detailsCandidate.DetailCandidateFragment
 import com.example.vitesse.ui.interfaceUi.FilterableInterface
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -55,7 +56,9 @@ class CandidateFragment : Fragment(), FilterableInterface {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Initialize adapter with an empty list to start
-        candidateAdapter = CandidateAdapter(emptyList())
+        candidateAdapter = CandidateAdapter(emptyList()) { candidate ->
+            openDetailFragment(candidate)
+        }
         recyclerView.adapter = candidateAdapter
     }
 
@@ -73,11 +76,25 @@ class CandidateFragment : Fragment(), FilterableInterface {
         } else {
             // Filter candidates whose first name or last name contains the query (case-insensitive)
             candidateList.filter {
-                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(query, ignoreCase = true)
+                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(
+                    query,
+                    ignoreCase = true
+                )
             }
         }
 
         // Update the adapter with the filtered list of candidates
         candidateAdapter.updateData(filteredList)
+    }
+
+    private fun openDetailFragment(candidate: Candidate) {
+        val detailFragment = DetailCandidateFragment.newInstance(candidate.id)
+        parentFragmentManager.beginTransaction()
+            .replace(
+                R.id.main_view,
+                detailFragment
+            ) // Remplacez `R.id.main_view` par l'ID de votre conteneur
+            .addToBackStack(null) // Ajoute à la pile arrière pour permettre le retour en arrière
+            .commit()
     }
 }
