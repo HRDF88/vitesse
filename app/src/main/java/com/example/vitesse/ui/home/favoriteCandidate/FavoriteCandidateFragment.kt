@@ -11,6 +11,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vitesse.R
+import com.example.vitesse.domain.model.Candidate
+import com.example.vitesse.ui.detailsCandidate.DetailCandidateFragment
 import com.example.vitesse.ui.interfaceUi.FilterableInterface
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -58,7 +60,9 @@ class FavoriteCandidateFragment : Fragment(), FilterableInterface {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Initialize the adapter with an empty list to start
-        favoriteCandidateAdapter = FavoriteCandidateAdapter()
+        favoriteCandidateAdapter = FavoriteCandidateAdapter(emptyList()){candidate ->
+            openDetailFragment(candidate)
+        }
         recyclerView.adapter = favoriteCandidateAdapter
 
         // Load favorite candidates as soon as the fragment is ready (suspended function)
@@ -102,6 +106,28 @@ class FavoriteCandidateFragment : Fragment(), FilterableInterface {
      */
     override fun filter(query: String) {
         favoriteCandidateAdapter.filter(query) // Call the filter method of the adapter to apply the filter
+    }
+
+    /**
+     * Opens a detail fragment to display information about a given candidate.
+     *
+     * This function creates an instance of `DetailCandidateFragment` using the ID
+     * of the provided candidate, then replaces the current fragment in the container
+     * specified by `R.id.main_view` with the detail fragment. The fragment transaction
+     * is added to the back stack to enable backward navigation.
+     *
+     * @param candidate The candidate whose detail fragment will be displayed.
+     *                  The `Candidate` object must contain a unique ID to identify the candidate.
+     */
+    private fun openDetailFragment(candidate: Candidate) {
+        val detailFragment = DetailCandidateFragment.newInstance(candidate.id)
+        parentFragmentManager.beginTransaction()
+            .replace(
+                R.id.main_view,
+                detailFragment
+            ) // Remplacez `R.id.main_view` par l'ID de votre conteneur
+            .addToBackStack(null) // Ajoute à la pile arrière pour permettre le retour en arrière
+            .commit()
     }
 }
 

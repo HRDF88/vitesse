@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.domain.model.CandidateWithAge
 import com.example.vitesse.domain.usecase.AddCandidateUseCase
@@ -11,6 +12,9 @@ import com.example.vitesse.domain.usecase.DeleteCandidateUseCase
 import com.example.vitesse.domain.usecase.GetAllCandidateUseCase
 import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.example.vitesse.domain.usecase.UpdateCandidateUseCase
+import com.example.vitesse.domain.usecase.candidate.AddCandidateToFavoriteUseCase
+import com.example.vitesse.domain.usecase.candidate.DeleteCandidateToFavoriteUseCase
+import com.example.vitesse.domain.usecase.candidate.GetFavoriteCandidateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -28,7 +32,10 @@ class DetailCandidateViewModel @Inject constructor(
     private val deleteCandidateUseCase: DeleteCandidateUseCase,
     private val getAllCandidateUseCase: GetAllCandidateUseCase,
     private val getCandidateByIdUseCase: GetCandidateByIdUseCase,
-    private val updateCandidateUseCase: UpdateCandidateUseCase
+    private val updateCandidateUseCase: UpdateCandidateUseCase,
+    private val addCandidateToFavoriteUseCase: AddCandidateToFavoriteUseCase,
+    private val deleteCandidateToFavoriteUseCase: DeleteCandidateToFavoriteUseCase,
+    private val getFavoriteCandidateUseCase: GetFavoriteCandidateUseCase
 ) : ViewModel() {
 
     /**
@@ -109,10 +116,56 @@ class DetailCandidateViewModel @Inject constructor(
         }
     }
 
-    // Méthode pour calculer l'âge à partir de la date de naissance
+    /**
+     * Calculates the age of a candidate based on their date of birth.
+     *
+     * @param birthDate The birth date of the candidate as a `LocalDateTime`.
+     * @return The calculated age as an integer, representing the difference
+     *         between the current year and the year of birth.
+     */
     private fun calculateAge(birthDate: LocalDateTime): Int {
         val currentYear = LocalDate.now().year
         val birthYear = birthDate.year
         return currentYear - birthYear
+    }
+
+    /**
+     * Adds a new favorite candidate using the addCandidateToFavoriteUseCase and reload all favorite candidates.
+     *
+     * @param candidate the new favorite candidate to be added.
+     */
+    suspend fun addNewFavoriteCandidate(candidate: Candidate){
+        try {
+            addCandidateToFavoriteUseCase.execute(candidate)
+        }catch (e:Exception){
+            val errorMessage = (R.string.error_add_favorite_candidate).toString()
+            onError(errorMessage)
+        }
+    }
+
+    /**
+     *Deletes a favorite candidate using the deleteCandidateToFavoriteUseCase and reload all favorite candidates.
+     *
+     * @param candidate the favorite candidate to delete.
+     */
+    suspend fun deleteFavoriteCandidate(candidate: Candidate){
+        try {
+            deleteCandidateToFavoriteUseCase.execute(candidate)
+        } catch (e:Exception){
+            val errorMessage = (R.string.error_delete_favorite_candidate).toString()
+            onError(errorMessage)
+        }
+    }
+
+    fun deleteCandidate(candidate: Candidate) {
+        viewModelScope.launch {
+            try {
+                deleteCandidateUseCase.execute(candidate)
+
+            } catch (e: Exception) {
+                val errorMessage = (R.string.error_delete_favorite_candidate).toString()
+                onError(errorMessage)
+            }
+        }
     }
 }

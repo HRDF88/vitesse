@@ -12,11 +12,13 @@ import com.example.vitesse.domain.model.Candidate
  * Adapter class for the RecyclerView that displays a list of favorite candidates.
  */
 class FavoriteCandidateAdapter(
-    private var favoriteCandidate: List<Candidate> = emptyList()
+    private var favoriteCandidate: List<Candidate> = emptyList(),
+    private val onItemClick: (Candidate) -> Unit
 ) :
     RecyclerView.Adapter<FavoriteCandidateAdapter.FavoriteCandidateViewHolder>() {
 
     private var filteredFavoriteCandidates: List<Candidate> = favoriteCandidate
+
 
     /**
      * Create View Holder.
@@ -40,6 +42,11 @@ class FavoriteCandidateAdapter(
         holder.tvFirstName.text = favoriteCandidate.firstName
         holder.tvLastName.text = favoriteCandidate.surName
         holder.tvNote.text = favoriteCandidate.note
+
+        // Set click listener on the item view
+        holder.itemView.setOnClickListener {
+            onItemClick(favoriteCandidate) // Appeler le callback avec le candidat cliqué
+        }
 
     }
 

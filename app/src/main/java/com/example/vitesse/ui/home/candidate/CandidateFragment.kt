@@ -87,6 +87,17 @@ class CandidateFragment : Fragment(), FilterableInterface {
         candidateAdapter.updateData(filteredList)
     }
 
+    /**
+     * Opens a detail fragment to display information about a given candidate.
+     *
+     * This function creates an instance of `DetailCandidateFragment` using the ID
+     * of the provided candidate, then replaces the current fragment in the container
+     * specified by `R.id.main_view` with the detail fragment. The fragment transaction
+     * is added to the back stack to enable backward navigation.
+     *
+     * @param candidate The candidate whose detail fragment will be displayed.
+     *                  The `Candidate` object must contain a unique ID to identify the candidate.
+     */
     private fun openDetailFragment(candidate: Candidate) {
         val detailFragment = DetailCandidateFragment.newInstance(candidate.id)
         parentFragmentManager.beginTransaction()
