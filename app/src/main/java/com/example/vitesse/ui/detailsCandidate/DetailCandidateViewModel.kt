@@ -28,14 +28,11 @@ import java.time.LocalDateTime
 import javax.inject.Inject
 
 class DetailCandidateViewModel @Inject constructor(
-    private val addCandidateUseCase: AddCandidateUseCase,
     private val deleteCandidateUseCase: DeleteCandidateUseCase,
-    private val getAllCandidateUseCase: GetAllCandidateUseCase,
     private val getCandidateByIdUseCase: GetCandidateByIdUseCase,
     private val updateCandidateUseCase: UpdateCandidateUseCase,
     private val addCandidateToFavoriteUseCase: AddCandidateToFavoriteUseCase,
     private val deleteCandidateToFavoriteUseCase: DeleteCandidateToFavoriteUseCase,
-    private val getFavoriteCandidateUseCase: GetFavoriteCandidateUseCase
 ) : ViewModel() {
 
     /**
@@ -66,17 +63,17 @@ class DetailCandidateViewModel @Inject constructor(
         .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
 
-/*
-    // StateFlow pour le salaire en livres
-    val expectedSalaryPounds: StateFlow<String> = _candidateFlow
-        .map { candidate ->
-            candidate?.let {
-                val salaryInPounds = convertEurosToPounds(it.expectedSalary)
-                "%.2f".format(salaryInPounds)
-            } ?: "Salaire inconnu"
-        }
-        .stateIn(viewModelScope, SharingStarted.Lazily, "Salaire inconnu")
-*/
+    /*
+        // StateFlow pour le salaire en livres
+        val expectedSalaryPounds: StateFlow<String> = _candidateFlow
+            .map { candidate ->
+                candidate?.let {
+                    val salaryInPounds = convertEurosToPounds(it.expectedSalary)
+                    "%.2f".format(salaryInPounds)
+                } ?: "Salaire inconnu"
+            }
+            .stateIn(viewModelScope, SharingStarted.Lazily, "Salaire inconnu")
+    */
     /**
      * update uiState if there is an error.
      */
@@ -108,10 +105,10 @@ class DetailCandidateViewModel @Inject constructor(
                         currentState.copy(candidate = candidate, error = "")
                     }
                 } else {
-                    onError("Candidate not found")
+                    onError((R.string.candidate_not_found).toString())
                 }
             } catch (e: Exception) {
-                onError("Error loading candidate details: ${e.message}")
+                onError((R.string.error_load_candidate).toString())
             }
         }
     }
@@ -134,10 +131,10 @@ class DetailCandidateViewModel @Inject constructor(
      *
      * @param candidate the new favorite candidate to be added.
      */
-    suspend fun addNewFavoriteCandidate(candidate: Candidate){
+    suspend fun addNewFavoriteCandidate(candidate: Candidate) {
         try {
             addCandidateToFavoriteUseCase.execute(candidate)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             val errorMessage = (R.string.error_add_favorite_candidate).toString()
             onError(errorMessage)
         }
@@ -148,22 +145,32 @@ class DetailCandidateViewModel @Inject constructor(
      *
      * @param candidate the favorite candidate to delete.
      */
-    suspend fun deleteFavoriteCandidate(candidate: Candidate){
+    suspend fun deleteFavoriteCandidate(candidate: Candidate) {
         try {
             deleteCandidateToFavoriteUseCase.execute(candidate)
-        } catch (e:Exception){
+        } catch (e: Exception) {
             val errorMessage = (R.string.error_delete_favorite_candidate).toString()
             onError(errorMessage)
         }
     }
 
+    /**
+     * Deletes a candidate using `deleteCandidateUseCase`. Updates the UI state to indicate
+     * that the candidate has been deleted.
+     *
+     * @param candidate The candidate to delete.
+     */
     fun deleteCandidate(candidate: Candidate) {
         viewModelScope.launch {
             try {
                 deleteCandidateUseCase.execute(candidate)
 
+                // // Update the status to indicate that the candidate has been deleted.
+                _uiState.value = _uiState.value.copy(
+                    isDeleted = true
+                )
             } catch (e: Exception) {
-                val errorMessage = (R.string.error_delete_favorite_candidate).toString()
+                val errorMessage = (R.string.error_delete_candidate).toString()
                 onError(errorMessage)
             }
         }

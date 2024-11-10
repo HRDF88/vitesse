@@ -24,4 +24,13 @@
     <string name="save">Save</string>
     <string name="enter_date">Enter a date</string>
     <string name="select_date">Select a date</string>
+    <string name="age_unknown">Age unknown</string>
+    <string name="year">%1$s years</string>
+    <string name="delete_candidate">Candidate successfully deleted.</string>
+    <string name="confirm_deletion">Confirm deletion</string>
+    <string name="question_delete_candidate">Are you sure you want to delete this candidate?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="candidate_not_found">Candidate not found.</string>
+
 </resources>

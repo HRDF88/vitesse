@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -96,10 +97,9 @@ class DetailCandidateFragment : Fragment() {
 
                     // Display the calculated age for this candidate, fetched from the ViewModel.
                     val candidateAge = detailCandidateViewModel.candidatesWithAge.value
-                        .find { it.candidate.id == candidate.id }?.age ?: "Âge inconnu"
-                    binding.detailCandidateAge.text = "($candidateAge ans)"
+                        .find { it.candidate.id == candidate.id }?.age ?: getString(R.string.age_unknown)
+                    binding.detailCandidateAge.text = getString(R.string.year, candidateAge)
                 }
-
 
 
                 // Display errors, if any.
@@ -109,6 +109,17 @@ class DetailCandidateFragment : Fragment() {
                     detailCandidateViewModel.updateErrorState("")
                 }
 
+                //Observe if the candidate has been deleted
+                if (uiState.isDeleted) {
+                    // Show a success message.
+                    Toast.makeText(
+                        requireContext(),
+                        getString(R.string.delete_candidate),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    // Return to the list of candidates or close this fragment.
+                    requireActivity().onBackPressed()
+                }
 
             }
 
@@ -124,7 +135,7 @@ class DetailCandidateFragment : Fragment() {
      * @param inflater Inflater to inflate the menu.
      */
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        // lie le menu des actions du candidat
+        // links the candidate's actions menu.
         inflater.inflate(R.menu.menu_detail_candidate, menu)
         super.onCreateOptionsMenu(menu, inflater)
     }
@@ -138,24 +149,29 @@ class DetailCandidateFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.menu_favorite -> {
-                // Toggle favorite status
+                // Toggle favorite status.
                 toggleFavorite()
                 return true
             }
 
             R.id.menu_edit -> {
-                // Gérer l'action de modification
+                // Manage edit action.
                 return true
             }
 
             R.id.menu_delete -> {
-                // Gérer l'action de suppression
+                // Manage delete action.
+                showDeleteConfirmationDialog()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
     }
 
+    /**
+     * Toggles the favorite status of the candidate. If the candidate is currently a favorite, they
+     * are removed from favorites; if not, they are added. Updates the UI icon accordingly.
+     */
     private fun toggleFavorite() {
         val candidate = detailCandidateViewModel.uiState.value.candidate
         candidate?.let {
@@ -177,6 +193,10 @@ class DetailCandidateFragment : Fragment() {
         }
     }
 
+    /**
+     * Updates the favorite icon in the menu to reflect the candidate's favorite status. Displays a
+     * filled star if the candidate is a favorite, otherwise an empty star.
+     */
     private fun updateFavoriteIcon() {
         val favoriteIcon = requireActivity().findViewById<ImageButton>(R.id.menu_favorite)
         if (isFavorite) {
@@ -184,6 +204,23 @@ class DetailCandidateFragment : Fragment() {
         } else {
             favoriteIcon.setImageResource(R.drawable.star)  // Replace with your empty star drawable
         }
+    }
+
+    /**
+     * Displays a confirmation dialog for candidate deletion. If confirmed, triggers the deletion
+     * of the candidate through the ViewModel.
+     */
+    private fun showDeleteConfirmationDialog() {
+        AlertDialog.Builder(requireContext())
+            .setTitle(getString(R.string.confirm_deletion))
+            .setMessage(getString(R.string.question_delete_candidate))
+            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                detailCandidateViewModel.uiState.value.candidate?.let { candidate ->
+                    detailCandidateViewModel.deleteCandidate(candidate)
+                }
+            }
+            .setNegativeButton(getString(R.string.no), null)
+            .show()
     }
 
 
