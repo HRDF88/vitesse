@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph">
+    <fragment
+        android:id="@+id/detailCandidateFragment"
+        android:name="com.example.vitesse.ui.detailsCandidate.DetailCandidateFragment"
+        android:label="fragment_detail_candidate">
+
+        <action
+            android:id="@+id/action_detailCandidateFragment_to_addCandidateFragment"
+            app:destination="@id/addCandidateFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addCandidateFragment"
+        android:name="com.example.vitesse.ui.addCandidate.AddCandidateFragment"
+        android:label="fragment_add_candidate" />
+</navigation>

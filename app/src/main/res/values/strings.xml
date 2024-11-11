@@ -21,6 +21,8 @@
     <string name="error_add_candidate">Impossible to add the candidate.</string>
     <string name="error_delete_candidate">Impossible to delete the candidate.</string>
     <string name="add_candidate">Add a candidate</string>
+    <string name="edit_candidate">Edit a candidate</string>
+    <string name="error_update_candidate">Error while updating candidate.</string>
     <string name="save">Save</string>
     <string name="enter_date">Enter a date</string>
     <string name="select_date">Select a date</string>

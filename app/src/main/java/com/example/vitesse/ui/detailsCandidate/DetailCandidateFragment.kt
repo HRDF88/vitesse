@@ -14,6 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import com.example.vitesse.R
 import com.example.vitesse.databinding.FragmentDetailCandidateBinding
 import dagger.hilt.android.AndroidEntryPoint
@@ -156,6 +157,7 @@ class DetailCandidateFragment : Fragment() {
 
             R.id.menu_edit -> {
                 // Manage edit action.
+                navigateToAddCandidateFragment()
                 return true
             }
 
@@ -221,6 +223,17 @@ class DetailCandidateFragment : Fragment() {
             }
             .setNegativeButton(getString(R.string.no), null)
             .show()
+    }
+
+    private fun navigateToAddCandidateFragment() {
+        val candidate = detailCandidateViewModel.uiState.value.candidate
+        candidate?.let {
+            val bundle = Bundle().apply {
+                putLong("candidateId", it.id)
+            }
+            findNavController().navigate(R.id.action_detailCandidateFragment_to_addCandidateFragment, bundle)
+        }
+
     }
 
 

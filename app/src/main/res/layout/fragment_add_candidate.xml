@@ -27,16 +27,6 @@
             android:gravity="center_horizontal"
             android:orientation="vertical">
 
-            <!-- Titre -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingBottom="24dp"
-                android:text="@string/add_candidate"
-                android:textAlignment="center"
-                android:textSize="20sp"
-                android:textStyle="bold" />
-
             <!-- Champ Prénom -->
             <ImageView
                 android:id="@+id/add_candidate_profile_picture"
@@ -328,7 +318,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
             <!-- Bouton Sauvegarder -->
-            <Button
+            <com.google.android.material.button.MaterialButton
                 android:id="@+id/add_candidate_save_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -338,6 +328,7 @@
                 android:text="@string/save"
                 android:textAlignment="center"
                 android:textColor="#FFFFFF"
+
                 app:boxCornerRadiusBottomEnd="8dp"
                 app:boxCornerRadiusBottomStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"

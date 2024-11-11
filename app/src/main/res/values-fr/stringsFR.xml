@@ -21,7 +21,9 @@
     <string name="error_load_candidate">Impossible de charger les candidats.</string>
     <string name="error_add_candidate">Impossible d\'ajouter le candidat.</string>
     <string name="error_delete_candidate">Impossible de supprimer le candidat.</string>
+    <string name="error_update_candidate">Erreur lors de la mise à jour du candidat.</string>
     <string name="add_candidate">Ajouter un candidat</string>
+    <string name="edit_candidate">Editer un candidat</string>
     <string name="save">Sauvegarder</string>
     <string name="enter_date">Entrer une date</string>
     <string name="select_date">Sélectionner une date</string>

@@ -7,14 +7,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.domain.model.CandidateWithAge
-import com.example.vitesse.domain.usecase.AddCandidateUseCase
 import com.example.vitesse.domain.usecase.DeleteCandidateUseCase
-import com.example.vitesse.domain.usecase.GetAllCandidateUseCase
 import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.example.vitesse.domain.usecase.UpdateCandidateUseCase
 import com.example.vitesse.domain.usecase.candidate.AddCandidateToFavoriteUseCase
 import com.example.vitesse.domain.usecase.candidate.DeleteCandidateToFavoriteUseCase
-import com.example.vitesse.domain.usecase.candidate.GetFavoriteCandidateUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -30,7 +27,6 @@ import javax.inject.Inject
 class DetailCandidateViewModel @Inject constructor(
     private val deleteCandidateUseCase: DeleteCandidateUseCase,
     private val getCandidateByIdUseCase: GetCandidateByIdUseCase,
-    private val updateCandidateUseCase: UpdateCandidateUseCase,
     private val addCandidateToFavoriteUseCase: AddCandidateToFavoriteUseCase,
     private val deleteCandidateToFavoriteUseCase: DeleteCandidateToFavoriteUseCase,
 ) : ViewModel() {
