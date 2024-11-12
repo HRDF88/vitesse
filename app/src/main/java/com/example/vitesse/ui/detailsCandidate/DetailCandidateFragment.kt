@@ -1,22 +1,31 @@
 package com.example.vitesse.ui.detailsCandidate
 
+import android.content.ContentValues.TAG
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
+import androidx.core.content.ContextCompat
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.example.vitesse.R
 import com.example.vitesse.databinding.FragmentDetailCandidateBinding
+import com.example.vitesse.domain.model.Candidate
+import com.example.vitesse.ui.addCandidate.AddCandidateFragment
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -30,188 +39,180 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class DetailCandidateFragment : Fragment() {
 
-    // The ID of the candidate whose details are displayed.
     private var candidateId: Long? = null
-
-    // Binding for the XML layout associated with this fragment.
     private lateinit var binding: FragmentDetailCandidateBinding
-
-    // ViewModel to manage candidate data Logic.
     private val detailCandidateViewModel: DetailCandidateViewModel by viewModels()
-
-    // Track if the candidate is in favorites or not.
     private var isFavorite: Boolean = false
+    private lateinit var favoriteMenuItem: MenuItem // Reference for the favorite menu item
 
-    /**
-     * Initializes the fragment and loads candidate details if an ID is available.
-     *
-     * @param savedInstanceState The previous saved state of the fragment, if any.
-     */
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         candidateId = arguments?.getLong(ARG_CANDIDATE_ID)
-
-        // Load candidate details if the ID is available.
         candidateId?.let {
             detailCandidateViewModel.loadCandidateDetails(it)
         }
     }
 
-    /**
-     * Creates and initializes the fragment's view. Uses ViewBinding to bind UI elements.
-     * Observes the `uiState` from the ViewModel and updates the UI based on state changes.
-     *
-     * @param inflater LayoutInflater object to inflate views in the fragment.
-     * @param container The parent view that will contain this fragment's view.
-     * @param savedInstanceState The previous saved state of the fragment, if any.
-     * @return The root view of the fragment.
-     */
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-
-        // Use ViewBinding to bind the layout.
+    ): View {
         binding = FragmentDetailCandidateBinding.inflate(inflater, container, false)
-        viewLifecycleOwner.lifecycleScope.launch {
-
-            // Observe ViewModel state for UI updates.
-            detailCandidateViewModel.uiState.collect() { uiState ->
-
-                // Handle loading state.
-                binding.progressBar.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
-
-                // Update views if candidate details are available.
-                uiState.candidate?.let { candidate ->
-                    (activity as? AppCompatActivity)?.supportActionBar?.title =
-                        "${candidate.firstName} ${candidate.surName}"
-                    binding.detailCandidateNote.text = candidate.note
-                    binding.detailCandidateDateOfBirth.text = candidate.dateOfBirth.toString()
-                    binding.detailCandidateExpectedSalaryEuros.text =
-                        candidate.expectedSalaryEuros.toString()
-
-                    isFavorite = candidate.favorite
-                    updateFavoriteIcon()
-                    /*
-                    binding.detailCandidateExpectedSalaryPounds.text =
-                        candidate.expectedSalaryPounds*/
-
-                    // Display the calculated age for this candidate, fetched from the ViewModel.
-                    val candidateAge = detailCandidateViewModel.candidatesWithAge.value
-                        .find { it.candidate.id == candidate.id }?.age ?: getString(R.string.age_unknown)
-                    binding.detailCandidateAge.text = getString(R.string.year, candidateAge)
-                }
-
-
-                // Display errors, if any.
-                if (uiState.error.isNotBlank()) {
-                    Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
-                    // Reset the error state
-                    detailCandidateViewModel.updateErrorState("")
-                }
-
-                //Observe if the candidate has been deleted
-                if (uiState.isDeleted) {
-                    // Show a success message.
-                    Toast.makeText(
-                        requireContext(),
-                        getString(R.string.delete_candidate),
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    // Return to the list of candidates or close this fragment.
-                    requireActivity().onBackPressed()
-                }
-
-            }
-
-
-        }
+        setHasOptionsMenu(true) // Enable options menu
         return binding.root
     }
 
-    /**
-     * Creates the options menu for candidate actions.
-     *
-     * @param menu Menu in which the items will be placed.
-     * @param inflater Inflater to inflate the menu.
-     */
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        // links the candidate's actions menu.
-        inflater.inflate(R.menu.menu_detail_candidate, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        setupToolbar() // Set up the toolbar
+        setupMenuProvider() // Set up the menu for the fragment
+        observeCandidateDetails() // Observe candidate details from the ViewModel
 
-    /**
-     * Handles menu item selections.
-     *
-     * @param item Selected menu item.
-     * @return `true` if the item is handled, otherwise calls the default behavior.
-     */
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_favorite -> {
-                // Toggle favorite status.
-                toggleFavorite()
-                return true
-            }
-
-            R.id.menu_edit -> {
-                // Manage edit action.
-                navigateToAddCandidateFragment()
-                return true
-            }
-
-            R.id.menu_delete -> {
-                // Manage delete action.
-                showDeleteConfirmationDialog()
-                return true
+        // Associez les boutons aux actions
+        binding.detailCandidateCall.setOnClickListener {
+            val candidate = detailCandidateViewModel.uiState.value.candidate
+            val phoneNumber = candidate?.phoneNumbers
+            phoneNumber?.let { phone ->
+                val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
+                startActivity(intent) // Ouvre l'application téléphone
             }
         }
-        return super.onOptionsItemSelected(item)
+
+        binding.detailCandidateSms.setOnClickListener {
+            val candidate = detailCandidateViewModel.uiState.value.candidate
+            val phoneNumber = candidate?.phoneNumbers
+            phoneNumber?.let { phone ->
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("sms:$phone"))
+                startActivity(intent) // Ouvre l'application SMS
+            }
+        }
+
+        binding.detailCandidateEmail.setOnClickListener {
+            val candidate = detailCandidateViewModel.uiState.value.candidate
+            val email = candidate?.email
+            email?.let { mail ->
+                val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$mail"))
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Subject") // Sujet de l'email
+                intent.putExtra(Intent.EXTRA_TEXT, "Body of the email") // Corps de l'email
+                startActivity(intent) // Ouvre l'application de mail
+            }
+        }
+
     }
 
-    /**
-     * Toggles the favorite status of the candidate. If the candidate is currently a favorite, they
-     * are removed from favorites; if not, they are added. Updates the UI icon accordingly.
-     */
+    override fun onResume() {
+        super.onResume()
+        // Recharger les informations du candidat après une modification
+        candidateId?.let {
+            detailCandidateViewModel.loadCandidateDetails(it) // Recharger les données dans onResume
+        }
+    }
+
+    private fun setupToolbar() {
+        val toolbar: Toolbar = binding.root.findViewById(R.id.toolbar)
+        (activity as? AppCompatActivity)?.setSupportActionBar(toolbar) // Set the toolbar as the ActionBar
+
+        // Set the back icon and its click listener
+        toolbar.setNavigationIcon(R.drawable.arrow_back)
+        toolbar.setNavigationOnClickListener {
+            parentFragmentManager.popBackStack()
+        }
+    }
+
+    private fun setupMenuProvider() {
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.menu_detail_candidate, menu) // Inflate the menu
+                // Initialiser le favoriteMenuItem
+                favoriteMenuItem = menu.findItem(R.id.menu_favorite)
+                updateFavoriteMenuIcon() // Appeler après l'initialisation
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    R.id.menu_favorite -> {
+                        toggleFavorite() // Toggle favorite status
+                        true
+                    }
+                    R.id.menu_edit -> {
+                        navigateToAddCandidateFragment() // Navigate to add/edit candidate fragment
+                        true
+                    }
+                    R.id.menu_delete -> {
+                        showDeleteConfirmationDialog() // Show delete confirmation dialog
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner) // Use the view lifecycle to manage the menu
+    }
+
+
+    private fun observeCandidateDetails() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            detailCandidateViewModel.uiState.collect { uiState ->
+                binding.progressBar.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
+                uiState.candidate?.let { candidate ->
+                    (activity as? AppCompatActivity)?.supportActionBar?.title =
+                        "${candidate.firstName} ${candidate.surName}" // Set the title in the ActionBar
+                    updateCandidateDetails(candidate)
+                }
+
+                if (uiState.error.isNotBlank()) {
+                    showError(uiState.error) // Show error message
+                    detailCandidateViewModel.updateErrorState("") // Reset the error state
+                }
+
+                if (uiState.isDeleted) {
+                    showDeletionSuccess() // Show success message after deletion
+                    parentFragmentManager.popBackStack()
+                }
+            }
+        }
+    }
+
+    private fun updateCandidateDetails(candidate: Candidate) {
+        binding.detailCandidateNote.text = candidate.note
+        binding.detailCandidateDateOfBirth.text = candidate.dateOfBirth.toString()
+        binding.detailCandidateExpectedSalaryEuros.text = candidate.expectedSalaryEuros.toString()
+        isFavorite = candidate.favorite
+        updateFavoriteMenuIcon()
+
+        val candidateAge = detailCandidateViewModel.candidatesWithAge.value
+            .find { it.candidate.id == candidate.id }?.age ?: getString(R.string.age_unknown)
+        binding.detailCandidateAge.text = getString(R.string.year, candidateAge)
+    }
+
     private fun toggleFavorite() {
         val candidate = detailCandidateViewModel.uiState.value.candidate
         candidate?.let {
-            if (isFavorite) {
-                // If already a favorite, remove from favorites
-                viewLifecycleOwner.lifecycleScope.launch {
+            viewLifecycleOwner.lifecycleScope.launch {
+                if (isFavorite) {
                     detailCandidateViewModel.deleteFavoriteCandidate(it)
-                }
-            } else {
-                // If not a favorite, add to favorites
-                viewLifecycleOwner.lifecycleScope.launch {
+                } else {
                     detailCandidateViewModel.addNewFavoriteCandidate(it)
                 }
             }
-
-            // Toggle the favorite status
             isFavorite = !isFavorite
-            updateFavoriteIcon()  // Update the UI (icon color)
+            updateFavoriteMenuIcon() // Update the menu's favorite icon
         }
     }
 
-    /**
-     * Updates the favorite icon in the menu to reflect the candidate's favorite status. Displays a
-     * filled star if the candidate is a favorite, otherwise an empty star.
-     */
-    private fun updateFavoriteIcon() {
-        val favoriteIcon = requireActivity().findViewById<ImageButton>(R.id.menu_favorite)
-        if (isFavorite) {
-            favoriteIcon.setImageResource(R.drawable.star_full)  // Replace with your filled star drawable
+
+
+    private fun updateFavoriteMenuIcon() {
+        // Vérifier que favoriteMenuItem est bien initialisé avant de l'utiliser
+        if (::favoriteMenuItem.isInitialized) {
+            favoriteMenuItem.icon = ContextCompat.getDrawable(
+                requireContext(),
+                if (isFavorite) R.drawable.star_full else R.drawable.star
+            )
         } else {
-            favoriteIcon.setImageResource(R.drawable.star)  // Replace with your empty star drawable
+            Log.e(TAG, "favoriteMenuItem n'est pas initialisé")
         }
     }
 
-    /**
-     * Displays a confirmation dialog for candidate deletion. If confirmed, triggers the deletion
-     * of the candidate through the ViewModel.
-     */
     private fun showDeleteConfirmationDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.confirm_deletion))
@@ -225,33 +226,37 @@ class DetailCandidateFragment : Fragment() {
             .show()
     }
 
+    private fun showError(message: String) {
+        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
+    }
+
+    private fun showDeletionSuccess() {
+        Toast.makeText(requireContext(), getString(R.string.delete_candidate), Toast.LENGTH_SHORT).show()
+    }
+
     private fun navigateToAddCandidateFragment() {
         val candidate = detailCandidateViewModel.uiState.value.candidate
         candidate?.let {
-            val bundle = Bundle().apply {
-                putLong("candidateId", it.id)
-            }
-            findNavController().navigate(R.id.action_detailCandidateFragment_to_addCandidateFragment, bundle)
+            // Créer une instance du fragment à ouvrir
+            val addCandidateFragment = AddCandidateFragment.newInstance(it.id) // Passez l'ID du candidat ou d'autres données nécessaires
+
+            // Remplacer le fragment actuel par le nouveau fragment
+            parentFragmentManager.beginTransaction()
+                .replace(R.id.main_view, addCandidateFragment) // Remplacer le fragment actuel par AddCandidateFragment
+                .addToBackStack(null) // Ajoute à la pile arrière pour que l'utilisateur puisse revenir en arrière
+                .commit()
         }
-
     }
-
 
     companion object {
         private const val ARG_CANDIDATE_ID = "candidate_id"
 
-        /**
-         * Creates an instance of the fragment with the candidate ID passed as an argument.
-         *
-         * @param candidateId ID of the candidate to display.
-         * @return A new instance of `DetailCandidateFragment` with the candidate ID.
-         */
         fun newInstance(candidateId: Long): DetailCandidateFragment {
-            val fragment = DetailCandidateFragment()
-            val args = Bundle()
-            args.putLong(ARG_CANDIDATE_ID, candidateId)
-            fragment.arguments = args
-            return fragment
+            return DetailCandidateFragment().apply {
+                arguments = Bundle().apply {
+                    putLong(ARG_CANDIDATE_ID, candidateId)
+                }
+            }
         }
     }
 }

@@ -6,20 +6,20 @@
         android:id="@+id/menu_favorite"
         android:title="Favorite"
         android:icon="@drawable/star"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <!-- Edit button -->
     <item
         android:id="@+id/menu_edit"
         android:title="Edit"
         android:icon="@drawable/create"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom" />
 
     <!-- Delete button -->
     <item
         android:id="@+id/menu_delete"
         android:title="Delete"
         android:icon="@drawable/delete"
-        app:showAsAction="always" />
+        app:showAsAction="ifRoom"/>
 
 </menu>

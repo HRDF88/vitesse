@@ -12,6 +12,7 @@ import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.example.vitesse.domain.usecase.UpdateCandidateUseCase
 import com.example.vitesse.domain.usecase.candidate.AddCandidateToFavoriteUseCase
 import com.example.vitesse.domain.usecase.candidate.DeleteCandidateToFavoriteUseCase
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -24,6 +25,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import javax.inject.Inject
 
+@HiltViewModel
 class DetailCandidateViewModel @Inject constructor(
     private val deleteCandidateUseCase: DeleteCandidateUseCase,
     private val getCandidateByIdUseCase: GetCandidateByIdUseCase,

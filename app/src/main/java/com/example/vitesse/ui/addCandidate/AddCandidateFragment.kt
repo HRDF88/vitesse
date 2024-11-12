@@ -65,6 +65,22 @@ class AddCandidateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        // Set up the toolbar with back navigation
+        val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
+        toolbar?.apply {
+            val candidateId = arguments?.getLong("candidateId", -1L) ?: -1L
+            title = if (candidateId == -1L) {
+                getString(R.string.add_candidate)
+            } else {
+                getString(R.string.edit_candidate)
+            }
+            setNavigationIcon(R.drawable.arrow_back)
+            setNavigationOnClickListener {
+                // Handle back navigation when the user presses the back arrow
+                requireActivity().onBackPressedDispatcher.onBackPressed()
+            }
+        }
+
         // Observe the UI state for error handling and updating the UI
         viewLifecycleOwner.lifecycleScope.launch {
             addCandidateViewModel.uiState.collect { uiState ->
@@ -100,7 +116,7 @@ class AddCandidateFragment : Fragment() {
          * Otherwise, a new candidate will be added.
          */
         binding.addCandidateSaveButton.setOnClickListener {
-            val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+            val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
             val candidate = Candidate(
                 firstName = binding.addCandidateFirstname.text.toString(),
                 surName = binding.addCandidateSurname.text.toString(),
@@ -124,7 +140,7 @@ class AddCandidateFragment : Fragment() {
                 },
                 note = binding.addCandidateNote.text.toString(),
                 favorite = false,
-                profilePicture = "",  // Profile picture is not handled in this example
+                profilePicture = "test",  // Profile picture is not handled in this example
                 id = 0  // ID will be handled by the database (auto-generated)
             )
 
@@ -132,26 +148,30 @@ class AddCandidateFragment : Fragment() {
             if (arguments?.getLong("candidateId", -1L) == -1L) {
                 // Add new candidate if ID is invalid (-1L)
                 addCandidateViewModel.addCandidate(candidate)
+                Toast.makeText(requireContext(), "Candidat ajouté avec succès!", Toast.LENGTH_SHORT)
+                    .show()
             } else {
                 // Update existing candidate if ID is valid
                 addCandidateViewModel.updateCandidate(candidate)
+                Toast.makeText(requireContext(), "Candidat modifié avec succès!", Toast.LENGTH_SHORT)
+                    .show()
             }
+            parentFragmentManager.popBackStack()
 
-            // Set up the toolbar with back navigation
-            val toolbar = view.findViewById<Toolbar>(R.id.toolbar)
-            toolbar?.apply {
-                val candidateId = arguments?.getLong("candidateId", -1L) ?: -1L
-                title = if (candidateId == -1L) {
-                    getString(R.string.add_candidate)
-                } else {
-                    getString(R.string.edit_candidate)
-                }
-                setNavigationIcon(R.drawable.arrow_back)
-                setNavigationOnClickListener {
-                    // Handle back navigation when the user presses the back arrow
-                    requireActivity().onBackPressedDispatcher.onBackPressed()
-                }
-            }
         }
     }
+
+    companion object {
+        // Cette méthode permet de créer une nouvelle instance du fragment en passant des arguments (comme l'ID du candidat)
+        fun newInstance(candidateId: Long): AddCandidateFragment {
+            val fragment = AddCandidateFragment()
+            val args = Bundle().apply {
+                putLong("candidateId", candidateId) // Passez l'ID du candidat en argument
+            }
+            fragment.arguments = args // Attache les arguments au fragment
+            return fragment
+        }
+    }
+
+
 }

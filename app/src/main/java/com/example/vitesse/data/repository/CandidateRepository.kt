@@ -1,5 +1,6 @@
 package com.example.vitesse.data.repository
 
+import android.util.Log
 import com.example.vitesse.data.dao.CandidateDtoDao
 import com.example.vitesse.data.entity.CandidateDto
 import com.example.vitesse.data.repositoryInterfaces.CandidateRepositoryInterface
@@ -48,6 +49,7 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
      */
     override suspend fun addCandidate(candidate: Candidate) {
         candidateDao.insertCandidate(candidate.toDto())
+        Log.d("CandidateRepository", "Ajout du candidat : $candidate")
     }
 
     /**

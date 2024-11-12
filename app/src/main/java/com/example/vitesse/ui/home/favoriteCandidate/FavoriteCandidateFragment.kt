@@ -97,6 +97,14 @@ class FavoriteCandidateFragment : Fragment(), FilterableInterface {
         }
     }
 
+    override fun onResume() {
+        super.onResume()
+        // Call loadFavoriteCandidate to refresh the list when the fragment is resumed
+        viewLifecycleOwner.lifecycleScope.launch {
+            favoriteCandidateViewModel.loadFavoriteCandidate()
+        }
+    }
+
     /**
      * Filters the list of favorite candidates based on the search query.
      * This method is part of the FilterableInterface, which allows it to be called from other parts of the app.

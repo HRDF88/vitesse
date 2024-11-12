@@ -1,13 +1,15 @@
 package com.example.vitesse
 
 import android.annotation.SuppressLint
+import android.content.pm.PackageManager
 import android.graphics.PorterDuff
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
 import androidx.viewpager2.widget.ViewPager2
@@ -18,48 +20,44 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
+import android.Manifest
 
 @AndroidEntryPoint
-/**
- * Main activity that hosts the fragments and manages the user interface interactions,
- * including a ViewPager2 for tab navigation, a FloatingActionButton for adding candidates,
- * and a SearchView for filtering candidates in the active fragment.
- */
 class MainActivity : AppCompatActivity() {
 
+    // Declare variables for components
     private lateinit var viewPager: ViewPager2
     private lateinit var searchView: SearchView
     private lateinit var viewPagerAdapter: ViewPagerAdapter
 
+    // Request code for permissions
+    private val PERMISSIONS_REQUEST_CODE = 1001
+
     /**
      * Called when the activity is created.
-     * Initializes the ViewPager, SearchView, and FloatingActionButton.
-     * Sets up TabLayout and ViewPager2 for tab navigation.
-     * Adds click listeners for the FloatingActionButton and SearchView.
-     *
-     * @param savedInstanceState The saved instance state of the activity, if available.
+     * Initializes the components, sets up the view, and assigns listeners for various actions.
      */
     @SuppressLint("UseCompatLoadingForDrawables", "ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Initialize views and components
+        // Initialize views
         viewPager = findViewById(R.id.viewPager2)
         val tabLayout = findViewById<TabLayout>(R.id.tabLayout)
         searchView = findViewById(R.id.searchView)
         val fab = findViewById<FloatingActionButton>(R.id.main_add_candidate_button)
 
-        // Set up ViewPager with adapter to manage the fragments in tabs
+        // Set up the ViewPager with an adapter to manage fragments within the tabs
         viewPagerAdapter = ViewPagerAdapter(this)
         viewPager.adapter = viewPagerAdapter
 
-        // Connect TabLayout and ViewPager, setting the tab names
+        // Link TabLayout with ViewPager and set tab names dynamically
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
             tab.text = if (position == 0) getString(R.string.all) else getString(R.string.favorite)
         }.attach()
 
-        // Floating Action Button Click Listener to open AddCandidateFragment.
+        // Set up Floating Action Button (FAB) click listener to navigate to AddCandidateFragment
         fab.setOnClickListener {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_view, AddCandidateFragment())
@@ -67,29 +65,22 @@ class MainActivity : AppCompatActivity() {
                 .commit()
         }
 
-        // Add listener for back stack changes to hide/show the FAB based on the fragment.
+        // Handle changes in the back stack to show/hide the FAB based on the fragment displayed
         supportFragmentManager.addOnBackStackChangedListener {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.main_view)
             fab.visibility =
                 if (currentFragment is AddCandidateFragment) View.GONE else View.VISIBLE
         }
 
-        // Customize SearchView and set up listener for text changes
+        // Set up SearchView to filter candidates based on the input text
         setupSearchView()
 
-        // SearchView listener for filtering candidates based on text input
+        // SearchView listener to handle text input and filter candidates accordingly
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = false
 
-            /**
-             * Filters the candidates based on the query text change.
-             * It checks the current fragment and applies the filter to the active fragment.
-             *
-             * @param newText The new text entered in the SearchView.
-             * @return True to indicate that the query text has been handled.
-             */
             override fun onQueryTextChange(newText: String?): Boolean {
-                // Apply the filter to the active fragment
+                // Apply filter to the active fragment based on the input text
                 val currentFragment =
                     supportFragmentManager.findFragmentByTag("f${viewPager.currentItem}")
                 if (currentFragment is FilterableInterface) {
@@ -98,28 +89,87 @@ class MainActivity : AppCompatActivity() {
                 return true
             }
         })
+
+        // Request necessary permissions at runtime
+        requestPermissionsIfNeeded()
     }
 
     /**
-     * Set up the customizations for the SearchView.
-     * Changes the text color, hint color, and the search icon color.
+     * Checks and requests necessary permissions at runtime.
+     * Handles permissions for reading and writing to external storage or media files.
+     */
+    private fun requestPermissionsIfNeeded() {
+        val permissions = mutableListOf<String>()
+
+        // Check if the app has storage permissions based on Android version
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) { // For Android 10 and below (API 29)
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+            if (checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+            }
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) { // For Android 11 and above (API 30)
+            if (checkSelfPermission(Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+            }
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // For Android 13 (API 33)
+            if (checkSelfPermission(Manifest.permission.READ_MEDIA_IMAGES) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_MEDIA_IMAGES)
+            }
+            if (checkSelfPermission(Manifest.permission.READ_MEDIA_VIDEO) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_MEDIA_VIDEO)
+            }
+            if (checkSelfPermission(Manifest.permission.READ_MEDIA_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                permissions.add(Manifest.permission.READ_MEDIA_AUDIO)
+            }
+        }
+
+        // Request permissions if they are not granted
+        if (permissions.isNotEmpty()) {
+            requestPermissions(permissions.toTypedArray(), PERMISSIONS_REQUEST_CODE)
+        }
+    }
+
+
+    /**
+     * Handles the result of the permission request.
+     * Displays a toast message depending on whether the permission was granted or denied.
+     */
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+            for (i in permissions.indices) {
+                if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
+                    // Permission granted
+                    Toast.makeText(this, "Permission granted for ${permissions[i]}", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Permission denied
+                    Toast.makeText(this, "Permission denied for ${permissions[i]}", Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+    }
+
+    /**
+     * Customizes the SearchView component for better usability.
+     * Changes text color, hint color, and search icon color.
      */
     private fun setupSearchView() {
-        // Access EditText inside the SearchView
+        // Access the EditText inside the SearchView
         val searchEditText: EditText =
             searchView.findViewById(androidx.appcompat.R.id.search_src_text)
 
         // Set text color to black
         searchEditText.setTextColor(ContextCompat.getColor(this, android.R.color.black))
 
-        // Optionally, set hint color to black as well
+        // Set hint color to black as well
         searchEditText.setHintTextColor(ContextCompat.getColor(this, android.R.color.black))
 
-        // Optionally, change the compound drawable (search icon)
-        val drawableRight = AppCompatResources.getDrawable(this, R.drawable.search)
-        searchEditText.setCompoundDrawablesWithIntrinsicBounds(null, null, drawableRight, null)
-
-        // Change search icon color to black
+        // Change the search icon color to black
         val searchIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_button)
         searchIcon.setColorFilter(
             ContextCompat.getColor(this, android.R.color.black),

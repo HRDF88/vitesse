@@ -84,10 +84,11 @@ class AddCandidateViewModel @Inject constructor(
             try {
                 addCandidateUseCase.execute(candidate)
                 _uiState.value=AddCandidateUiState(error = "", addResult = true)
+                Log.d("AddCandidateViewModel", "ajout du candidat" )
 
             } catch (e: Exception) {
                 onError((R.string.error_add_candidate).toString())
-
+                Log.e("AddCandidateViewModel", "Erreur lors de l'ajout du candidat", e)
 
             }
         }

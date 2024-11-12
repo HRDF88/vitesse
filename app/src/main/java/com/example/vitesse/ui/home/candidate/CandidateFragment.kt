@@ -4,7 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ProgressBar
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vitesse.R
@@ -12,100 +16,109 @@ import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.ui.detailsCandidate.DetailCandidateFragment
 import com.example.vitesse.ui.interfaceUi.FilterableInterface
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-/**
- * Fragment that displays a list of candidates in a RecyclerView.
- * Implements the FilterableInterface to allow filtering of candidates based on search query.
- */
 class CandidateFragment : Fragment(), FilterableInterface {
 
     private lateinit var candidateAdapter: CandidateAdapter
     private lateinit var recyclerView: RecyclerView
-    private var candidateList: List<Candidate> = listOf() // List of all candidates
-    private var filteredList = candidateList // List of candidates after applying the filter
+    private lateinit var candidateViewModel: CandidateViewModel
 
-    /**
-     * Called to inflate the fragment's layout.
-     *
-     * @param inflater The LayoutInflater object to inflate views.
-     * @param container The parent ViewGroup that the fragment's UI will be attached to.
-     * @param savedInstanceState If non-null, this fragment is being re-constructed from a previous saved state.
-     * @return The View for the fragment's UI.
-     */
+    private var filteredList: List<Candidate> = listOf()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_candidate, container, false)
     }
 
-    /**
-     * Called after the fragment's view has been created.
-     * Initializes the RecyclerView, sets up the adapter, and binds it to the UI.
-     *
-     * @param view The view returned by onCreateView.
-     * @param savedInstanceState The state saved during the fragment's previous lifecycle.
-     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Initialize RecyclerView and its adapter
+        // Initialiser RecyclerView et l'adaptateur
         recyclerView = view.findViewById(R.id.candidate_recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
-        // Initialize adapter with an empty list to start
         candidateAdapter = CandidateAdapter(emptyList()) { candidate ->
             openDetailFragment(candidate)
         }
         recyclerView.adapter = candidateAdapter
-    }
 
-    /**
-     * Filters the candidate list based on the search query.
-     * This method is part of the FilterableInterface, which allows it to be called from other parts of the app.
-     *
-     * @param query The search query to filter the candidates.
-     * If the query is empty, the full list is returned. Otherwise, candidates whose first or last names
-     * contain the query (case-insensitive) are included in the filtered list.
-     */
-    override fun filter(query: String) {
-        filteredList = if (query.isEmpty()) {
-            candidateList // If the query is empty, return the whole list
-        } else {
-            // Filter candidates whose first name or last name contains the query (case-insensitive)
-            candidateList.filter {
-                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(
-                    query,
-                    ignoreCase = true
-                )
+        // Initialiser le ViewModel avec Hilt
+        candidateViewModel = ViewModelProvider(this).get(CandidateViewModel::class.java)
+
+        // Observer des candidats avec collect dans une coroutine
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            candidateViewModel.candidateFlow.collect { candidates ->
+                // Mettre à jour la liste des candidats
+                filteredList = candidates
+                candidateAdapter.updateData(filteredList)
             }
         }
 
-        // Update the adapter with the filtered list of candidates
-        candidateAdapter.updateData(filteredList)
+        // Observer de l'état de l'UI pour gérer le chargement ou les erreurs
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+            candidateViewModel.uiState.collect { uiState ->
+                // Afficher une animation de chargement ou une erreur si nécessaire
+                if (uiState.isLoading) {
+                    // Afficher un ProgressBar ou autre indication de chargement
+                    showLoading(true)
+                } else {
+                    // Cacher le ProgressBar
+                    showLoading(false)
+
+                    // Si une erreur est présente, afficher un message
+                    if (uiState.error.isNotEmpty()) {
+                        Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
+                    }
+                }
+            }
+        }
+
+        // Récupérer les candidats
+        candidateViewModel.getAllCandidates()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Call getAllCandidate to refresh the list when the fragment is resumed
+        viewLifecycleOwner.lifecycleScope.launch {
+        candidateViewModel.getAllCandidates()
+        }
+    }
+    /**
+     * Filtre la liste des candidats en fonction de la requête de recherche.
+     */
+    override fun filter(query: String) {
+        filteredList = if (query.isEmpty()) {
+            candidateViewModel.candidateFlow.value // Liste complète si le filtre est vide
+        } else {
+            candidateViewModel.candidateFlow.value.filter {
+                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(query, ignoreCase = true)
+            }
+        }
+
+        candidateAdapter.updateData(filteredList) // Mettre à jour les données filtrées
     }
 
     /**
-     * Opens a detail fragment to display information about a given candidate.
-     *
-     * This function creates an instance of `DetailCandidateFragment` using the ID
-     * of the provided candidate, then replaces the current fragment in the container
-     * specified by `R.id.main_view` with the detail fragment. The fragment transaction
-     * is added to the back stack to enable backward navigation.
-     *
-     * @param candidate The candidate whose detail fragment will be displayed.
-     *                  The `Candidate` object must contain a unique ID to identify the candidate.
+     * Ouvre un fragment pour afficher les détails d'un candidat.
      */
     private fun openDetailFragment(candidate: Candidate) {
         val detailFragment = DetailCandidateFragment.newInstance(candidate.id)
         parentFragmentManager.beginTransaction()
-            .replace(
-                R.id.main_view,
-                detailFragment
-            ) // Remplacez `R.id.main_view` par l'ID de votre conteneur
-            .addToBackStack(null) // Ajoute à la pile arrière pour permettre le retour en arrière
+            .replace(R.id.main_view, detailFragment)
+            .addToBackStack(null)
             .commit()
+    }
+
+    /**
+     * Affiche ou cache un indicateur de chargement (ProgressBar).
+     */
+    private fun showLoading(isLoading: Boolean) {
+        val progressBar = view?.findViewById<ProgressBar>(R.id.progressBar) // Assurez-vous que vous avez un ProgressBar dans votre layout
+        progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }

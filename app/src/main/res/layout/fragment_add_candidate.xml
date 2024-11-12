@@ -127,7 +127,7 @@
                         android:id="@+id/add_candidate_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="phone" />
+                        android:inputType="none" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -216,16 +216,15 @@
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/add_candidate_birth_layout"
-                            android:layout_width="50dp"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
                             android:hint="@string/enter_date">
 
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/add_candidate_birth"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:focusable="false"
+                                android:focusable="true"
                                 android:inputType="date" />
 
                         </com.google.android.material.textfield.TextInputLayout>

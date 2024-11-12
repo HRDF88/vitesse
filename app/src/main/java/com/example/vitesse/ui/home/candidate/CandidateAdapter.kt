@@ -69,6 +69,7 @@ class CandidateAdapter(
     /**
      * Update filtered list based on search query.
      */
+    @SuppressLint("NotifyDataSetChanged")
     override fun filter(query: String) {
         filteredCandidates = if (query.isEmpty()) {
             candidate

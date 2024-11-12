@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    app:startDestination="@id/candidateFragment">
+
+    <!-- Fragment Candidate -->
+    <fragment
+        android:id="@+id/candidateFragment"
+        android:name="com.example.vitesse."
+        android:label="CandidateFragment"
+        tools:layout="@layout/fragment_candidate">
+
+        <!-- Définir l'action de navigation vers le fragment DetailCandidateFragment -->
+        <action
+            android:id="@+id/action_candidateFragment_to_detailCandidateFragment"
+            app:destination="@id/detailCandidateFragment" />
+
+
+    </fragment>
+
+    <!-- Fragment DetailCandidate -->
+    <fragment
+        android:id="@+id/detailCandidateFragment"
+        android:name="com.example.vitesse.ui.detailsCandidate.DetailCandidateFragment"
+        android:label="DetailCandidateFragment"
+        tools:layout="@layout/fragment_detail_candidate">
+
+
+    </fragment>
+
+</navigation>
