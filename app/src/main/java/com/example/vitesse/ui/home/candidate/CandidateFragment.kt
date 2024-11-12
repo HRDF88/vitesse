@@ -6,11 +6,14 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.vitesse.MainActivity
 import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.ui.detailsCandidate.DetailCandidateFragment
@@ -26,6 +29,10 @@ class CandidateFragment : Fragment(), FilterableInterface {
     private lateinit var candidateViewModel: CandidateViewModel
 
     private var filteredList: List<Candidate> = listOf()
+    private var initialLayoutParams: ConstraintLayout.LayoutParams? = null
+
+    // Variable pour savoir si on est actuellement dans le détail
+    private var isInDetailFragment = false
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -36,6 +43,11 @@ class CandidateFragment : Fragment(), FilterableInterface {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        // Assurez-vous que initialLayoutParams est bien initialisé avant de l'utiliser
+        val fragmentContainerView =
+            requireActivity().findViewById<FragmentContainerView>(R.id.main_view)
+        initialLayoutParams = fragmentContainerView.layoutParams as ConstraintLayout.LayoutParams
 
         // Initialiser RecyclerView et l'adaptateur
         recyclerView = view.findViewById(R.id.candidate_recyclerView)
@@ -83,11 +95,23 @@ class CandidateFragment : Fragment(), FilterableInterface {
 
     override fun onResume() {
         super.onResume()
-        // Call getAllCandidate to refresh the list when the fragment is resumed
-        viewLifecycleOwner.lifecycleScope.launch {
-        candidateViewModel.getAllCandidates()
+
+
+        if (activity is MainActivity) {
+            val mainActivity = activity as MainActivity
+            // Si on n'est pas dans le détail, ajuster pour revenir au mode liste
+            if (!isInDetailFragment) {
+                mainActivity.adjustFragmentContainerViewLayout(false)
+            }
         }
     }
+
+    override fun onPause() {
+        super.onPause()
+        // Lors de la pause du fragment, on signale qu'on est en mode détail
+        isInDetailFragment = false
+    }
+
     /**
      * Filtre la liste des candidats en fonction de la requête de recherche.
      */
@@ -96,7 +120,10 @@ class CandidateFragment : Fragment(), FilterableInterface {
             candidateViewModel.candidateFlow.value // Liste complète si le filtre est vide
         } else {
             candidateViewModel.candidateFlow.value.filter {
-                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(query, ignoreCase = true)
+                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(
+                    query,
+                    ignoreCase = true
+                )
             }
         }
 
@@ -112,13 +139,17 @@ class CandidateFragment : Fragment(), FilterableInterface {
             .replace(R.id.main_view, detailFragment)
             .addToBackStack(null)
             .commit()
+        (activity as MainActivity).adjustFragmentContainerViewLayout(true)
+        isInDetailFragment = true
+
     }
 
     /**
      * Affiche ou cache un indicateur de chargement (ProgressBar).
      */
     private fun showLoading(isLoading: Boolean) {
-        val progressBar = view?.findViewById<ProgressBar>(R.id.progressBar) // Assurez-vous que vous avez un ProgressBar dans votre layout
+        val progressBar =
+            view?.findViewById<ProgressBar>(R.id.progressBar) // Assurez-vous que vous avez un ProgressBar dans votre layout
         progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }

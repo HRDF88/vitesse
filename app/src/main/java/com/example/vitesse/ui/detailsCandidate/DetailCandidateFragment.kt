@@ -15,12 +15,13 @@ import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.findNavController
 import com.example.vitesse.R
 import com.example.vitesse.databinding.FragmentDetailCandidateBinding
 import com.example.vitesse.domain.model.Candidate
@@ -115,8 +116,25 @@ class DetailCandidateFragment : Fragment() {
         // Set the back icon and its click listener
         toolbar.setNavigationIcon(R.drawable.arrow_back)
         toolbar.setNavigationOnClickListener {
+            // Avant de revenir, ajuster la taille du FragmentContainerView
+            adjustFragmentContainerViewLayout(false)
             parentFragmentManager.popBackStack()
         }
+    }
+
+    /**
+     * Ajuste les dimensions du FragmentContainerView avant de revenir au fragment précédent.
+     */
+    private fun adjustFragmentContainerViewLayout(isDetailFragment: Boolean) {
+        val fragmentContainerView =
+            requireActivity().findViewById<FragmentContainerView>(R.id.main_view)
+        val layoutParams = fragmentContainerView.layoutParams as ConstraintLayout.LayoutParams
+        if (isDetailFragment) {
+            layoutParams.height = ConstraintLayout.LayoutParams.MATCH_PARENT
+        } else {
+            layoutParams.height = ConstraintLayout.LayoutParams.WRAP_CONTENT
+        }
+        fragmentContainerView.layoutParams = layoutParams
     }
 
     private fun setupMenuProvider() {
@@ -134,14 +152,17 @@ class DetailCandidateFragment : Fragment() {
                         toggleFavorite() // Toggle favorite status
                         true
                     }
+
                     R.id.menu_edit -> {
                         navigateToAddCandidateFragment() // Navigate to add/edit candidate fragment
                         true
                     }
+
                     R.id.menu_delete -> {
                         showDeleteConfirmationDialog() // Show delete confirmation dialog
                         true
                     }
+
                     else -> false
                 }
             }
@@ -200,7 +221,6 @@ class DetailCandidateFragment : Fragment() {
     }
 
 
-
     private fun updateFavoriteMenuIcon() {
         // Vérifier que favoriteMenuItem est bien initialisé avant de l'utiliser
         if (::favoriteMenuItem.isInitialized) {
@@ -218,6 +238,7 @@ class DetailCandidateFragment : Fragment() {
             .setTitle(getString(R.string.confirm_deletion))
             .setMessage(getString(R.string.question_delete_candidate))
             .setPositiveButton(getString(R.string.yes)) { _, _ ->
+                adjustFragmentContainerViewLayout(false)
                 detailCandidateViewModel.uiState.value.candidate?.let { candidate ->
                     detailCandidateViewModel.deleteCandidate(candidate)
                 }
@@ -231,18 +252,23 @@ class DetailCandidateFragment : Fragment() {
     }
 
     private fun showDeletionSuccess() {
-        Toast.makeText(requireContext(), getString(R.string.delete_candidate), Toast.LENGTH_SHORT).show()
+        Toast.makeText(requireContext(), getString(R.string.delete_candidate), Toast.LENGTH_SHORT)
+            .show()
     }
 
     private fun navigateToAddCandidateFragment() {
         val candidate = detailCandidateViewModel.uiState.value.candidate
         candidate?.let {
             // Créer une instance du fragment à ouvrir
-            val addCandidateFragment = AddCandidateFragment.newInstance(it.id) // Passez l'ID du candidat ou d'autres données nécessaires
+            val addCandidateFragment =
+                AddCandidateFragment.newInstance(it.id) // Passez l'ID du candidat ou d'autres données nécessaires
 
             // Remplacer le fragment actuel par le nouveau fragment
             parentFragmentManager.beginTransaction()
-                .replace(R.id.main_view, addCandidateFragment) // Remplacer le fragment actuel par AddCandidateFragment
+                .replace(
+                    R.id.main_view,
+                    addCandidateFragment
+                ) // Remplacer le fragment actuel par AddCandidateFragment
                 .addToBackStack(null) // Ajoute à la pile arrière pour que l'utilisateur puisse revenir en arrière
                 .commit()
         }

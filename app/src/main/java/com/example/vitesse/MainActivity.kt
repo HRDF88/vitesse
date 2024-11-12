@@ -21,6 +21,9 @@ import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
 import android.Manifest
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.fragment.app.FragmentContainerView
+import com.example.vitesse.ui.detailsCandidate.DetailCandidateFragment
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -29,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var viewPager: ViewPager2
     private lateinit var searchView: SearchView
     private lateinit var viewPagerAdapter: ViewPagerAdapter
+    private lateinit var fragmentContainerView: FragmentContainerView
 
     // Request code for permissions
     private val PERMISSIONS_REQUEST_CODE = 1001
@@ -41,6 +45,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        fragmentContainerView = findViewById(R.id.main_view)
+
 
         // Initialize views
         viewPager = findViewById(R.id.viewPager2)
@@ -68,8 +74,11 @@ class MainActivity : AppCompatActivity() {
         // Handle changes in the back stack to show/hide the FAB based on the fragment displayed
         supportFragmentManager.addOnBackStackChangedListener {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.main_view)
-            fab.visibility =
-                if (currentFragment is AddCandidateFragment) View.GONE else View.VISIBLE
+
+            fab.visibility = when (currentFragment) {
+                is AddCandidateFragment, is DetailCandidateFragment -> View.GONE // Cache le FAB pour les fragments de détail ou d'ajout
+                else -> View.VISIBLE // Affiche le FAB pour les autres fragments
+            }
         }
 
         // Set up SearchView to filter candidates based on the input text
@@ -153,7 +162,20 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
+    /**
+     * Ajuste les dimensions du FragmentContainerView selon le fragment affiché.
+     */
+    fun adjustFragmentContainerViewLayout(isDetailFragment: Boolean) {
+        val layoutParams = fragmentContainerView.layoutParams as ConstraintLayout.LayoutParams
+        if (isDetailFragment) {
+            // Prendre toute la hauteur de l'écran
+            layoutParams.height = ConstraintLayout.LayoutParams.MATCH_PARENT
+        } else {
+            // Réinitialiser la hauteur à wrap_content (par défaut)
+            layoutParams.height = ConstraintLayout.LayoutParams.WRAP_CONTENT
+        }
+        fragmentContainerView.layoutParams = layoutParams
+    }
     /**
      * Customizes the SearchView component for better usability.
      * Changes text color, hint color, and search icon color.
