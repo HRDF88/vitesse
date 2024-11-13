@@ -6,23 +6,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
-import com.example.vitesse.domain.model.CandidateWithAge
 import com.example.vitesse.domain.usecase.DeleteCandidateUseCase
 import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
-import com.example.vitesse.domain.usecase.UpdateCandidateUseCase
 import com.example.vitesse.domain.usecase.candidate.AddCandidateToFavoriteUseCase
 import com.example.vitesse.domain.usecase.candidate.DeleteCandidateToFavoriteUseCase
+import com.example.vitesse.domain.usecase.candidate.currencyConversionUseCase.ConvertEurosToGbpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.Period
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,6 +27,7 @@ class DetailCandidateViewModel @Inject constructor(
     private val getCandidateByIdUseCase: GetCandidateByIdUseCase,
     private val addCandidateToFavoriteUseCase: AddCandidateToFavoriteUseCase,
     private val deleteCandidateToFavoriteUseCase: DeleteCandidateToFavoriteUseCase,
+    private val convertEurosToGbpUseCase: ConvertEurosToGbpUseCase
 ) : ViewModel() {
 
     /**
@@ -45,33 +42,6 @@ class DetailCandidateViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(DetailCandidateUiState())
     val uiState: StateFlow<DetailCandidateUiState> = _uiState.asStateFlow()
 
-    /**
-     * The state flow for all candidates with age.
-     */
-    val candidatesWithAge: StateFlow<List<CandidateWithAge>> = _candidateFlow
-        /**
-         * Transform Candidate object to CandidateWithAge object.
-         */
-        .map { candidates ->
-            candidates.map { candidate ->
-                val age = calculateAge(candidate.dateOfBirth)
-                CandidateWithAge(candidate, age)
-            }
-        }
-        .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
-
-
-    /*
-        // StateFlow pour le salaire en livres
-        val expectedSalaryPounds: StateFlow<String> = _candidateFlow
-            .map { candidate ->
-                candidate?.let {
-                    val salaryInPounds = convertEurosToPounds(it.expectedSalary)
-                    "%.2f".format(salaryInPounds)
-                } ?: "Salaire inconnu"
-            }
-            .stateIn(viewModelScope, SharingStarted.Lazily, "Salaire inconnu")
-    */
     /**
      * update uiState if there is an error.
      */
@@ -96,17 +66,40 @@ class DetailCandidateViewModel @Inject constructor(
 
     fun loadCandidateDetails(candidateId: Long) {
         viewModelScope.launch {
+            _uiState.update { currentState -> currentState.copy(isLoading = true) }
+
             try {
+                // Récupérer les détails du candidat
                 val candidate = getCandidateByIdUseCase.execute(candidateId)
+
                 if (candidate != null) {
+                    val birthDate = candidate.dateOfBirth.toLocalDate()
+                    val age = calculateAge(birthDate)
+
+                    // Effectuer la conversion du salaire en GBP
+                    val salaryInPounds = try {
+                        convertEurosToGbpUseCase(candidate.expectedSalaryEuros.toDouble())
+                    } catch (e: Exception) {
+                        Log.e("ExpectedSalary", "Erreur de conversion du salaire en GBP", e)
+                        null // Si une erreur se produit, le salaire en GBP est null
+                    }
+
+                    // Mettre à jour l'UI avec les nouvelles données (y compris le salaire en GBP)
                     _uiState.update { currentState ->
-                        currentState.copy(candidate = candidate, error = "")
+                        currentState.copy(
+                            candidate = candidate,
+                            error = "",
+                            age = age,
+                            expectedSalaryPounds = salaryInPounds?.let { "%.2f".format(it) } ?: "Invalid salary",
+                            isLoading = false
+                        )
                     }
                 } else {
                     onError((R.string.candidate_not_found).toString())
                 }
             } catch (e: Exception) {
                 onError((R.string.error_load_candidate).toString())
+                _uiState.update { currentState -> currentState.copy(isLoading = false) }
             }
         }
     }
@@ -118,10 +111,11 @@ class DetailCandidateViewModel @Inject constructor(
      * @return The calculated age as an integer, representing the difference
      *         between the current year and the year of birth.
      */
-    private fun calculateAge(birthDate: LocalDateTime): Int {
-        val currentYear = LocalDate.now().year
-        val birthYear = birthDate.year
-        return currentYear - birthYear
+    private fun calculateAge(birthDate: LocalDate): Int {
+        val today = LocalDate.now()
+        val age = Period.between(birthDate, today).years
+        Log.d("DetailCandidateViewModel", "Date de naissance: $birthDate, Âge calculé: $age")
+        return age
     }
 
     /**

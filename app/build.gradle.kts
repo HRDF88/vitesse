@@ -17,11 +17,12 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-
+        buildConfigField("String", "API_KEY", "\"${project.findProperty("apiKey") ?: ""}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
+        buildConfigField("String", "API_KEY", "\"${project.findProperty("apiKey") ?: ""}\"")
     }
 
     buildTypes {
@@ -31,6 +32,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "API_KEY", "\"${project.findProperty("apiKey") ?:""}\"")
         }
     }
     viewBinding{
@@ -45,6 +47,9 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+    buildFeatures {
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"

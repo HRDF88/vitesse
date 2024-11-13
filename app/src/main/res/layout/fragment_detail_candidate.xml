@@ -69,14 +69,13 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="@string/call"
                     android:src="@drawable/phone"
                     app:tint="#6200EE" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Appel"
+                    android:text="@string/call"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -92,7 +91,6 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="SMS"
                     android:src="@drawable/sms"
                     app:tint="#6200EE" />
 
@@ -114,7 +112,6 @@
                     android:layout_width="48dp"
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:contentDescription="Email"
                     android:src="@drawable/mail_outline"
                     app:tint="#6200EE" />
 
@@ -176,7 +173,6 @@
                         android:id="@+id/detail_candidate_date_of_birth"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="03/03/1989"
                         android:textSize="14sp" />
 
                     <TextView
@@ -185,14 +181,14 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:paddingStart="4dp"
-                        android:text="(34 ans)" />
+                        />
 
                 </LinearLayout>
 
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Anniversaire"
+                    android:text="@string/birthday"
                     android:textSize="14sp"
                     />
 
@@ -216,7 +212,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Prétentions salariales"
+                    android:text="@string/salary"
                     android:textSize="16sp"
                     android:textStyle="bold"
                     android:paddingBottom="8dp" />
@@ -225,7 +221,6 @@
                     android:id="@+id/detail_candidate_expected_salary_euros"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="3500 €"
                     android:textSize="14sp" />
 
                 <LinearLayout
@@ -236,7 +231,6 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/or"
                         android:textColor="#808080"
                         android:textSize="12sp" />
 
@@ -245,7 +239,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text=" 3026,99"
                         android:paddingStart="1dp"/>
 
                 </LinearLayout>
@@ -280,7 +273,6 @@
                     android:id="@+id/detail_candidate_note"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Notes concernant le candidat"
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>

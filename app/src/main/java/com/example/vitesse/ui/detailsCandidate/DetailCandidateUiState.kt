@@ -6,5 +6,7 @@ data class DetailCandidateUiState(
     val candidate: Candidate? = null,  // To store candidate details.
     val isLoading: Boolean = false,
     val error: String = "",
-    val isDeleted: Boolean = false
+    val isDeleted: Boolean = false,
+    val age : Int? = null,
+    val expectedSalaryPounds: String = "Salary unknown"
 )

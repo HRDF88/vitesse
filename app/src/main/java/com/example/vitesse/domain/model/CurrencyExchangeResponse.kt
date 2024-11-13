@@ -8,12 +8,21 @@ data class CurrencyExchangeResponse(
     val last_update_utc: String,
     val next_update_unix: Long,
     val next_update_utc: String,
-    val base_code: String,
-    val base_symbol: String,
-    val base_amount: String,
-    val foreign_code: String,
-    val foreign_symbol: String,
-    val foreign_rate: Double,
-    val foreign_amount: Double
+    val conversion: String,
+    val base: BaseCurrency,
+    val foreign: ForeignCurrency
+)
+
+data class BaseCurrency(
+    val code: String,
+    val symbol: String,
+    val amount: Double
+)
+
+data class ForeignCurrency(
+    val code: String,
+    val symbol: String,
+    val rate: Double,
+    val amount: Double
 )
 

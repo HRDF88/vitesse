@@ -28,7 +28,9 @@ import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.ui.addCandidate.AddCandidateFragment
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
+import java.time.format.DateTimeFormatter
 
 /**
  * Fragment that displays the details of a specific candidate.
@@ -103,10 +105,16 @@ class DetailCandidateFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        adjustFragmentContainerViewLayout(true)
         // Recharger les informations du candidat après une modification
         candidateId?.let {
             detailCandidateViewModel.loadCandidateDetails(it) // Recharger les données dans onResume
         }
+    }
+
+    override fun onDestroyView() {
+        viewLifecycleOwner.lifecycleScope.coroutineContext.cancelChildren()
+        super.onDestroyView()
     }
 
     private fun setupToolbar() {
@@ -172,21 +180,41 @@ class DetailCandidateFragment : Fragment() {
 
     private fun observeCandidateDetails() {
         viewLifecycleOwner.lifecycleScope.launch {
+            // Observer l'état de l'UI à chaque mise à jour
             detailCandidateViewModel.uiState.collect { uiState ->
+
+                // Gérer l'affichage de la ProgressBar
                 binding.progressBar.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
+
+                // Si un candidat est trouvé, afficher ses détails
                 uiState.candidate?.let { candidate ->
+                    // Mettre à jour le titre de l'ActionBar avec le nom du candidat
                     (activity as? AppCompatActivity)?.supportActionBar?.title =
-                        "${candidate.firstName} ${candidate.surName}" // Set the title in the ActionBar
+                        "${candidate.firstName} ${candidate.surName}"
+
+                    // Afficher l'âge calculé (ou afficher "Âge inconnu" si l'âge est null)
+                    val ageText = uiState.age?.let { getString(R.string.year, it) }
+                        ?: getString(R.string.age_unknown)
+                    binding.detailCandidateAge.text = ageText
+
+                    // Mettre à jour les autres détails du candidat
                     updateCandidateDetails(candidate)
-                }
 
+
+                    // Afficher le salaire en livres dans le TextView correspondant
+                    binding.detailCandidateExpectedSalaryPounds.text = uiState.expectedSalaryPounds
+                    }
+
+
+                // Si un message d'erreur est présent, l'afficher
                 if (uiState.error.isNotBlank()) {
-                    showError(uiState.error) // Show error message
-                    detailCandidateViewModel.updateErrorState("") // Reset the error state
+                    showError(uiState.error)
+                    detailCandidateViewModel.updateErrorState("") // Réinitialiser l'état d'erreur
                 }
 
+                // Si le candidat a été supprimé, afficher un message de succès et revenir à l'écran précédent
                 if (uiState.isDeleted) {
-                    showDeletionSuccess() // Show success message after deletion
+                    showDeletionSuccess()
                     parentFragmentManager.popBackStack()
                 }
             }
@@ -194,15 +222,17 @@ class DetailCandidateFragment : Fragment() {
     }
 
     private fun updateCandidateDetails(candidate: Candidate) {
+        val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
+
+        // Formatage de la date de naissance
+        val formattedDateOfBirth = candidate.dateOfBirth.format(dateFormatter)
+        binding.detailCandidateDateOfBirth.text = formattedDateOfBirth
+
+        // Autres détails du candidat
         binding.detailCandidateNote.text = candidate.note
-        binding.detailCandidateDateOfBirth.text = candidate.dateOfBirth.toString()
         binding.detailCandidateExpectedSalaryEuros.text = candidate.expectedSalaryEuros.toString()
         isFavorite = candidate.favorite
         updateFavoriteMenuIcon()
-
-        val candidateAge = detailCandidateViewModel.candidatesWithAge.value
-            .find { it.candidate.id == candidate.id }?.age ?: getString(R.string.age_unknown)
-        binding.detailCandidateAge.text = getString(R.string.year, candidateAge)
     }
 
     private fun toggleFavorite() {
@@ -269,7 +299,7 @@ class DetailCandidateFragment : Fragment() {
                     R.id.main_view,
                     addCandidateFragment
                 ) // Remplacer le fragment actuel par AddCandidateFragment
-                .addToBackStack(null) // Ajoute à la pile arrière pour que l'utilisateur puisse revenir en arrière
+                .addToBackStack(null)
                 .commit()
         }
     }

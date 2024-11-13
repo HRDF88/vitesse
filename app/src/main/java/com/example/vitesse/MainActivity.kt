@@ -102,7 +102,10 @@ class MainActivity : AppCompatActivity() {
         // Request necessary permissions at runtime
         requestPermissionsIfNeeded()
     }
-
+    override fun onResume() {
+        super.onResume()
+        adjustFragmentContainerViewLayout(false)
+    }
     /**
      * Checks and requests necessary permissions at runtime.
      * Handles permissions for reading and writing to external storage or media files.

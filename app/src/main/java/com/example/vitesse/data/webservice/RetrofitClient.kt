@@ -1,5 +1,6 @@
 package com.example.vitesse.data.webservice
 
+import com.example.vitesse.BuildConfig
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import okhttp3.Interceptor
@@ -14,17 +15,9 @@ import retrofit2.converter.moshi.MoshiConverterFactory
 object RetrofitClient {
     private const val baseUrl = "https://continentl.com/"
     private val login = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-    private val apiKeyInterceptor = Interceptor { chain ->
-        val url = chain.request().url.newBuilder()
-            .addQueryParameter("key", "sk-ek3E67288afd60804445")// a mettre en local properties.
-            .build()
-        val request = chain.request().newBuilder().url(url).build()
-        chain.proceed(request)
-    }
 
     private val okHttpClient = OkHttpClient.Builder()
         .addInterceptor(login)
-        .addInterceptor(apiKeyInterceptor)
         .build()
 
     private val moshi = Moshi.Builder()
