@@ -31,7 +31,6 @@ class CandidateFragment : Fragment(), FilterableInterface {
     private var filteredList: List<Candidate> = listOf()
     private var initialLayoutParams: ConstraintLayout.LayoutParams? = null
 
-    // Variable pour savoir si on est actuellement dans le détail
     private var isInDetailFragment = false
 
     override fun onCreateView(
@@ -44,12 +43,10 @@ class CandidateFragment : Fragment(), FilterableInterface {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Assurez-vous que initialLayoutParams est bien initialisé avant de l'utiliser
         val fragmentContainerView =
             requireActivity().findViewById<FragmentContainerView>(R.id.main_view)
         initialLayoutParams = fragmentContainerView.layoutParams as ConstraintLayout.LayoutParams
 
-        // Initialiser RecyclerView et l'adaptateur
         recyclerView = view.findViewById(R.id.candidate_recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
@@ -58,13 +55,11 @@ class CandidateFragment : Fragment(), FilterableInterface {
         }
         recyclerView.adapter = candidateAdapter
 
-        // Initialiser le ViewModel avec Hilt
         candidateViewModel = ViewModelProvider(this).get(CandidateViewModel::class.java)
 
-        // Observer des candidats avec collect dans une coroutine
+        // Observer des candidats
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             candidateViewModel.candidateFlow.collect { candidates ->
-                // Mettre à jour la liste des candidats
                 filteredList = candidates
                 candidateAdapter.updateData(filteredList)
             }
@@ -73,15 +68,11 @@ class CandidateFragment : Fragment(), FilterableInterface {
         // Observer de l'état de l'UI pour gérer le chargement ou les erreurs
         viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             candidateViewModel.uiState.collect { uiState ->
-                // Afficher une animation de chargement ou une erreur si nécessaire
                 if (uiState.isLoading) {
-                    // Afficher un ProgressBar ou autre indication de chargement
                     showLoading(true)
                 } else {
-                    // Cacher le ProgressBar
                     showLoading(false)
 
-                    // Si une erreur est présente, afficher un message
                     if (uiState.error.isNotEmpty()) {
                         Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
                     }
@@ -89,17 +80,19 @@ class CandidateFragment : Fragment(), FilterableInterface {
             }
         }
 
-        // Récupérer les candidats
+        // Initial call to load candidates
         candidateViewModel.getAllCandidates()
     }
 
+
     override fun onResume() {
         super.onResume()
-
+        viewLifecycleOwner.lifecycleScope.launch {
+            candidateViewModel.getAllCandidates()
+        }
 
         if (activity is MainActivity) {
             val mainActivity = activity as MainActivity
-            // Si on n'est pas dans le détail, ajuster pour revenir au mode liste
             if (!isInDetailFragment) {
                 mainActivity.adjustFragmentContainerViewLayout(false)
             }
@@ -108,31 +101,21 @@ class CandidateFragment : Fragment(), FilterableInterface {
 
     override fun onPause() {
         super.onPause()
-        // Lors de la pause du fragment, on signale qu'on est en mode détail
         isInDetailFragment = false
     }
 
-    /**
-     * Filtre la liste des candidats en fonction de la requête de recherche.
-     */
     override fun filter(query: String) {
         filteredList = if (query.isEmpty()) {
             candidateViewModel.candidateFlow.value // Liste complète si le filtre est vide
         } else {
             candidateViewModel.candidateFlow.value.filter {
-                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(
-                    query,
-                    ignoreCase = true
-                )
+                it.firstName.contains(query, ignoreCase = true) || it.surName.contains(query, ignoreCase = true)
             }
         }
 
-        candidateAdapter.updateData(filteredList) // Mettre à jour les données filtrées
+        candidateAdapter.updateData(filteredList)
     }
 
-    /**
-     * Ouvre un fragment pour afficher les détails d'un candidat.
-     */
     private fun openDetailFragment(candidate: Candidate) {
         val detailFragment = DetailCandidateFragment.newInstance(candidate.id)
         parentFragmentManager.beginTransaction()
@@ -141,15 +124,10 @@ class CandidateFragment : Fragment(), FilterableInterface {
             .commit()
         (activity as MainActivity).adjustFragmentContainerViewLayout(true)
         isInDetailFragment = true
-
     }
 
-    /**
-     * Affiche ou cache un indicateur de chargement (ProgressBar).
-     */
     private fun showLoading(isLoading: Boolean) {
-        val progressBar =
-            view?.findViewById<ProgressBar>(R.id.progressBar) // Assurez-vous que vous avez un ProgressBar dans votre layout
+        val progressBar = view?.findViewById<ProgressBar>(R.id.progressBar)
         progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 }

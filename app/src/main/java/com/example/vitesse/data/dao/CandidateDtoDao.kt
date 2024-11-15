@@ -24,7 +24,7 @@ interface CandidateDtoDao {
      *
      * @return A flow of a list of CandidateDto objects representing all candidate.
      */
-    @Query(value = "SELECT * FROM candidate")
+    @Query(value = "SELECT * FROM candidate ORDER BY surName, firstName")
     fun getAllCandidate(): Flow<List<CandidateDto>>
 
     /**
@@ -42,7 +42,7 @@ interface CandidateDtoDao {
      * @return the CandidateDto object representing the candidate, or null if not found.
      */
     @Query(value = "SELECT*FROM candidate WHERE id=:id")
-    suspend fun getCandidateById(id: Long): CandidateDto?
+    fun getCandidateById(id: Long): Flow<CandidateDto?>
 
     /**
      * Updates a candidate in the database.
@@ -50,7 +50,7 @@ interface CandidateDtoDao {
      * @param candidate the candidate to update.
      */
     @Update
-    suspend fun updateCandidate(candidate: CandidateDto)
+    suspend fun updateCandidate(candidate: CandidateDto): Int
 
     /**
      * Retrieves a favorite candidate from the database.
@@ -66,7 +66,7 @@ interface CandidateDtoDao {
      * @param id The ID of the candidate to add to favorites.
      */
     @Query(value = "UPDATE candidate SET favorite=1 WHERE id =:id")
-    suspend fun addCandidateToFavorite(id:Long)
+    suspend fun addCandidateToFavorite(id: Long)
 
     /**
      * Deletes a candidate from the list of favorites.
@@ -74,7 +74,7 @@ interface CandidateDtoDao {
      * @param id The ID of the candidate to remove from favorites.
      */
     @Query(value = "UPDATE candidate SET favorite=0 WHERE id =:id")
-    suspend fun deleteCandidateToFavorite(id:Long)
+    suspend fun deleteCandidateToFavorite(id: Long)
 }
 
 

@@ -11,7 +11,7 @@
     <string name="note">Note</string>
     <string name="notes">Notes</string>
     <string name="about">A propos</string>
-    <string name="or">Soit £</string>
+    <string name="or">Soit £ </string>
     <string name="all">Tous</string>
     <string name="favorite">Favoris</string>
     <string name="search">Rechercher un candidat</string>
@@ -36,5 +36,7 @@
     <string name="no">Non</string>
     <string name="candidate_not_found">Candidat introuvable.</string>
     <string name="birthday">Anniversaire</string>
+    <string name="error_currencyConversion">erreur lors de la récupération du taux de change.</string>
+    <string name="error_io">Pas de connexion Internet, veuillez réessayer.</string>
 
 </resources>

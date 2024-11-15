@@ -5,7 +5,10 @@ import com.example.vitesse.data.dao.CandidateDtoDao
 import com.example.vitesse.data.entity.CandidateDto
 import com.example.vitesse.data.repositoryInterfaces.CandidateRepositoryInterface
 import com.example.vitesse.domain.model.Candidate
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 /**
@@ -21,9 +24,10 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
      *
      * @return the list of all candidates.
      */
+
     override suspend fun getAllCandidate(): List<Candidate> {
         return candidateDao.getAllCandidate()
-            .first()
+            .first()  // Collecte la première liste émise
             .map { candidateDto ->
                 Candidate.fromDto(candidateDto)
             }
@@ -36,9 +40,11 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
      * @return the user object if found, or null if no user exists with the given ID.
      */
     override suspend fun getCandidateById(id: Long): Candidate? {
-        return candidateDao.getCandidateById(id)?.let { candidateDto ->
-            Candidate.fromDto(candidateDto)
-        }
+        return candidateDao.getCandidateById(id)
+            .firstOrNull() // Collecte la première valeur émise par le Flow
+            ?.let { candidateDto ->
+                Candidate.fromDto(candidateDto) // Transforme CandidateDto en Candidate
+            }
     }
 
 

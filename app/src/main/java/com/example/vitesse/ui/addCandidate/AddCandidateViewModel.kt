@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.domain.usecase.AddCandidateUseCase
+import com.example.vitesse.domain.usecase.GetAllCandidateUseCase
 import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.example.vitesse.domain.usecase.UpdateCandidateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class AddCandidateViewModel @Inject constructor(
     private val getCandidateByIdUseCase: GetCandidateByIdUseCase,
     private val addCandidateUseCase: AddCandidateUseCase,
-    private val updateCandidateUseCase: UpdateCandidateUseCase
+    private val updateCandidateUseCase: UpdateCandidateUseCase,
+    private val getAllCandidateUseCase: GetAllCandidateUseCase
 ) : ViewModel() {
 
     /**
@@ -82,14 +84,16 @@ class AddCandidateViewModel @Inject constructor(
     fun addCandidate(candidate: Candidate) {
         viewModelScope.launch {
             try {
-                addCandidateUseCase.execute(candidate)
-                _uiState.value=AddCandidateUiState(error = "", addResult = true)
-                Log.d("AddCandidateViewModel", "ajout du candidat" )
+                // Log to check if the method is called
+                Log.d("AddCandidateViewModel", "Tentative d'ajout du candidat: $candidate")
 
+                addCandidateUseCase.execute(candidate)
+                _uiState.value = AddCandidateUiState(error = "", addResult = true)
+                Log.d("AddCandidateViewModel", "Candidat ajouté avec succès")
+                getAllCandidateUseCase.execute()
             } catch (e: Exception) {
                 onError((R.string.error_add_candidate).toString())
                 Log.e("AddCandidateViewModel", "Erreur lors de l'ajout du candidat", e)
-
             }
         }
     }

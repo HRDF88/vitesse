@@ -1,5 +1,6 @@
 package com.example.vitesse.ui.addCandidate
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,8 +15,10 @@ import com.example.vitesse.databinding.FragmentAddCandidateBinding
 import com.example.vitesse.domain.model.Candidate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Calendar
 
 /**
  * A fragment that allows users to add or edit a candidate's information.
@@ -28,15 +31,8 @@ class AddCandidateFragment : Fragment() {
     private lateinit var binding: FragmentAddCandidateBinding
     private val addCandidateViewModel: AddCandidateViewModel by viewModels()
 
-    /**
-     * Inflates the layout for the fragment and retrieves the candidate ID from arguments.
-     * If the ID is valid, it loads the candidate data for editing.
-     *
-     * @param inflater The LayoutInflater object that can be used to inflate the layout.
-     * @param container The parent container in which the fragment's UI should be placed.
-     * @param savedInstanceState A bundle containing the saved state, if any.
-     * @return The root view of the fragment's layout.
-     */
+    private var selectedDate: LocalDate? = null  // Pour stocker la date sélectionnée
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -55,13 +51,6 @@ class AddCandidateFragment : Fragment() {
         return binding.root
     }
 
-    /**
-     * Sets up the necessary UI components and observers for handling user input and displaying candidate data.
-     * Observes candidate data and the UI state for error handling and updates.
-     *
-     * @param view The root view of the fragment.
-     * @param savedInstanceState A bundle containing the saved state, if any.
-     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -76,7 +65,6 @@ class AddCandidateFragment : Fragment() {
             }
             setNavigationIcon(R.drawable.arrow_back)
             setNavigationOnClickListener {
-                // Handle back navigation when the user presses the back arrow
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
         }
@@ -84,7 +72,6 @@ class AddCandidateFragment : Fragment() {
         // Observe the UI state for error handling and updating the UI
         viewLifecycleOwner.lifecycleScope.launch {
             addCandidateViewModel.uiState.collect { uiState ->
-                // If there's an error, show a toast message
                 if (uiState.error.isNotBlank()) {
                     Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
                     addCandidateViewModel.updateErrorState("")  // Reset the error state
@@ -96,44 +83,46 @@ class AddCandidateFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             addCandidateViewModel.candidateFlow.collect { candidate ->
                 candidate?.let {
-                    // Set the values in the form if editing an existing candidate
                     binding.addCandidateFirstname.setText(it.firstName)
                     binding.addCandidateSurname.setText(it.surName)
                     binding.addCandidatePhone.setText(it.phoneNumbers)
                     binding.addCandidateMail.setText(it.email)
-                    binding.addCandidateBirth.setText(
-                        it.dateOfBirth.toLocalDate().toString()
-                    )  // Display only the date (no time)
                     binding.addCandidateSalary.setText(it.expectedSalaryEuros.toString())
                     binding.addCandidateNote.setText(it.note)
+
+                    // Set the birth date (showing only the date part)
+                    binding.addCandidateBirth.setText(it.dateOfBirth.toLocalDate().toString())
                 }
             }
         }
 
-        /**
-         * Configures the save button click listener to either add or update the candidate.
-         * If a valid candidate ID is provided, the existing candidate will be updated.
-         * Otherwise, a new candidate will be added.
-         */
+        // Handle the DatePickerDialog for birth date selection
+        binding.addCandidateBirth.setOnClickListener {
+            showDatePickerDialog()
+        }
+
+        // Configure the save button
         binding.addCandidateSaveButton.setOnClickListener {
-            val formatter = DateTimeFormatter.ofPattern("dd-MM-yyyy")
+            val firstName = binding.addCandidateFirstname.text.toString()
+            val surName = binding.addCandidateSurname.text.toString()
+            val phone = binding.addCandidatePhone.text.toString()
+            val email = binding.addCandidateMail.text.toString()
+
+            if (firstName.isBlank() || surName.isBlank() || phone.isBlank() || email.isBlank()) {
+                Toast.makeText(requireContext(), "Tous les champs doivent être remplis", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            val candidateId = arguments?.getLong("candidateId", -1L) ?: -1L
+
+            // Create the Candidate object
             val candidate = Candidate(
-                firstName = binding.addCandidateFirstname.text.toString(),
-                surName = binding.addCandidateSurname.text.toString(),
-                phoneNumbers = binding.addCandidatePhone.text.toString(),
-                email = binding.addCandidateMail.text.toString(),
-                dateOfBirth = try {
-                    // Parse the birth date and append the time to set it to 00:00:00
-                    LocalDateTime.parse(
-                        binding.addCandidateBirth.text.toString() + "T00:00:00",
-                        formatter
-                    )
-                } catch (e: Exception) {
-                    // Default to current date with time set to 00:00 if parsing fails
-                    LocalDateTime.now().withHour(0).withMinute(0).withSecond(0)
-                },
+                firstName = firstName,
+                surName = surName,
+                phoneNumbers = phone,
+                email = email,
+                dateOfBirth = selectedDate?.atStartOfDay() ?: LocalDateTime.now().withHour(0).withMinute(0).withSecond(0),  // Si aucune date n'est sélectionnée, on met la date actuelle à minuit
                 expectedSalaryEuros = try {
-                    // Convert salary to integer or default to 0 if parsing fails
                     binding.addCandidateSalary.text.toString().toInt()
                 } catch (e: NumberFormatException) {
                     0  // Default salary value
@@ -141,37 +130,46 @@ class AddCandidateFragment : Fragment() {
                 note = binding.addCandidateNote.text.toString(),
                 favorite = false,
                 profilePicture = "test",  // Profile picture is not handled in this example
-                id = 0  // ID will be handled by the database (auto-generated)
+                id = if (candidateId == -1L) 0 else candidateId  // If ID is -1 (add), set to 0, else use existing ID
             )
 
-            // Check if we are editing or adding a new candidate
-            if (arguments?.getLong("candidateId", -1L) == -1L) {
-                // Add new candidate if ID is invalid (-1L)
+            if (candidateId == -1L) {
                 addCandidateViewModel.addCandidate(candidate)
-                Toast.makeText(requireContext(), "Candidat ajouté avec succès!", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "Candidat ajouté avec succès!", Toast.LENGTH_SHORT).show()
             } else {
-                // Update existing candidate if ID is valid
                 addCandidateViewModel.updateCandidate(candidate)
-                Toast.makeText(requireContext(), "Candidat modifié avec succès!", Toast.LENGTH_SHORT)
-                    .show()
+                Toast.makeText(requireContext(), "Candidat modifié avec succès!", Toast.LENGTH_SHORT).show()
             }
-            parentFragmentManager.popBackStack()
 
+            parentFragmentManager.popBackStack()
+            requireActivity().recreate()
         }
+    }
+
+    private fun showDatePickerDialog() {
+        val calendar = Calendar.getInstance()
+        val datePickerDialog = DatePickerDialog(
+            requireContext(),
+            { _, year, month, dayOfMonth ->
+                // Create a LocalDate with the selected date
+                selectedDate = LocalDate.of(year, month + 1, dayOfMonth) // month is 0-based
+                binding.addCandidateBirth.setText(selectedDate.toString())  // Show the date in the format yyyy-MM-dd
+            },
+            calendar.get(Calendar.YEAR),
+            calendar.get(Calendar.MONTH),
+            calendar.get(Calendar.DAY_OF_MONTH)
+        )
+        datePickerDialog.show()
     }
 
     companion object {
-        // Cette méthode permet de créer une nouvelle instance du fragment en passant des arguments (comme l'ID du candidat)
         fun newInstance(candidateId: Long): AddCandidateFragment {
             val fragment = AddCandidateFragment()
             val args = Bundle().apply {
-                putLong("candidateId", candidateId) // Passez l'ID du candidat en argument
+                putLong("candidateId", candidateId)
             }
-            fragment.arguments = args // Attache les arguments au fragment
+            fragment.arguments = args
             return fragment
         }
     }
-
-
 }

@@ -11,8 +11,11 @@ import com.example.vitesse.domain.usecase.GetAllCandidateUseCase
 import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.example.vitesse.domain.usecase.UpdateCandidateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -23,11 +26,7 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class CandidateViewModel @Inject constructor(
-    private val addCandidateUseCase: AddCandidateUseCase,
-    private val deleteCandidateUseCase: DeleteCandidateUseCase,
-    private val getAllCandidateUseCase: GetAllCandidateUseCase,
-    private val getCandidateByIdUseCase: GetCandidateByIdUseCase,
-    private val updateCandidateUseCase: UpdateCandidateUseCase
+    private val getAllCandidateUseCase: GetAllCandidateUseCase
 ) : ViewModel() {
 
     /**
@@ -35,6 +34,10 @@ class CandidateViewModel @Inject constructor(
      */
     private val _candidateFlow = MutableStateFlow<List<Candidate>>(emptyList())
     val candidateFlow: StateFlow<List<Candidate>> = _candidateFlow.asStateFlow()
+
+    // SharedFlow pour notifier des événements de mise à jour (ajout, modification, suppression)
+    private val _updateEvent = MutableSharedFlow<Unit>(replay = 0)  // replay=0 car on ne garde pas les événements passés
+    val updateEvent: SharedFlow<Unit> = _updateEvent.asSharedFlow()
 
     /**
      * Ui State of candidate data

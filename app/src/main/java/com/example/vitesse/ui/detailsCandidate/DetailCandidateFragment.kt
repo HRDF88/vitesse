@@ -95,8 +95,8 @@ class DetailCandidateFragment : Fragment() {
             val email = candidate?.email
             email?.let { mail ->
                 val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$mail"))
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Subject") // Sujet de l'email
-                intent.putExtra(Intent.EXTRA_TEXT, "Body of the email") // Corps de l'email
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Subject") // Sujet de l'email, FAIRE STRING R!!!!!
+                intent.putExtra(Intent.EXTRA_TEXT, "Body of the email") // Corps de l'email, FAIRE STRING R!!!!!
                 startActivity(intent) // Ouvre l'application de mail
             }
         }
@@ -202,13 +202,13 @@ class DetailCandidateFragment : Fragment() {
 
 
                     // Afficher le salaire en livres dans le TextView correspondant
-                    binding.detailCandidateExpectedSalaryPounds.text = uiState.expectedSalaryPounds
+                    binding.detailCandidateExpectedSalaryPounds.text = " ${uiState.expectedSalaryPounds}"
                     }
 
 
                 // Si un message d'erreur est présent, l'afficher
                 if (uiState.error.isNotBlank()) {
-                    showError(uiState.error)
+                    Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
                     detailCandidateViewModel.updateErrorState("") // Réinitialiser l'état d'erreur
                 }
 
@@ -230,7 +230,8 @@ class DetailCandidateFragment : Fragment() {
 
         // Autres détails du candidat
         binding.detailCandidateNote.text = candidate.note
-        binding.detailCandidateExpectedSalaryEuros.text = candidate.expectedSalaryEuros.toString()
+        binding.detailCandidateExpectedSalaryEuros.text = "${candidate.expectedSalaryEuros} €"
+
         isFavorite = candidate.favorite
         updateFavoriteMenuIcon()
     }
@@ -275,10 +276,6 @@ class DetailCandidateFragment : Fragment() {
             }
             .setNegativeButton(getString(R.string.no), null)
             .show()
-    }
-
-    private fun showError(message: String) {
-        Snackbar.make(binding.root, message, Snackbar.LENGTH_LONG).show()
     }
 
     private fun showDeletionSuccess() {

@@ -10,7 +10,7 @@
     <string name="note">Note</string>
     <string name="notes">Notes</string>
     <string name="about">About</string>
-    <string name="or">Or £</string>
+    <string name="or">Or £ </string>
     <string name="all">All</string>
     <string name="favorite">Favorite</string>
     <string name="search">Search for a candidate</string>
@@ -35,5 +35,7 @@
     <string name="no">No</string>
     <string name="candidate_not_found">Candidate not found.</string>
     <string name="birthday">Birthday</string>
+    <string name="error_currencyConversion">error while retrieving the exchange rate.</string>
+    <string name="error_io">No Internet connection, please try again.</string>
 
 </resources>

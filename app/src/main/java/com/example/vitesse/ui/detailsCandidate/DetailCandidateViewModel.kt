@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.time.LocalDate
 import java.time.Period
 import javax.inject.Inject
@@ -82,15 +83,20 @@ class DetailCandidateViewModel @Inject constructor(
                     } catch (e: Exception) {
                         Log.e("ExpectedSalary", "Erreur de conversion du salaire en GBP", e)
                         null // Si une erreur se produit, le salaire en GBP est null
+                        onError((R.string.error_currencyConversion).toString())
+                    } catch (e: IOException) {
+                        Log.e("ExpectedSalary", "Pas de connexion Internet", e)
+                        null // Si une erreur se produit, le salaire en GBP est null
+                        onError((R.string.error_io).toString())
                     }
 
                     // Mettre à jour l'UI avec les nouvelles données (y compris le salaire en GBP)
                     _uiState.update { currentState ->
                         currentState.copy(
                             candidate = candidate,
-                            error = "",
                             age = age,
-                            expectedSalaryPounds = salaryInPounds?.let { "%.2f".format(it) } ?: "Invalid salary",
+                            expectedSalaryPounds = salaryInPounds?.let { "%.2f".format(it) }
+                                ?: "Invalid salary",
                             isLoading = false
                         )
                     }

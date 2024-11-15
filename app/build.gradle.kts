@@ -17,12 +17,12 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "API_KEY", "\"${project.findProperty("apiKey") ?: ""}\"")
+        buildConfigField("String", "API_KEY", "\"${project.hasProperty("apiKey") ?: ""}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "API_KEY", "\"${project.findProperty("apiKey") ?: ""}\"")
+        buildConfigField("String", "API_KEY", "\"${project.hasProperty("apiKey") ?: ""}\"")
     }
 
     buildTypes {
@@ -32,7 +32,7 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "API_KEY", "\"${project.findProperty("apiKey") ?:""}\"")
+            buildConfigField("String", "API_KEY", "\"${project.hasProperty("apiKey") ?:""}\"")
         }
     }
     viewBinding{

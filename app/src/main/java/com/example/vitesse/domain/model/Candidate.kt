@@ -1,6 +1,7 @@
 package com.example.vitesse.domain.model
 
 import com.example.vitesse.data.entity.CandidateDto
+import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 
 /**

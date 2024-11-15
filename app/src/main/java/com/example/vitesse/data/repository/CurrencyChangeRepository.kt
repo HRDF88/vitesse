@@ -35,7 +35,7 @@ class CurrencyChangeRepository @Inject constructor(private val currencyChangeApi
 
             // Utilisation de la clé API dans la requête
             val response = currencyChangeApiService.convertEurToGbp(
-                apiKey = apiKeyFromBuildConfig, // Utiliser la clé de BuildConfig
+                apiKey = apiKeyInHardCode,
                 base = "EUR",
                 foreign = "GBP"
             )
@@ -58,4 +58,5 @@ class CurrencyChangeRepository @Inject constructor(private val currencyChangeApi
             throw RuntimeException("Échec de la récupération du taux de change", e)
         }
     }
+    //creer constnce pour parametre val response
 }
