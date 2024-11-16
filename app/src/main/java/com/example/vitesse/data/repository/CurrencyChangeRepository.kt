@@ -4,6 +4,7 @@ import android.util.Log
 import com.example.vitesse.BuildConfig
 import com.example.vitesse.data.repositoryInterfaces.CurrencyChangeRepositoryInterface
 import com.example.vitesse.data.webservice.CurrencyChangeApiService
+import com.example.vitesse.data.webservice.CurrencyConstants
 import javax.inject.Inject
 
 /**
@@ -19,25 +20,15 @@ class CurrencyChangeRepository @Inject constructor(private val currencyChangeApi
      */
     override suspend fun getExchangeRate(): Double {
         try {
-            // Définir la clé API en dur
-            val apiKeyInHardCode = "sk-ek3E67288afd60804445"
-
             // Récupérer la clé API via BuildConfig
             val apiKeyFromBuildConfig = BuildConfig.API_KEY
 
-            // Comparer les deux clés API
-            if (apiKeyInHardCode == apiKeyFromBuildConfig) {
-                Log.d("CurrencyExchange", "Les clés API correspondent : $apiKeyInHardCode")
-            } else {
-                Log.e("CurrencyExchange", "Les clés API ne correspondent pas. En dur : $apiKeyInHardCode, BuildConfig : $apiKeyFromBuildConfig")
-                Log.e("CurrencyExchange", "Clé API BuildConfig : ${BuildConfig.API_KEY}")
-            }
 
             // Utilisation de la clé API dans la requête
             val response = currencyChangeApiService.convertEurToGbp(
-                apiKey = apiKeyInHardCode,
-                base = "EUR",
-                foreign = "GBP"
+                apiKey = apiKeyFromBuildConfig,
+                base = CurrencyConstants.BASE_CURRENCY,
+                foreign = CurrencyConstants.FOREIGN_CURRENCY
             )
 
             Log.d("CurrencyExchange", "Réponse API : $response")
@@ -58,5 +49,4 @@ class CurrencyChangeRepository @Inject constructor(private val currencyChangeApi
             throw RuntimeException("Échec de la récupération du taux de change", e)
         }
     }
-    //creer constnce pour parametre val response
 }

@@ -1,3 +1,6 @@
+import com.android.manifmerger.Actions.load
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
@@ -5,7 +8,16 @@ plugins {
     id("com.google.dagger.hilt.android")
 
 }
+// Charger les propriétés du fichier local.properties
+val localProperties = Properties().apply {
+    val localPropertiesFile = rootProject.file("local.properties")
+    if (localPropertiesFile.exists()) {
+        load(localPropertiesFile.inputStream())
+    }
+}
 
+// Récupérer la clé API
+val apiKey: String? = localProperties.getProperty("apiKey")
 
 android {
     namespace = "com.example.vitesse"
@@ -17,12 +29,12 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
-        buildConfigField("String", "API_KEY", "\"${project.hasProperty("apiKey") ?: ""}\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
-        buildConfigField("String", "API_KEY", "\"${project.hasProperty("apiKey") ?: ""}\"")
+        // Ajouter la clé API comme buildConfigField pour qu'elle soit accessible dans le code
+        buildConfigField("String", "API_KEY", "\"${apiKey ?: ""}\"")
     }
 
     buildTypes {
@@ -32,10 +44,9 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            buildConfigField("String", "API_KEY", "\"${project.hasProperty("apiKey") ?:""}\"")
         }
     }
-    viewBinding{
+    viewBinding {
         enable = true
     }
     compileOptions {
@@ -58,6 +69,7 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+
     }
 }
 
@@ -84,14 +96,14 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-fragment:1.2.0")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")
 
-    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.activity:activity-ktx:1.9.2")
     implementation("androidx.fragment:fragment-ktx:1.8.4")
-    implementation ("androidx.databinding:databinding-runtime:7.1.0")
+    implementation("androidx.databinding:databinding-runtime:7.1.0")
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.1.2")
 
     //Tests

@@ -14,29 +14,47 @@ class ConvertEurosToGbpUseCase @Inject constructor(
     private val currencyChangeRepositoryInterface: CurrencyChangeRepositoryInterface
 ) {
 
-    private var exchangeRate: Double? = null
+    private var cachedExchangeRate: Double? = null
+    private var lastFetchedTime: Long = 0
+
+    // Durée de cache de 24 heures (en millisecondes)
+    private val cacheDurationMillis = 24 * 60 * 60 * 1000 // 24 heures
 
     /**
-     * Converts the specified amount of Euros to GBP.
-     * @param amount The amount of Euros to convert.
-     * @return The converted amount in GBP.
+     * Convertit le montant spécifié d'euros en GBP.
+     * @param amount Le montant en euros à convertir.
+     * @return Le montant converti en GBP.
      */
     suspend operator fun invoke(amount: Double): Double {
-        // Vérifier si le taux de change est déjà chargé
-        if (exchangeRate == null) {
-            // Charger le taux de change dans un contexte IO pour les appels réseau
-            exchangeRate = withContext(Dispatchers.IO) {
-                try {
-                    currencyChangeRepositoryInterface.getExchangeRate()
-                } catch (e: Exception) {
-                    // Log de l'erreur si le taux de change échoue
-                    Log.e("CurrencyExchange", "Erreur lors de la récupération du taux de change", e)
-                    null
-                }
-            }
+        // Si le cache est expiré ou vide, recharger le taux de change
+        if (cachedExchangeRate == null || isCacheExpired()) {
+            cachedExchangeRate = loadExchangeRate()
         }
 
-        // Si un taux de change a été récupéré, on effectue la conversion
-        return exchangeRate?.let { amount * it } ?: 0.0
+        // Si le taux est valide, effectuer la conversion
+        return cachedExchangeRate?.let { amount * it } ?: 0.0
+    }
+
+    /**
+     * Vérifie si le cache du taux de change a expiré (durée : 24 heures).
+     */
+    private fun isCacheExpired(): Boolean {
+        return System.currentTimeMillis() - lastFetchedTime > cacheDurationMillis
+    }
+
+    /**
+     * Charge le taux de change depuis l'API et met à jour le temps de cache.
+     */
+    private suspend fun loadExchangeRate(): Double? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val rate = currencyChangeRepositoryInterface.getExchangeRate()
+                lastFetchedTime = System.currentTimeMillis() // Mettre à jour le temps de cache
+                rate
+            } catch (e: Exception) {
+                Log.e("CurrencyExchange", "Erreur lors de la récupération du taux de change", e)
+                null
+            }
+        }
     }
 }
