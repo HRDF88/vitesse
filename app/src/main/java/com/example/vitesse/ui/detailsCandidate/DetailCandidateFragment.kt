@@ -2,6 +2,7 @@ package com.example.vitesse.ui.detailsCandidate
 
 import android.content.ContentValues.TAG
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -50,8 +51,10 @@ class DetailCandidateFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Retrieve the candidate ID from the fragment arguments
         candidateId = arguments?.getLong(ARG_CANDIDATE_ID)
         candidateId?.let {
+            // Load candidate details if the ID is available
             detailCandidateViewModel.loadCandidateDetails(it)
         }
     }
@@ -71,13 +74,13 @@ class DetailCandidateFragment : Fragment() {
         setupMenuProvider() // Set up the menu for the fragment
         observeCandidateDetails() // Observe candidate details from the ViewModel
 
-        // Associez les boutons aux actions
+        // Setup actions for phone call, SMS, and email buttons
         binding.detailCandidateCall.setOnClickListener {
             val candidate = detailCandidateViewModel.uiState.value.candidate
             val phoneNumber = candidate?.phoneNumbers
             phoneNumber?.let { phone ->
                 val intent = Intent(Intent.ACTION_DIAL, Uri.parse("tel:$phone"))
-                startActivity(intent) // Ouvre l'application téléphone
+                startActivity(intent) // Open the phone app
             }
         }
 
@@ -86,7 +89,7 @@ class DetailCandidateFragment : Fragment() {
             val phoneNumber = candidate?.phoneNumbers
             phoneNumber?.let { phone ->
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("sms:$phone"))
-                startActivity(intent) // Ouvre l'application SMS
+                startActivity(intent) // Open the SMS app
             }
         }
 
@@ -95,28 +98,30 @@ class DetailCandidateFragment : Fragment() {
             val email = candidate?.email
             email?.let { mail ->
                 val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$mail"))
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Subject") // Sujet de l'email, FAIRE STRING R!!!!!
-                intent.putExtra(Intent.EXTRA_TEXT, "Body of the email") // Corps de l'email, FAIRE STRING R!!!!!
-                startActivity(intent) // Ouvre l'application de mail
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Subject") // TODO: Use string resources for subject
+                intent.putExtra(Intent.EXTRA_TEXT, "Body of the email") // TODO: Use string resources for body
+                startActivity(intent) // Open the email app
             }
         }
-
     }
 
     override fun onResume() {
         super.onResume()
-        adjustFragmentContainerViewLayout(true)
-        // Recharger les informations du candidat après une modification
+        adjustFragmentContainerViewLayout(true) // Adjust layout on resume
         candidateId?.let {
-            detailCandidateViewModel.loadCandidateDetails(it) // Recharger les données dans onResume
+            // Reload candidate details when fragment is resumed
+            detailCandidateViewModel.loadCandidateDetails(it)
         }
     }
 
     override fun onDestroyView() {
-        viewLifecycleOwner.lifecycleScope.coroutineContext.cancelChildren()
+        viewLifecycleOwner.lifecycleScope.coroutineContext.cancelChildren() // Cancel all coroutines on view destruction
         super.onDestroyView()
     }
 
+    /**
+     * Sets up the toolbar with back navigation functionality.
+     */
     private fun setupToolbar() {
         val toolbar: Toolbar = binding.root.findViewById(R.id.toolbar)
         (activity as? AppCompatActivity)?.setSupportActionBar(toolbar) // Set the toolbar as the ActionBar
@@ -124,34 +129,39 @@ class DetailCandidateFragment : Fragment() {
         // Set the back icon and its click listener
         toolbar.setNavigationIcon(R.drawable.arrow_back)
         toolbar.setNavigationOnClickListener {
-            // Avant de revenir, ajuster la taille du FragmentContainerView
+            // Adjust the fragment container layout before navigating back
             adjustFragmentContainerViewLayout(false)
             parentFragmentManager.popBackStack()
         }
     }
 
     /**
-     * Ajuste les dimensions du FragmentContainerView avant de revenir au fragment précédent.
+     * Adjusts the layout dimensions of the FragmentContainerView based on fragment state.
+     *
+     * @param isDetailFragment Whether this fragment is the detail fragment (to set full height).
      */
     private fun adjustFragmentContainerViewLayout(isDetailFragment: Boolean) {
         val fragmentContainerView =
             requireActivity().findViewById<FragmentContainerView>(R.id.main_view)
         val layoutParams = fragmentContainerView.layoutParams as ConstraintLayout.LayoutParams
-        if (isDetailFragment) {
-            layoutParams.height = ConstraintLayout.LayoutParams.MATCH_PARENT
+        layoutParams.height = if (isDetailFragment) {
+            ConstraintLayout.LayoutParams.MATCH_PARENT
         } else {
-            layoutParams.height = ConstraintLayout.LayoutParams.WRAP_CONTENT
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
         }
         fragmentContainerView.layoutParams = layoutParams
     }
 
+    /**
+     * Sets up the options menu for the fragment, including the favorite and edit/delete actions.
+     */
     private fun setupMenuProvider() {
         requireActivity().addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.menu_detail_candidate, menu) // Inflate the menu
-                // Initialiser le favoriteMenuItem
+                // Initialize the favorite menu item
                 favoriteMenuItem = menu.findItem(R.id.menu_favorite)
-                updateFavoriteMenuIcon() // Appeler après l'initialisation
+                updateFavoriteMenuIcon() // Update the favorite icon
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -160,59 +170,64 @@ class DetailCandidateFragment : Fragment() {
                         toggleFavorite() // Toggle favorite status
                         true
                     }
-
                     R.id.menu_edit -> {
-                        navigateToAddCandidateFragment() // Navigate to add/edit candidate fragment
+                        navigateToAddCandidateFragment() // Navigate to edit candidate fragment
                         true
                     }
-
                     R.id.menu_delete -> {
                         showDeleteConfirmationDialog() // Show delete confirmation dialog
                         true
                     }
-
                     else -> false
                 }
             }
         }, viewLifecycleOwner) // Use the view lifecycle to manage the menu
     }
 
-
+    /**
+     * Observes candidate details from the ViewModel and updates the UI accordingly.
+     */
     private fun observeCandidateDetails() {
         viewLifecycleOwner.lifecycleScope.launch {
-            // Observer l'état de l'UI à chaque mise à jour
             detailCandidateViewModel.uiState.collect { uiState ->
-
-                // Gérer l'affichage de la ProgressBar
+                // Show or hide the progress bar based on loading state
                 binding.progressBar.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
 
-                // Si un candidat est trouvé, afficher ses détails
+                // If candidate data is available, update the UI
                 uiState.candidate?.let { candidate ->
-                    // Mettre à jour le titre de l'ActionBar avec le nom du candidat
+                    // Update the ActionBar title with the candidate's name
                     (activity as? AppCompatActivity)?.supportActionBar?.title =
                         "${candidate.firstName} ${candidate.surName}"
 
-                    // Afficher l'âge calculé (ou afficher "Âge inconnu" si l'âge est null)
+                    // Display the candidate's age or show "Age Unknown" if not available
                     val ageText = uiState.age?.let { getString(R.string.year, it) }
                         ?: getString(R.string.age_unknown)
                     binding.detailCandidateAge.text = ageText
 
-                    // Mettre à jour les autres détails du candidat
+                    // Update other candidate details in the UI
                     updateCandidateDetails(candidate)
 
-
-                    // Afficher le salaire en livres dans le TextView correspondant
+                    // Display expected salary in pounds
                     binding.detailCandidateExpectedSalaryPounds.text = " ${uiState.expectedSalaryPounds}"
+
+                    // Display the profile picture if it exists
+                    if (candidate.profilePicture != null && candidate.profilePicture.isNotEmpty()) {
+                        // Convert the profile picture (ByteArray) to Bitmap
+                        val bitmap = BitmapFactory.decodeByteArray(candidate.profilePicture, 0, candidate.profilePicture.size)
+                        binding.detailCandidateProfilePicture.setImageBitmap(bitmap)
+                    } else {
+                        // Set a placeholder if no profile picture is available
+                        binding.detailCandidateProfilePicture.setImageResource(R.drawable.photo_camera)
                     }
-
-
-                // Si un message d'erreur est présent, l'afficher
-                if (uiState.error.isNotBlank()) {
-                    Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
-                    detailCandidateViewModel.updateErrorState("") // Réinitialiser l'état d'erreur
                 }
 
-                // Si le candidat a été supprimé, afficher un message de succès et revenir à l'écran précédent
+                // If there's an error message, display it
+                if (uiState.error.isNotBlank()) {
+                    Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
+                    detailCandidateViewModel.updateErrorState() // Reset the error state
+                }
+
+                // If candidate has been deleted, show a success message and navigate back
                 if (uiState.isDeleted) {
                     showDeletionSuccess()
                     parentFragmentManager.popBackStack()
@@ -221,21 +236,30 @@ class DetailCandidateFragment : Fragment() {
         }
     }
 
+    /**
+     * Updates the UI with the candidate's details.
+     *
+     * @param candidate The candidate whose details need to be displayed.
+     */
     private fun updateCandidateDetails(candidate: Candidate) {
         val dateFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
 
-        // Formatage de la date de naissance
+        // Format and display the candidate's date of birth
         val formattedDateOfBirth = candidate.dateOfBirth.format(dateFormatter)
         binding.detailCandidateDateOfBirth.text = formattedDateOfBirth
 
-        // Autres détails du candidat
+        // Display other candidate details
         binding.detailCandidateNote.text = candidate.note
         binding.detailCandidateExpectedSalaryEuros.text = "${candidate.expectedSalaryEuros} €"
 
+        // Update the favorite status and menu icon
         isFavorite = candidate.favorite
         updateFavoriteMenuIcon()
     }
 
+    /**
+     * Toggles the candidate's favorite status and updates the menu icon.
+     */
     private fun toggleFavorite() {
         val candidate = detailCandidateViewModel.uiState.value.candidate
         candidate?.let {
@@ -247,23 +271,28 @@ class DetailCandidateFragment : Fragment() {
                 }
             }
             isFavorite = !isFavorite
-            updateFavoriteMenuIcon() // Update the menu's favorite icon
+            updateFavoriteMenuIcon() // Update the favorite icon in the menu
         }
     }
 
-
+    /**
+     * Updates the favorite icon in the options menu.
+     */
     private fun updateFavoriteMenuIcon() {
-        // Vérifier que favoriteMenuItem est bien initialisé avant de l'utiliser
+        // Check if the favorite menu item has been initialized
         if (::favoriteMenuItem.isInitialized) {
             favoriteMenuItem.icon = ContextCompat.getDrawable(
                 requireContext(),
                 if (isFavorite) R.drawable.star_full else R.drawable.star
             )
         } else {
-            Log.e(TAG, "favoriteMenuItem n'est pas initialisé")
+            Log.e(TAG, "favoriteMenuItem is not initialized")
         }
     }
 
+    /**
+     * Displays a confirmation dialog before deleting the candidate.
+     */
     private fun showDeleteConfirmationDialog() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.confirm_deletion))
@@ -278,24 +307,23 @@ class DetailCandidateFragment : Fragment() {
             .show()
     }
 
+    /**
+     * Displays a success message after a candidate is deleted.
+     */
     private fun showDeletionSuccess() {
         Toast.makeText(requireContext(), getString(R.string.delete_candidate), Toast.LENGTH_SHORT)
             .show()
     }
 
+    /**
+     * Navigates to the Add/Edit candidate fragment.
+     */
     private fun navigateToAddCandidateFragment() {
         val candidate = detailCandidateViewModel.uiState.value.candidate
         candidate?.let {
-            // Créer une instance du fragment à ouvrir
-            val addCandidateFragment =
-                AddCandidateFragment.newInstance(it.id) // Passez l'ID du candidat ou d'autres données nécessaires
-
-            // Remplacer le fragment actuel par le nouveau fragment
+            val addCandidateFragment = AddCandidateFragment.newInstance(it.id) // Pass candidate ID
             parentFragmentManager.beginTransaction()
-                .replace(
-                    R.id.main_view,
-                    addCandidateFragment
-                ) // Remplacer le fragment actuel par AddCandidateFragment
+                .replace(R.id.main_view, addCandidateFragment) // Replace current fragment
                 .addToBackStack(null)
                 .commit()
         }
@@ -304,6 +332,12 @@ class DetailCandidateFragment : Fragment() {
     companion object {
         private const val ARG_CANDIDATE_ID = "candidate_id"
 
+        /**
+         * Creates a new instance of the fragment with the given candidate ID.
+         *
+         * @param candidateId The ID of the candidate to display.
+         * @return A new instance of `DetailCandidateFragment`.
+         */
         fun newInstance(candidateId: Long): DetailCandidateFragment {
             return DetailCandidateFragment().apply {
                 arguments = Bundle().apply {

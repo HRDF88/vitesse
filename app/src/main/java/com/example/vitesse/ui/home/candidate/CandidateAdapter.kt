@@ -1,8 +1,10 @@
 package com.example.vitesse.ui.home.candidate
 
 import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.vitesse.R
@@ -39,6 +41,11 @@ class CandidateAdapter(
         holder.tvLastName.text = candidate.surName
         holder.tvNote.text = candidate.note
 
+        candidate.profilePicture?.let { byteArray ->
+            val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+            holder.profilePicture.setImageBitmap(bitmap)
+        }
+
         // Set click listener on the item view
         holder.itemView.setOnClickListener {
             onItemClick(candidate) // Appeler le callback avec le candidat cliqué
@@ -54,6 +61,7 @@ class CandidateAdapter(
         var tvFirstName: TextView = itemView.findViewById(R.id.firstname)
         var tvLastName: TextView = itemView.findViewById(R.id.lastname)
         var tvNote: TextView = itemView.findViewById(R.id.note_candidate)
+        var profilePicture: ImageView = itemView.findViewById(R.id.profile_picture)
     }
 
     /**

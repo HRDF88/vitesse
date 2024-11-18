@@ -42,6 +42,7 @@ abstract class AppDataBase : RoomDatabase() {
 
             // Lancer une coroutine pour insérer des données par défaut dans la base de données
             scope.launch {
+                val testImageByteArray = ByteArray(10) { it.toByte() }
                 // Récupérer le DAO une fois que la base de données est initialisée
                 val candidateDtoDao = INSTANCE?.candidateDtoDao() // Accéder au DAO après la création de la base
                 candidateDtoDao?.let {
@@ -54,7 +55,7 @@ abstract class AppDataBase : RoomDatabase() {
                             dateOfBirth = LocalDateTime.now(),
                             expectedSalaryEuros = 30000,
                             note = "Test candidate",
-                            profilePicture = "profile",
+                            profilePicture = testImageByteArray,
                             favorite = false
                         )
                         // Insertion des données par défaut

@@ -47,7 +47,7 @@ data class CandidateDto(
     var note: String,
 
     @ColumnInfo(name = "profilePicture")
-    var profilePicture: String,
+    var profilePicture: ByteArray?,
 
     @ColumnInfo(name = "favorite")
     var favorite : Boolean

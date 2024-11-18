@@ -28,6 +28,7 @@
             android:orientation="vertical">
 
             <!-- Champ Prénom -->
+
             <ImageView
                 android:id="@+id/add_candidate_profile_picture"
                 android:layout_width="226dp"

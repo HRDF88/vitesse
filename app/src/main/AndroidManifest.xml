@@ -5,14 +5,14 @@
     <!-- Permission pour l'accès à Internet -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- Permissions pour l'accès aux fichiers -->
+    <!-- Permissions pour l'accès aux fichiers (Scoped Storage) -->
     <!-- Pour Android 10 et en dessous (API 29) -->
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" android:maxSdkVersion="28"/>
 
     <!-- Pour Android 11 et supérieur (API 30 et au-dessus) -->
     <!-- La permission READ_EXTERNAL_STORAGE n'est plus nécessaire à partir d'Android 11 si vous ciblez cette version -->
-    <!-- On utilise des permissions spécifiques pour la lecture des fichiers médias -->
+    <!-- On utilise des permissions spécifiques pour la lecture des fichiers multimédias -->
     <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" android:required="false" />
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" android:required="false" />
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" android:required="false" />

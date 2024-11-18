@@ -8,5 +8,6 @@ data class DetailCandidateUiState(
     val error: String = "",
     val isDeleted: Boolean = false,
     val age : Int? = null,
-    val expectedSalaryPounds: String = "Salary unknown"
+    val expectedSalaryPounds: String = "Salary unknown",
+    val profilePicture: ByteArray? = null
 )

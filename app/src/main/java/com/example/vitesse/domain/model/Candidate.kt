@@ -15,7 +15,7 @@ import java.time.LocalDateTime
  * @param dateOfBirth the date of birth of the candidate
  * @param expectedSalaryEuros the expected salary in euros of the candidate
  * @param note the note regarding the candidate
- * @param profilePicture the profile picture of the candidate
+ * @param profilePicture the profile picture of the candidate as a ByteArray (image data)
  */
 data class Candidate(
     val id: Long,
@@ -26,7 +26,7 @@ data class Candidate(
     val dateOfBirth: LocalDateTime,
     val expectedSalaryEuros: Int,
     val note: String,
-    val profilePicture: String,
+    val profilePicture: ByteArray?,
     val favorite : Boolean
 ) {
     /**

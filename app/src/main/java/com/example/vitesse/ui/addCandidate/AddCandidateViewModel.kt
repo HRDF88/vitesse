@@ -1,6 +1,6 @@
 package com.example.vitesse.ui.addCandidate
 
-import android.content.ContentValues.TAG
+import android.graphics.Bitmap
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,53 +27,83 @@ class AddCandidateViewModel @Inject constructor(
     private val getAllCandidateUseCase: GetAllCandidateUseCase
 ) : ViewModel() {
 
-    /**
-     * The state flow to all candidates.
-     */
     private val _candidateFlow = MutableStateFlow<Candidate?>(null)
     val candidateFlow: StateFlow<Candidate?> = _candidateFlow.asStateFlow()
 
-    /**
-     * Ui State of candidate data
-     */
     private val _uiState = MutableStateFlow(AddCandidateUiState())
     val uiState: StateFlow<AddCandidateUiState> = _uiState.asStateFlow()
 
+    private val _imageCaptureState = MutableStateFlow<ByteArray?>(null)
+    val imageCaptureState: StateFlow<ByteArray?> = _imageCaptureState.asStateFlow()
+
     /**
-     * update uiState if there is an error.
+     * Updates the UI state if there is an error.
+     *
+     * @param errorMessage The error message to display.
      */
     private fun onError(errorMessage: String) {
-        Log.e(TAG, errorMessage)
-        _uiState.update { currentState ->
-            currentState.copy(
-                error = errorMessage,
-
-                )
-        }
+        Log.e("AddCandidateViewModel", errorMessage)
+        _uiState.update { currentState -> currentState.copy(error = errorMessage) }
     }
 
     /**
      * Update error state to reset its value after the error message is broadcast.
      */
-    fun updateErrorState(errorMessage: String) {
-        val currentState = uiState.value
-        val updatedState = currentState.copy(error = errorMessage)
-        _uiState.value = updatedState
+    fun updateErrorState() {
+        _uiState.update { currentState -> currentState.copy(error = "") }
     }
 
     /**
-     * Charger les informations du candidat par ID.
-     * @param candidateId L'identifiant du candidat.
+     * Handles image capture by converting a Bitmap to a ByteArray encoded in Base64.
+     *
+     * @param bitmap The captured image as a Bitmap.
      */
-    fun loadCandidateById(candidateId: Long) {
+    fun handleImageCapture(bitmap: Bitmap) {
         viewModelScope.launch {
-            try {
-                val candidate = getCandidateByIdUseCase.execute(candidateId)
-                _candidateFlow.value = candidate
-            } catch (e: Exception) {
-                onError((R.string.error_load_candidate).toString())
-            }
+            val byteArray = convertBitmapToByteArray(bitmap)
+            _imageCaptureState.value = byteArray
+            Log.d("AddCandidateViewModel", "Image captured and converted to ByteArray")
         }
+    }
+
+    /**
+     * Saves the captured image in the candidate entity and updates the database.
+     *
+     * @param candidateId The ID of the candidate to associate the image with.
+     */
+    fun saveCandidateImage(candidateId: Long) {
+        val imageByteArray = _imageCaptureState.value
+        if (imageByteArray != null) {
+            viewModelScope.launch {
+                try {
+                    val candidate = getCandidateByIdUseCase.execute(candidateId)
+                    if (candidate != null) {
+                        val updatedCandidate = candidate.copy(profilePicture = imageByteArray)
+                        updateCandidateUseCase.execute(updatedCandidate.toDto())
+                        Log.d("AddCandidateViewModel", "Image saved for candidate $candidateId")
+                    } else {
+                        onError("Candidate not found for ID: $candidateId")
+                    }
+                } catch (e: Exception) {
+                    Log.e("AddCandidateViewModel", "Error saving image for candidate $candidateId", e)
+                    onError("Failed to save candidate image.")
+                }
+            }
+        } else {
+            onError("No image captured to save.")
+        }
+    }
+
+    /**
+     * Converts a Bitmap to a ByteArray.
+     *
+     * @param bitmap The Bitmap to convert.
+     * @return The converted ByteArray.
+     */
+    private fun convertBitmapToByteArray(bitmap: Bitmap): ByteArray {
+        val outputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
+        return outputStream.toByteArray()
     }
 
     /**
@@ -84,16 +115,14 @@ class AddCandidateViewModel @Inject constructor(
     fun addCandidate(candidate: Candidate) {
         viewModelScope.launch {
             try {
-                // Log to check if the method is called
-                Log.d("AddCandidateViewModel", "Tentative d'ajout du candidat: $candidate")
-
+                Log.d("AddCandidateViewModel", "Attempting to add candidate: $candidate")
                 addCandidateUseCase.execute(candidate)
                 _uiState.value = AddCandidateUiState(error = "", addResult = true)
-                Log.d("AddCandidateViewModel", "Candidat ajouté avec succès")
+                Log.d("AddCandidateViewModel", "Candidate added successfully")
                 getAllCandidateUseCase.execute()
             } catch (e: Exception) {
                 onError((R.string.error_add_candidate).toString())
-                Log.e("AddCandidateViewModel", "Erreur lors de l'ajout du candidat", e)
+                Log.e("AddCandidateViewModel", "Error adding candidate", e)
             }
         }
     }
@@ -108,12 +137,28 @@ class AddCandidateViewModel @Inject constructor(
     fun updateCandidate(candidate: Candidate) {
         viewModelScope.launch {
             try {
-                // Call the update use case
-                updateCandidateUseCase.execute(candidate.toDto())  // Convert to CandidateDto before passing
-                _uiState.value = AddCandidateUiState(addResult = true)  // Success, update the UI state
+                updateCandidateUseCase.execute(candidate.toDto())
+                _uiState.value = AddCandidateUiState(addResult = true)
             } catch (e: Exception) {
                 onError((R.string.error_update_candidate).toString())
             }
         }
     }
+
+    /**
+     * Loads the information of a candidate by ID.
+     *
+     * @param candidateId The ID of the candidate.
+     */
+    fun loadCandidateById(candidateId: Long) {
+        viewModelScope.launch {
+            try {
+                val candidate = getCandidateByIdUseCase.execute(candidateId)
+                _candidateFlow.value = candidate
+            } catch (e: Exception) {
+                onError((R.string.error_load_candidate).toString())
+            }
+        }
+    }
 }
+
