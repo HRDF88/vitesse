@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +24,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeParseException
 import java.util.Calendar
 
 /**
@@ -49,7 +52,7 @@ class AddCandidateFragment : Fragment() {
         }
 
     /**
-     * Called to create the fragment's view. It initializes the binding and loads the candidate data
+     * Called to create the fragment's view. Initializes the binding and loads the candidate data
      * if an ID is provided in the arguments (for editing).
      *
      * @param inflater The LayoutInflater used to inflate the fragment's view.
@@ -79,11 +82,14 @@ class AddCandidateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupToolbar()  // Initialize the toolbar
-        observeUiState() // Observe UI state for error handling
-        observeCandidateData() // Observe candidate data to pre-fill the form when editing
+        setupToolbar()  // Initialisation de la barre de navigation
+        observeUiState() // Observer l'état UI pour la gestion des erreurs
+        observeFieldErrors() // Observer les erreurs de validation
+        observeCandidateData() // Observer les données du candidat
 
-        // Set up actions for birth date picker, save button, and profile picture selection
+        setupListeners()
+        updateSaveButtonState()
+
         binding.addCandidateBirth.setOnClickListener {
             showDatePickerDialog()
         }
@@ -96,6 +102,139 @@ class AddCandidateFragment : Fragment() {
             imagePickerLauncher.launch("image/*")
         }
     }
+
+    /**
+     * Observer les erreurs de validation via StateFlow.
+     * Collecte les erreurs dans le StateFlow et met à jour l'UI.
+     */
+    private fun observeFieldErrors() {
+        // Utiliser lifecycleScope pour collecter les émissions de StateFlow
+        lifecycleScope.launch {
+            addCandidateViewModel.fieldErrors.collect { errors ->
+                // Mise à jour des erreurs dans l'UI à partir de fieldErrors
+                binding.addCandidateFirstnameLayout.error = errors["firstName"]
+                binding.addCandidateSurnameLayout.error = errors["surname"]
+                binding.addCandidatePhoneLayout.error = errors["phone"]
+                binding.addCandidateMailLayout.error = errors["email"]
+                binding.addCandidateBirthLayout.error = errors["dateOfBirth"]
+            }
+        }
+    }
+
+
+    private fun setupListeners() {
+        // Listener pour First Name
+        binding.addCandidateFirstname.apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    addCandidateViewModel.validateFirstName(s.toString())
+                    updateSaveButtonState()
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {  // Si le champ perd le focus
+                    addCandidateViewModel.validateFirstName(text.toString()) // Re-valider le champ
+                }
+            }
+        }
+
+        // Listener pour Surname
+        binding.addCandidateSurname.apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    val uppercaseSurname = s.toString().uppercase() // Convertir en majuscule
+                    if (s.toString() != uppercaseSurname) {
+                        setText(uppercaseSurname) // Mettre à jour le texte avec la version en majuscule
+                        setSelection(uppercaseSurname.length) // Remettre le curseur à la fin
+                    }
+
+                    // Valider le surname en majuscule
+                    addCandidateViewModel.validateSurname(uppercaseSurname)
+                    updateSaveButtonState() // Mettre à jour l'état du bouton de sauvegarde
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {  // Si le champ perd le focus
+                    val uppercaseSurname = text.toString().uppercase() // Convertir en majuscule si nécessaire
+                    setText(uppercaseSurname) // Mettre à jour le texte en majuscule
+                    setSelection(uppercaseSurname.length) // Remettre le curseur à la fin
+                    addCandidateViewModel.validateSurname(uppercaseSurname) // Re-valider le champ
+                }
+            }
+        }
+
+        // Listener pour Phone
+        binding.addCandidatePhone.apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    addCandidateViewModel.validatePhone(s.toString())
+                    updateSaveButtonState()
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {  // Si le champ perd le focus
+                    addCandidateViewModel.validatePhone(text.toString()) // Re-valider le champ
+                }
+            }
+        }
+
+        // Listener pour Email
+        binding.addCandidateMail.apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    addCandidateViewModel.validateEmail(s.toString())
+                    updateSaveButtonState()
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) {  // Si le champ perd le focus
+                    addCandidateViewModel.validateEmail(text.toString()) // Re-valider le champ
+                }
+            }
+        }
+
+        // Listener pour Date of Birth
+        binding.addCandidateBirth.apply {
+            addTextChangedListener(object : TextWatcher {
+                override fun afterTextChanged(s: Editable?) {
+                    // Valider la date de naissance dès que l'utilisateur tape
+                    addCandidateViewModel.validateDateOfBirth(s.toString())
+                    updateSaveButtonState() // Mettre à jour l'état du bouton "Save"
+                }
+
+                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            })
+
+            // Validation lorsque le champ perd le focus
+            setOnFocusChangeListener { _, hasFocus ->
+                if (!hasFocus) { // Si le champ perd le focus
+                    addCandidateViewModel.validateDateOfBirth(text.toString()) // Re-valider la date de naissance
+                }
+            }
+        }
+    }
+
 
     /**
      * Sets up the toolbar for the fragment.
@@ -123,6 +262,7 @@ class AddCandidateFragment : Fragment() {
     private fun observeUiState() {
         viewLifecycleOwner.lifecycleScope.launch {
             addCandidateViewModel.uiState.collect { uiState ->
+                binding.progressBar.visibility = if (uiState.isLoading) View.VISIBLE else View.GONE
                 // If there is an error in the UI state, show a toast with the error message
                 if (uiState.error.isNotBlank()) {
                     Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
@@ -139,16 +279,21 @@ class AddCandidateFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             addCandidateViewModel.candidateFlow.collect { candidate ->
                 candidate?.let {
-                    // Pre-fill the form with the candidate's existing data (if available)
+                    // Pre-fill the form with the candidate's existing data
                     binding.addCandidateFirstname.setText(it.firstName)
                     binding.addCandidateSurname.setText(it.surName)
                     binding.addCandidatePhone.setText(it.phoneNumbers)
                     binding.addCandidateMail.setText(it.email)
                     binding.addCandidateSalary.setText(it.expectedSalaryEuros.toString())
                     binding.addCandidateNote.setText(it.note)
-                    binding.addCandidateBirth.setText(it.dateOfBirth.toLocalDate().toString())
 
-                    // Charger la date actuelle dans selectedDate
+                    // Format the date to dd/MM/yyyy
+                    binding.addCandidateBirth.setText(
+                        it.dateOfBirth.toLocalDate()
+                            .format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                    )
+
+                    // Set the selected date for later use
                     selectedDate = it.dateOfBirth.toLocalDate()
 
                     // Display the profile picture if available
@@ -172,31 +317,44 @@ class AddCandidateFragment : Fragment() {
      */
     private fun showDatePickerDialog() {
         val calendar = Calendar.getInstance()
+        val today = calendar.timeInMillis // Current date in milliseconds
+
         val datePickerDialog = DatePickerDialog(
             requireContext(),
             { _, year, month, dayOfMonth ->
                 // Set the selected date when the user selects a date
-                selectedDate = LocalDate.of(year, month + 1, dayOfMonth)
-                binding.addCandidateBirth.setText(selectedDate.toString())
+                selectedDate =
+                    LocalDate.of(year, month + 1, dayOfMonth) // month is zero-based, hence +1
+                // Format the selected date to dd/MM/yyyy
+                val formattedDate = selectedDate?.format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))
+                binding.addCandidateBirth.setText(formattedDate) // Set the formatted date to the TextInputEditText
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
             calendar.get(Calendar.DAY_OF_MONTH)
         )
+
+        // Restrict the date picker to not allow future dates
+        datePickerDialog.datePicker.maxDate = today // Set max date as today
+
         datePickerDialog.show()
     }
 
     /**
-     * Handles the selected image URI when the user selects a profile picture.
-     * Decodes the image into a bitmap and passes it to the ViewModel.
+     * Processes the selected image URI.
+     * Delegates image resizing and state management to the ViewModel.
      *
      * @param uri The URI of the selected image.
      */
     private fun handleImageUri(uri: Uri) {
         val imageStream = requireContext().contentResolver.openInputStream(uri)
         val bitmap = BitmapFactory.decodeStream(imageStream)
-        binding.addCandidateProfilePicture.setImageBitmap(bitmap) // Affiche immédiatement l'image dans l'ImageView
-        addCandidateViewModel.handleImageCapture(bitmap) // Stocke l'image dans le ViewModel pour la sauvegarde
+
+        // Delegate image resizing and state management to the ViewModel
+        addCandidateViewModel.handleImageCapture(bitmap)
+
+        // Optionally display the resized image in the UI
+        binding.addCandidateProfilePicture.setImageBitmap(bitmap)
     }
 
     /**
@@ -204,79 +362,113 @@ class AddCandidateFragment : Fragment() {
      * Validates the input and creates a new candidate object, then calls the appropriate ViewModel method.
      */
     private fun handleSaveOrUpdateCandidate() {
-        // Retrieve input values
         val firstName = binding.addCandidateFirstname.text.toString()
         val surName = binding.addCandidateSurname.text.toString()
         val phone = binding.addCandidatePhone.text.toString()
         val email = binding.addCandidateMail.text.toString()
 
-        // Validate input
-        if (firstName.isBlank() || surName.isBlank() || phone.isBlank() || email.isBlank()) {
+        // Valider que tous les champs sont remplis
+        if (firstName.isBlank() || surName.isBlank() || phone.isBlank() || email.isBlank() || selectedDate == null) {
             Toast.makeText(requireContext(), "All fields must be filled", Toast.LENGTH_SHORT).show()
             return
         }
 
-        // Retrieve the candidate ID (for editing) or set it to 0 for a new candidate
+        // Formater la date de naissance en format "yyyy-MM-dd" via le ViewModel
+        val formattedDate = addCandidateViewModel.formatDate(selectedDate)
+        if (formattedDate == null) {
+            Toast.makeText(requireContext(), "Invalid date", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Parser la date formatée en LocalDateTime via le ViewModel
+        val dateOfBirth = addCandidateViewModel.parseDateToLocalDateTime(formattedDate)
+        if (dateOfBirth == null) {
+            Toast.makeText(requireContext(), "Invalid date format", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        // Récupérer l'ID du candidat (ou 0 si c'est un ajout)
         val candidateId = arguments?.getLong("candidateId", -1L) ?: -1L
+
+        // Si aucune nouvelle image n'est choisie, utiliser l'image actuelle (ancienne)
+        val currentProfilePicture = addCandidateViewModel.imageCaptureState.value
+            ?: getCurrentProfilePicture()
+
+
+        // Préserver l'état "favori" du candidat actuel si nous modifions un candidat existant
+        val currentFavoriteStatus = addCandidateViewModel.candidateFlow.value?.favorite ?: false
+
         val candidate = Candidate(
             firstName = firstName,
             surName = surName,
             phoneNumbers = phone,
             email = email,
-            dateOfBirth = selectedDate?.atStartOfDay()
-                ?: addCandidateViewModel.candidateFlow.value?.dateOfBirth  // Préserver la date actuelle
-                ?: LocalDateTime.now(),
+            dateOfBirth = dateOfBirth,
             expectedSalaryEuros = binding.addCandidateSalary.text.toString().toIntOrNull() ?: 0,
             note = binding.addCandidateNote.text.toString(),
-            favorite = false,
-            profilePicture = addCandidateViewModel.imageCaptureState.value
-                ?: getCurrentProfilePicture(), // Use the captured image or the existing profile picture
+            favorite = currentFavoriteStatus,
+            profilePicture = currentProfilePicture,
             id = if (candidateId == -1L) 0 else candidateId
         )
 
-        // If we're adding a new candidate, call the ViewModel to add it
+        // Sauvegarder ou mettre à jour le candidat
         if (candidateId == -1L) {
             addCandidateViewModel.addCandidate(candidate)
             Toast.makeText(requireContext(), "Candidate added successfully!", Toast.LENGTH_SHORT)
                 .show()
         } else {
-            // If editing, update the existing candidate
             addCandidateViewModel.updateCandidate(candidate)
             Toast.makeText(requireContext(), "Candidate updated successfully!", Toast.LENGTH_SHORT)
                 .show()
         }
 
-        // Save the image if there was a change in the profile picture
-        if (candidateId != -1L && addCandidateViewModel.imageCaptureState.value?.isNotEmpty() == true) {
-            addCandidateViewModel.saveCandidateImage(candidateId)
-        }
-
-        // Navigate back and refresh the activity
-        parentFragmentManager.popBackStack()
-        requireActivity().recreate()
+        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
+
     /**
-     * Retrieves the current profile picture for the candidate, if available.
-     * Returns an empty byte array if there is no profile picture.
+     * Retrieves the current profile picture from the ViewModel or defaults to a placeholder.
      *
-     * @return The current profile picture as a byte array.
+     * @return The profile picture as a byte array, or an empty byte array if no picture is set.
      */
     private fun getCurrentProfilePicture(): ByteArray {
-        return addCandidateViewModel.candidateFlow.value?.profilePicture ?: ByteArray(0)
+        return addCandidateViewModel.imageCaptureState.value?.takeIf { it.isNotEmpty() }
+            ?: byteArrayOf() // Return an empty byte array if no image is selected
     }
 
-    /**
-     * Factory method to create a new instance of the fragment with a candidate ID (for editing).
-     *
-     * @param candidateId The ID of the candidate to edit. Pass -1 for adding a new candidate.
-     * @return A new instance of `AddCandidateFragment`.
-     */
+
+    private fun validateAllFields(): Boolean {
+        val firstName = binding.addCandidateFirstname.text.toString().trim()
+        val surName = binding.addCandidateSurname.text.toString().trim()
+        val phone = binding.addCandidatePhone.text.toString().trim()
+        val email = binding.addCandidateMail.text.toString().trim()
+        val dateOfBirth = binding.addCandidateBirth.text.toString().trim()
+
+        // Vérifier si tous les champs sont remplis et valides
+        if (firstName.isBlank() || surName.isBlank() || phone.isBlank() || email.isBlank() || dateOfBirth.isBlank()) {
+            return false
+        }
+
+        // Vérifier si l'email est valide
+        if (!addCandidateViewModel.isEmailValid(email)) {
+            return false
+        }
+
+        // Vérifier si la date de naissance est valide
+        return addCandidateViewModel.isDateValid(dateOfBirth)
+    }
+
+    private fun updateSaveButtonState() {
+        val isValid = validateAllFields()
+        binding.addCandidateSaveButton.isEnabled = isValid // Ajuste le bouton correspondant
+    }
+
     companion object {
+        // This method will create a new instance of the fragment with the provided candidateId argument
         fun newInstance(candidateId: Long): AddCandidateFragment {
             return AddCandidateFragment().apply {
                 arguments = Bundle().apply {
-                    putLong("candidateId", candidateId)
+                    putLong("candidateId", candidateId) // Pass the candidate ID as an argument
                 }
             }
         }

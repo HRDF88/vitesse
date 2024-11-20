@@ -7,6 +7,14 @@
     android:orientation="vertical"
     android:padding="16dp">
 
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        android:indeterminate="true" />
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -34,6 +42,7 @@
                 android:layout_width="226dp"
                 android:layout_height="203dp"
                 android:layout_margin="12dp"
+                android:src="@drawable/photo_camera"
                 tools:srcCompat="@tools:sample/avatars" />
 
             <LinearLayout
@@ -41,7 +50,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="12dp"
                 android:layout_marginBottom="16dp"
-                android:gravity="center_vertical"
+                android:gravity="clip_vertical"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -50,52 +59,60 @@
                     android:layout_marginEnd="8dp"
                     android:src="@drawable/person"
                     app:tint="#808080" />
-
-                <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/add_candidate_firstname_layout"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:hint="@string/firstname"
-                    app:boxCornerRadiusBottomEnd="8dp"
-                    app:boxCornerRadiusBottomStart="8dp"
-                    app:boxCornerRadiusTopEnd="8dp"
-                    app:boxCornerRadiusTopStart="8dp"
-                    app:boxStrokeColor="#6200EE"
-                    app:boxStrokeWidth="1dp">
-
-                    <com.google.android.material.textfield.TextInputEditText
-                        android:id="@+id/add_candidate_firstname"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:inputType="textPersonName" />
-                </com.google.android.material.textfield.TextInputLayout>
-            </LinearLayout>
-
-            <!-- Champ Nom -->
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/add_candidate_surname_layout"
-                android:layout_width="319dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="end"
-                android:layout_margin="12dp"
-                android:layout_marginBottom="16dp"
-                android:hint="@string/lastname"
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp"
-                app:boxStrokeColor="#6200EE"
-                app:boxStrokeWidth="1dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/add_candidate_surname"
+                <!-- Conteneur pour Prénom et Nom -->
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName" />
-            </com.google.android.material.textfield.TextInputLayout>
+                    android:orientation="vertical">
 
-            <!-- Champ Téléphone -->
+                    <!-- Champ Prénom -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/add_candidate_firstname_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="8dp"
+                        android:hint="@string/firstname"
+                        app:boxCornerRadiusBottomEnd="8dp"
+                        app:boxCornerRadiusBottomStart="8dp"
+                        app:boxCornerRadiusTopEnd="8dp"
+                        app:boxCornerRadiusTopStart="8dp"
+                        app:boxStrokeColor="#6200EE"
+                        app:boxStrokeWidth="1dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/add_candidate_firstname"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:inputType="textPersonName" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Champ Nom -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:id="@+id/add_candidate_surname_layout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"
+                        android:hint="@string/lastname"
+                        app:boxCornerRadiusBottomEnd="8dp"
+                        app:boxCornerRadiusBottomStart="8dp"
+                        app:boxCornerRadiusTopEnd="8dp"
+                        app:boxCornerRadiusTopStart="8dp"
+                        app:boxStrokeColor="#6200EE"
+                        app:boxStrokeWidth="1dp">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/add_candidate_surname"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAllCaps="true"
+                            android:inputType="textPersonName" />
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                </LinearLayout>
+
+
+            </LinearLayout>
+                <!-- Champ Téléphone -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -226,6 +243,7 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:focusable="true"
+                                android:maxLength="10"
                                 android:inputType="date" />
 
                         </com.google.android.material.textfield.TextInputLayout>
@@ -314,7 +332,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="100dp"
                         android:gravity="top"
-                        android:inputType="textMultiLine" />
+                        android:inputType="textMultiLine"
+                        android:maxLines="2"
+                        android:maxLength="100"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
             <!-- Bouton Sauvegarder -->

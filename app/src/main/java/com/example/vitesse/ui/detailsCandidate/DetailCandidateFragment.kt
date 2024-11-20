@@ -98,8 +98,8 @@ class DetailCandidateFragment : Fragment() {
             val email = candidate?.email
             email?.let { mail ->
                 val intent = Intent(Intent.ACTION_SENDTO, Uri.parse("mailto:$mail"))
-                intent.putExtra(Intent.EXTRA_SUBJECT, "Subject") // TODO: Use string resources for subject
-                intent.putExtra(Intent.EXTRA_TEXT, "Body of the email") // TODO: Use string resources for body
+                intent.putExtra(Intent.EXTRA_SUBJECT, "Subject")
+                intent.putExtra(Intent.EXTRA_TEXT, "Body of the email")
                 startActivity(intent) // Open the email app
             }
         }
