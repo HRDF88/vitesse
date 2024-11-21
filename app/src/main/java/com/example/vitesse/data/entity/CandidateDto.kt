@@ -50,6 +50,6 @@ data class CandidateDto(
     var profilePicture: ByteArray?,
 
     @ColumnInfo(name = "favorite")
-    var favorite : Boolean
+    var favorite: Boolean
 
-    )
+)

@@ -13,7 +13,7 @@ class DeleteCandidateUseCase @Inject constructor(private val candidateRepository
      *
      * @param candidate The Candidate object to be deleted.
      */
-    suspend fun execute(candidate: Candidate){
+    suspend fun execute(candidate: Candidate) {
         candidateRepositoryInterface.deleteCandidate(candidate)
     }
 }

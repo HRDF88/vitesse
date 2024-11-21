@@ -27,7 +27,7 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
 
     override suspend fun getAllCandidate(): List<Candidate> {
         return candidateDao.getAllCandidate()
-            .first()  // Collecte la première liste émise
+            .first()  // Collects the first issued list.
             .map { candidateDto ->
                 Candidate.fromDto(candidateDto)
             }
@@ -41,9 +41,9 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
      */
     override suspend fun getCandidateById(id: Long): Candidate? {
         return candidateDao.getCandidateById(id)
-            .firstOrNull() // Collecte la première valeur émise par le Flow
+            .firstOrNull()
             ?.let { candidateDto ->
-                Candidate.fromDto(candidateDto) // Transforme CandidateDto en Candidate
+                Candidate.fromDto(candidateDto) // Transform CandidateDto into Candidate.
             }
     }
 
@@ -55,7 +55,7 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
      */
     override suspend fun addCandidate(candidate: Candidate) {
         candidateDao.insertCandidate(candidate.toDto())
-        Log.d("CandidateRepository", "Ajout du candidat : $candidate")
+        Log.d("CandidateRepository", "Adding the candidate : $candidate")
     }
 
     /**
@@ -98,10 +98,10 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
      *
      * @param candidate The candidate object to add to favorites.
      */
-    override suspend fun addCandidateToFavorite(candidate: Candidate){
-        candidate.id?.let{
+    override suspend fun addCandidateToFavorite(candidate: Candidate) {
+        candidate.id?.let {
             candidateDao.addCandidateToFavorite(
-                id= candidate.id
+                id = candidate.id
             )
         }
     }
@@ -111,8 +111,8 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
      *
      * @param candidate The candidate object to delete to favorites.
      */
-    override suspend fun deleteCandidateToFavorite(candidate: Candidate){
-        candidate.id?.let{
+    override suspend fun deleteCandidateToFavorite(candidate: Candidate) {
+        candidate.id?.let {
             candidateDao.deleteCandidateToFavorite(
                 id = candidate.id
             )

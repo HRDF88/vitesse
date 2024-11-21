@@ -1,7 +1,6 @@
 package com.example.vitesse.ui.addCandidate
 
 import android.app.DatePickerDialog
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -13,7 +12,9 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.widget.Toolbar
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.vitesse.R
@@ -22,9 +23,7 @@ import com.example.vitesse.domain.model.Candidate
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.time.format.DateTimeParseException
 import java.util.Calendar
 
 /**
@@ -82,10 +81,10 @@ class AddCandidateFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        setupToolbar()  // Initialisation de la barre de navigation
-        observeUiState() // Observer l'état UI pour la gestion des erreurs
-        observeFieldErrors() // Observer les erreurs de validation
-        observeCandidateData() // Observer les données du candidat
+        setupToolbar()  // Initializing the navigation bar
+        observeUiState() // Observe UI state for error handling
+        observeFieldErrors() // Observe validation errors
+        observeCandidateData() // Observe candidate data
 
         setupListeners()
         updateSaveButtonState()
@@ -103,15 +102,22 @@ class AddCandidateFragment : Fragment() {
         }
     }
 
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        // Report that changes have been made
+        setFragmentResult("candidate_updated", bundleOf("updated" to true))
+    }
+
     /**
-     * Observer les erreurs de validation via StateFlow.
-     * Collecte les erreurs dans le StateFlow et met à jour l'UI.
+     * Observe validation errors via StateFlow.
+     * Collects errors in the StateFlow and updates the UI.
      */
     private fun observeFieldErrors() {
-        // Utiliser lifecycleScope pour collecter les émissions de StateFlow
+        //Use lifecycleScope to collect emissions from StateFlow
         lifecycleScope.launch {
             addCandidateViewModel.fieldErrors.collect { errors ->
-                // Mise à jour des erreurs dans l'UI à partir de fieldErrors
+                // Updating errors in UI from fieldErrors
                 binding.addCandidateFirstnameLayout.error = errors["firstName"]
                 binding.addCandidateSurnameLayout.error = errors["surname"]
                 binding.addCandidatePhoneLayout.error = errors["phone"]
@@ -121,9 +127,23 @@ class AddCandidateFragment : Fragment() {
         }
     }
 
-
+    /**
+     * Configures listeners for user input fields to handle validation and state updates.
+     * This method sets up real-time and focus-based validation for various fields,
+     * ensuring user input is checked as they type or when they finish editing.
+     */
     private fun setupListeners() {
-        // Listener pour First Name
+
+        /**
+         * Sets up a listener for the first name input field.
+         *
+         * - Real-time validation: Validates the first name whenever the text changes.
+         * - Focus-based validation: Validates the first name when the field loses focus.
+         *
+         * Behavior:
+         * - Updates the save button state after validation.
+         * - Ensures the first name is non-blank.
+         */
         binding.addCandidateFirstname.apply {
             addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -131,49 +151,81 @@ class AddCandidateFragment : Fragment() {
                     updateSaveButtonState()
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
 
             setOnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus) {  // Si le champ perd le focus
-                    addCandidateViewModel.validateFirstName(text.toString()) // Re-valider le champ
+                if (!hasFocus) {  // If the field loses focus
+                    addCandidateViewModel.validateFirstName(text.toString()) // Re-validate the field
                 }
             }
         }
 
-        // Listener pour Surname
+        /**
+         * Sets up a listener for the surname input field.
+         *
+         * - Real-time validation: Validates the surname whenever the text changes.
+         * - Focus-based validation: Validates the surname when the field loses focus.
+         * - Auto-formatting: Converts the surname to uppercase as the user types.
+         *
+         * Behavior:
+         * - Updates the save button state after validation.
+         * - Ensures the surname is converted to uppercase for consistency.
+         */
         binding.addCandidateSurname.apply {
             addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    val uppercaseSurname = s.toString().uppercase() // Convertir en majuscule
+                    val uppercaseSurname = s.toString().uppercase() // Convert to uppercase
                     if (s.toString() != uppercaseSurname) {
-                        setText(uppercaseSurname) // Mettre à jour le texte avec la version en majuscule
-                        setSelection(uppercaseSurname.length) // Remettre le curseur à la fin
+                        setText(uppercaseSurname) // Update text with uppercase version
+                        setSelection(uppercaseSurname.length) // Return cursor to end
                     }
 
-                    // Valider le surname en majuscule
+                    //Validate surname in uppercase
                     addCandidateViewModel.validateSurname(uppercaseSurname)
-                    updateSaveButtonState() // Mettre à jour l'état du bouton de sauvegarde
+                    updateSaveButtonState() // Update save button state
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
 
             setOnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus) {  // Si le champ perd le focus
-                    val uppercaseSurname = text.toString().uppercase() // Convertir en majuscule si nécessaire
-                    setText(uppercaseSurname) // Mettre à jour le texte en majuscule
-                    setSelection(uppercaseSurname.length) // Remettre le curseur à la fin
-                    addCandidateViewModel.validateSurname(uppercaseSurname) // Re-valider le champ
+                if (!hasFocus) {  // If the field loses focus
+                    val uppercaseSurname =
+                        text.toString().uppercase() //Convert to uppercase if necessary
+                    setText(uppercaseSurname) // Update text to uppercase
+                    setSelection(uppercaseSurname.length) // Return cursor to end
+                    addCandidateViewModel.validateSurname(uppercaseSurname) // Re-validate the field
                 }
             }
         }
 
-        // Listener pour Phone
+        /**
+         * Sets up a listener for the phone number input field.
+         *
+         * - Real-time validation: Validates the phone number whenever the text changes.
+         * - Focus-based validation: Validates the phone number when the field loses focus.
+         *
+         * Behavior:
+         * - Updates the save button state after validation.
+         * - Ensures the phone number is non-blank.
+         */
         binding.addCandidatePhone.apply {
             addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -181,19 +233,34 @@ class AddCandidateFragment : Fragment() {
                     updateSaveButtonState()
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
 
             setOnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus) {  // Si le champ perd le focus
-                    addCandidateViewModel.validatePhone(text.toString()) // Re-valider le champ
+                if (!hasFocus) {
+                    addCandidateViewModel.validatePhone(text.toString())
                 }
             }
         }
 
-        // Listener pour Email
+        /**
+         * Sets up a listener for the email input field.
+         *
+         * - Real-time validation: Validates the email whenever the text changes.
+         * - Focus-based validation: Validates the email when the field loses focus.
+         *
+         * Behavior:
+         * - Updates the save button state after validation.
+         * - Ensures the email is valid and follows the correct format.
+         */
         binding.addCandidateMail.apply {
             addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
@@ -201,35 +268,55 @@ class AddCandidateFragment : Fragment() {
                     updateSaveButtonState()
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
 
             setOnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus) {  // Si le champ perd le focus
-                    addCandidateViewModel.validateEmail(text.toString()) // Re-valider le champ
+                if (!hasFocus) {
+                    addCandidateViewModel.validateEmail(text.toString())
                 }
             }
         }
 
-        // Listener pour Date of Birth
+        /**
+         * Sets up a listener for the date of birth input field.
+         *
+         * - Real-time validation: Validates the date of birth whenever the text changes.
+         * - Focus-based validation: Validates the date of birth when the field loses focus.
+         *
+         * Behavior:
+         * - Updates the save button state after validation.
+         * - Ensures the date of birth is valid and non-blank.
+         */
         binding.addCandidateBirth.apply {
             addTextChangedListener(object : TextWatcher {
                 override fun afterTextChanged(s: Editable?) {
-                    // Valider la date de naissance dès que l'utilisateur tape
                     addCandidateViewModel.validateDateOfBirth(s.toString())
-                    updateSaveButtonState() // Mettre à jour l'état du bouton "Save"
+                    updateSaveButtonState()
                 }
 
-                override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+                override fun beforeTextChanged(
+                    s: CharSequence?,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
+
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
             })
 
-            // Validation lorsque le champ perd le focus
             setOnFocusChangeListener { _, hasFocus ->
-                if (!hasFocus) { // Si le champ perd le focus
-                    addCandidateViewModel.validateDateOfBirth(text.toString()) // Re-valider la date de naissance
+                if (!hasFocus) {
+                    addCandidateViewModel.validateDateOfBirth(text.toString())
                 }
             }
         }
@@ -367,35 +454,43 @@ class AddCandidateFragment : Fragment() {
         val phone = binding.addCandidatePhone.text.toString()
         val email = binding.addCandidateMail.text.toString()
 
-        // Valider que tous les champs sont remplis
+        // Validate that all fields are filled
         if (firstName.isBlank() || surName.isBlank() || phone.isBlank() || email.isBlank() || selectedDate == null) {
-            Toast.makeText(requireContext(), "All fields must be filled", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                (R.string.all_fiel_error).toString(),
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
-        // Formater la date de naissance en format "yyyy-MM-dd" via le ViewModel
+        // Format the date of birth in "yyyy-MM-dd" format via the ViewModel
         val formattedDate = addCandidateViewModel.formatDate(selectedDate)
         if (formattedDate == null) {
-            Toast.makeText(requireContext(), "Invalid date", Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireContext(), (R.string.invalid_date).toString(), Toast.LENGTH_SHORT)
+                .show()
             return
         }
 
-        // Parser la date formatée en LocalDateTime via le ViewModel
+        // Parse the date formatted as LocalDateTime via the ViewModel
         val dateOfBirth = addCandidateViewModel.parseDateToLocalDateTime(formattedDate)
         if (dateOfBirth == null) {
-            Toast.makeText(requireContext(), "Invalid date format", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                (R.string.error_format_date).toString(),
+                Toast.LENGTH_SHORT
+            ).show()
             return
         }
 
-        // Récupérer l'ID du candidat (ou 0 si c'est un ajout)
+        // Get the candidate ID (or 0 if it's an addition)
         val candidateId = arguments?.getLong("candidateId", -1L) ?: -1L
 
-        // Si aucune nouvelle image n'est choisie, utiliser l'image actuelle (ancienne)
+        // If no new image is chosen, use the current (old) image
         val currentProfilePicture = addCandidateViewModel.imageCaptureState.value
             ?: getCurrentProfilePicture()
 
-
-        // Préserver l'état "favori" du candidat actuel si nous modifions un candidat existant
+        // Preserve the "favorite" state of the current candidate if we modify an existing candidate
         val currentFavoriteStatus = addCandidateViewModel.candidateFlow.value?.favorite ?: false
 
         val candidate = Candidate(
@@ -411,14 +506,22 @@ class AddCandidateFragment : Fragment() {
             id = if (candidateId == -1L) 0 else candidateId
         )
 
-        // Sauvegarder ou mettre à jour le candidat
+        // Save or update candidate
         if (candidateId == -1L) {
             addCandidateViewModel.addCandidate(candidate)
-            Toast.makeText(requireContext(), "Candidate added successfully!", Toast.LENGTH_SHORT)
+            Toast.makeText(
+                requireContext(),
+                (R.string.success_add_candidate).toString(),
+                Toast.LENGTH_SHORT
+            )
                 .show()
         } else {
             addCandidateViewModel.updateCandidate(candidate)
-            Toast.makeText(requireContext(), "Candidate updated successfully!", Toast.LENGTH_SHORT)
+            Toast.makeText(
+                requireContext(),
+                (R.string.sucess_update_candidate).toString(),
+                Toast.LENGTH_SHORT
+            )
                 .show()
         }
 
@@ -436,7 +539,19 @@ class AddCandidateFragment : Fragment() {
             ?: byteArrayOf() // Return an empty byte array if no image is selected
     }
 
-
+    /**
+     * Validates all required input fields in the candidate form.
+     * This method checks that each field is filled out correctly and that the values meet specific criteria,
+     * such as ensuring that the email has a valid format and the date of birth follows a correct format.
+     *
+     * @return Boolean - Returns `true` if all fields are valid (non-blank, correctly formatted),
+     *                   otherwise returns `false`.
+     *
+     * This method performs the following validations:
+     * - First name, surname, phone number, email, and date of birth must not be blank.
+     * - The email must be in a valid format (using the `isEmailValid` method).
+     * - The date of birth must follow a valid format (using the `isDateValid` method).
+     */
     private fun validateAllFields(): Boolean {
         val firstName = binding.addCandidateFirstname.text.toString().trim()
         val surName = binding.addCandidateSurname.text.toString().trim()
@@ -444,23 +559,27 @@ class AddCandidateFragment : Fragment() {
         val email = binding.addCandidateMail.text.toString().trim()
         val dateOfBirth = binding.addCandidateBirth.text.toString().trim()
 
-        // Vérifier si tous les champs sont remplis et valides
+        // Check if all fields are filled and valid
         if (firstName.isBlank() || surName.isBlank() || phone.isBlank() || email.isBlank() || dateOfBirth.isBlank()) {
             return false
         }
 
-        // Vérifier si l'email est valide
+        //Check if the email is valid
         if (!addCandidateViewModel.isEmailValid(email)) {
             return false
         }
 
-        // Vérifier si la date de naissance est valide
+        // Check if the date of birth is valid
         return addCandidateViewModel.isDateValid(dateOfBirth)
     }
 
+    /**
+     * Updates the state of the save button based on the validity of all input fields.
+     * This method ensures that the save button is enabled only when all fields are valid.
+     */
     private fun updateSaveButtonState() {
         val isValid = validateAllFields()
-        binding.addCandidateSaveButton.isEnabled = isValid // Ajuste le bouton correspondant
+        binding.addCandidateSaveButton.isEnabled = isValid //Adjust the corresponding button
     }
 
     companion object {

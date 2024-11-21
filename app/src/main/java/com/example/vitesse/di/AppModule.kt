@@ -76,7 +76,7 @@ class AppModule {
 
     @Provides
     @Singleton
-    fun provideCurrencyChangeRepository(currencyChangeApiService: CurrencyChangeApiService) : CurrencyChangeRepositoryInterface{
+    fun provideCurrencyChangeRepository(currencyChangeApiService: CurrencyChangeApiService): CurrencyChangeRepositoryInterface {
         return CurrencyChangeRepository(currencyChangeApiService)
     }
 }

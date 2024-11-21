@@ -38,5 +38,16 @@
     <string name="birthday">Anniversaire</string>
     <string name="error_currencyConversion">erreur lors de la récupération du taux de change.</string>
     <string name="error_io">Pas de connexion Internet, veuillez réessayer.</string>
+    <string name="field_error_firstname">Le prénom est obligatoire</string>
+    <string name="field_error_surname">Le nom de famille est obligatoire</string>
+    <string name="field_error_phone">Le numéro de téléphone est requis</string>
+    <string name="field_error_email">L\'e-mail est requis</string>
+    <string name="error_format_email">Format d\'e-mail invalide</string>
+    <string name="field_error_date">La date de naissance est obligatoire</string>
+    <string name="error_format_date">Format de date invalide</string>
+    <string name="invalid_date">Date invalide</string>
+    <string name="all_fiel_error">Tous les champs doivent être remplis</string>
+    <string name="success_add_candidate">Candidate added successfully</string>
+    <string name="sucess_update_candidate">Candidat mis à jour avec succès</string>
 
 </resources>

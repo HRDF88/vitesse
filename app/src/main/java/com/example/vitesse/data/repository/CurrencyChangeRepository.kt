@@ -20,33 +20,33 @@ class CurrencyChangeRepository @Inject constructor(private val currencyChangeApi
      */
     override suspend fun getExchangeRate(): Double {
         try {
-            // Récupérer la clé API via BuildConfig
+            //Retrieve the API key via BuildConfig
             val apiKeyFromBuildConfig = BuildConfig.API_KEY
 
 
-            // Utilisation de la clé API dans la requête
+            // Using the API key in the request
             val response = currencyChangeApiService.convertEurToGbp(
                 apiKey = apiKeyFromBuildConfig,
                 base = CurrencyConstants.BASE_CURRENCY,
                 foreign = CurrencyConstants.FOREIGN_CURRENCY
             )
 
-            Log.d("CurrencyExchange", "Réponse API : $response")
+            Log.d("CurrencyExchange", "API Response : $response")
 
-            // Vérifier si le taux de change est valide
+            // Check if the exchange rate is valid.
             val exchangeRate = response.foreign.rate
 
             if (exchangeRate.isNaN() || exchangeRate <= 0) {
-                Log.e("CurrencyExchange", "Taux de change invalide : $exchangeRate")
-                throw RuntimeException("Le taux de change récupéré est invalide")
+                Log.e("CurrencyExchange", "Invalid exchange rate : $exchangeRate")
+                throw RuntimeException("The retrieved exchange rate is invalid")
             }
 
-            Log.d("CurrencyExchange", "Taux de change récupéré : $exchangeRate")
+            Log.d("CurrencyExchange", "Exchange rate recovered : $exchangeRate")
             return exchangeRate
 
         } catch (e: Exception) {
-            Log.e("CurrencyExchange", "Erreur lors de la récupération du taux de change", e)
-            throw RuntimeException("Échec de la récupération du taux de change", e)
+            Log.e("CurrencyExchange", "Error retrieving exchange rate", e)
+            throw RuntimeException("Failed to recover exchange rate", e)
         }
     }
 }

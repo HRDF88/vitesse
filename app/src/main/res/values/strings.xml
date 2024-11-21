@@ -19,7 +19,7 @@
     <string name="error_delete_favorite_candidate">Impossible to delete the candidate from favorites.</string>
     <string name="error_load_candidate">Unable to load candidates.</string>
     <string name="error_add_candidate">Impossible to add the candidate.</string>
-    <string name="error_delete_candidate">Impossible to delete the candidate.</string>
+    <string name="error_delete_candidate">Unable to delete the candidate.</string>
     <string name="add_candidate">Add a candidate</string>
     <string name="edit_candidate">Edit a candidate</string>
     <string name="error_update_candidate">Error while updating candidate.</string>
@@ -37,5 +37,16 @@
     <string name="birthday">Birthday</string>
     <string name="error_currencyConversion">error while retrieving the exchange rate.</string>
     <string name="error_io">No Internet connection, please try again.</string>
+    <string name="field_error_firstname">First name is required</string>
+    <string name="field_error_surname">Last name is required</string>
+    <string name="field_error_phone">Phone number is required</string>
+    <string name="field_error_email">Email is required</string>
+    <string name="error_format_email">Invalid email format</string>
+    <string name="field_error_date">Date of birth is required</string>
+    <string name="error_format_date">Invalid date format</string>
+    <string name="invalid_date">Invalid date</string>
+    <string name="all_fiel_error">All fields must be filled</string>
+    <string name="success_add_candidate">Candidate added successfully</string>
+    <string name="sucess_update_candidate">Candidate updated successfully</string>
 
 </resources>

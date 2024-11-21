@@ -41,10 +41,9 @@ class AddCandidateViewModel @Inject constructor(
     private val _imageCaptureState = MutableStateFlow<ByteArray?>(null)
     val imageCaptureState: StateFlow<ByteArray?> = _imageCaptureState.asStateFlow()
 
-
-    // Utilisation de StateFlow pour gérer les erreurs de validation
+    // Using StateFlow to handle validation errors
     private val _fieldErrors = MutableStateFlow<Map<String, String?>>(
-        mapOf() // Initialiser avec un état vide
+        mapOf() //Initialize with empty state
     )
     val fieldErrors: StateFlow<Map<String, String?>> = _fieldErrors
 
@@ -66,80 +65,128 @@ class AddCandidateViewModel @Inject constructor(
     }
 
 
-    // Validation pour le prénom
+    /**
+     * Validates the provided first name.
+     *
+     * @param firstName The first name to validate.
+     * Adds an error message to the field errors map if the first name is blank.
+     */
     fun validateFirstName(firstName: String) {
         val errors = _fieldErrors.value.toMutableMap()
-        errors["firstName"] = if (firstName.isBlank()) "First name is required" else null
+        errors["firstName"] =
+            if (firstName.isBlank()) (R.string.field_error_firstname).toString() else null
         _fieldErrors.value = errors
     }
 
-    // Validation pour le nom
+    /**
+     * Validates the provided surname.
+     *
+     * @param surname The surname to validate.
+     * Adds an error message to the field errors map if the surname is blank.
+     */
     fun validateSurname(surname: String) {
         val errors = _fieldErrors.value.toMutableMap()
-        errors["surname"] = if (surname.isBlank()) "Last name is required" else null
+        errors["surname"] =
+            if (surname.isBlank()) (R.string.field_error_surname).toString() else null
         _fieldErrors.value = errors
     }
 
-    // Validation pour le téléphone
+    /**
+     * Validates the provided phone number.
+     *
+     * @param phone The phone number to validate.
+     * Adds an error message to the field errors map if the phone number is blank.
+     */
     fun validatePhone(phone: String) {
         val errors = _fieldErrors.value.toMutableMap()
-        errors["phone"] = if (phone.isBlank()) "Phone number is required" else null
+        errors["phone"] = if (phone.isBlank()) (R.string.field_error_phone).toString() else null
         _fieldErrors.value = errors
     }
 
-    // Validation pour l'email
+    /**
+     * Validates the provided email address.
+     *
+     * @param email The email address to validate.
+     * Adds an error message to the field errors map if the email is blank or invalid.
+     */
     fun validateEmail(email: String) {
         val errors = _fieldErrors.value.toMutableMap()
         when {
-            email.isBlank() -> errors["email"] = "Email is required"
-            !isEmailValid(email) -> errors["email"] = "Invalid email format"
+            email.isBlank() -> errors["email"] = (R.string.field_error_email).toString()
+            !isEmailValid(email) -> errors["email"] = (R.string.error_format_email).toString()
             else -> errors["email"] = null
         }
         _fieldErrors.value = errors
     }
 
+    /**
+     * Checks whether the provided email address is valid.
+     *
+     * @param email The email address to check.
+     * @return True if the email is valid, false otherwise.
+     */
     fun isEmailValid(email: String): Boolean {
         return Patterns.EMAIL_ADDRESS.matcher(email).matches()
     }
 
+    /**
+     * Validates the provided date of birth.
+     *
+     * @param dateOfBirth The date of birth to validate, formatted as a string.
+     * Adds an error message to the field errors map if the date is blank or invalid.
+     */
     fun validateDateOfBirth(dateOfBirth: String?) {
         val errors = _fieldErrors.value.toMutableMap()
 
-        // Vérifier si la date est vide
+        //Check if date is empty
         errors["dateOfBirth"] = when {
-            dateOfBirth.isNullOrBlank() -> "Date of birth is required"
-            !isDateValid(dateOfBirth) -> "Invalid date format" // Vérifiez si le format de la date est valide
+            dateOfBirth.isNullOrBlank() -> (R.string.field_error_date).toString()
+            !isDateValid(dateOfBirth) -> (R.string.error_format_date).toString()
             else -> null
         }
 
         _fieldErrors.value = errors
     }
 
-    // Fonction utilitaire pour valider la date (si vous voulez valider le format)
-     fun isDateValid(date: String): Boolean {
+    /**
+     * Checks whether the provided date string is valid.
+     *
+     * @param date The date string to check, formatted as "dd/MM/yyyy".
+     * @return True if the date is valid, false otherwise.
+     */
+    fun isDateValid(date: String): Boolean {
         return try {
-            // Essayez de parser la date en utilisant un format spécifique (ex: dd/MM/yyyy)
             val formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy")
             LocalDate.parse(date, formatter)
-            true // Si la date est valide
+            true
         } catch (e: DateTimeParseException) {
-            false // Si une exception est levée, la date est invalide
+            false
         }
     }
 
-    // Méthode pour formater une date au format "yyyy-MM-dd"
+    /**
+     * Formats a given LocalDate to a string in the "yyyy-MM-dd" format.
+     *
+     * @param date The LocalDate to format.
+     * @return The formatted date string, or null if the input date is null.
+     */
     fun formatDate(date: LocalDate?): String? {
         return date?.format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
     }
 
-    // Méthode pour parser la date en LocalDateTime
+    /**
+     * Parses a date string to a LocalDateTime object.
+     *
+     * @param dateStr The date string to parse, formatted as "yyyy-MM-dd".
+     * @return The corresponding LocalDateTime object, or null if parsing fails.
+     */
     fun parseDateToLocalDateTime(dateStr: String?): LocalDateTime? {
         return try {
-            // Conversion correcte en LocalDateTime en utilisant le format ISO
+            // Correct conversion to LocalDateTime using ISO format
             val date = LocalDate.parse(dateStr, DateTimeFormatter.ISO_LOCAL_DATE)
-            date.atStartOfDay() // Retourne LocalDateTime à partir du LocalDate
+            date.atStartOfDay() // Return LocalDateTime from LocalDate
         } catch (e: Exception) {
-            // Si une exception est levée, cela signifie que le format n'est pas valide
+            // If an exception is thrown, it means the format is invalid
             null
         }
     }
@@ -191,17 +238,20 @@ class AddCandidateViewModel @Inject constructor(
     private fun validateCandidate(candidate: Candidate): Boolean {
         return when {
             candidate.firstName.isBlank() -> {
-                onError("First Name cannot be empty")
+                onError((R.string.field_error_firstname).toString())
                 false
             }
+
             candidate.surName.isBlank() -> {
-                onError("Last Name cannot be empty")
+                onError((R.string.field_error_surname).toString())
                 false
             }
+
             candidate.phoneNumbers.isBlank() -> {
-                onError("Phone number cannot be empty")
+                onError((R.string.field_error_phone).toString())
                 false
             }
+
             else -> true
         }
     }
@@ -222,7 +272,7 @@ class AddCandidateViewModel @Inject constructor(
                 getAllCandidateUseCase.execute()
             } catch (e: Exception) {
                 Log.e("AddCandidateViewModel", "Error adding candidate", e)
-                onError("Failed to add candidate.")
+                onError((R.string.error_add_candidate.toString()))
             }
         }
     }
@@ -236,7 +286,7 @@ class AddCandidateViewModel @Inject constructor(
         if (!validateCandidate(candidate)) return
         viewModelScope.launch {
             try {
-                // Utilisez l'image capturée si elle existe, sinon utilisez l'image existante du candidat
+                // Use the captured image if it exists, otherwise use the candidate's existing image
                 val candidateWithImage = candidate.copy(
                     profilePicture = _imageCaptureState.value ?: candidate.profilePicture
                 )
@@ -246,7 +296,7 @@ class AddCandidateViewModel @Inject constructor(
                 Log.d("AddCandidateViewModel", "Candidate updated successfully")
             } catch (e: Exception) {
                 Log.e("AddCandidateViewModel", "Error updating candidate", e)
-                onError("Failed to update candidate.")
+                onError((R.string.error_update_candidate).toString())
             }
         }
     }
@@ -261,14 +311,14 @@ class AddCandidateViewModel @Inject constructor(
             try {
                 val candidate = getCandidateByIdUseCase.execute(candidateId)
                 _candidateFlow.value = candidate
-                // Si le candidat a une image de profil, l'enregistrer dans l'état du ViewModel
+                // If the candidate has a profile image, save it in the ViewModel state
                 candidate?.profilePicture?.let {
                     _imageCaptureState.value = it
                 }
                 Log.d("AddCandidateViewModel", "Candidate loaded: $candidate")
             } catch (e: Exception) {
                 Log.e("AddCandidateViewModel", "Error loading candidate", e)
-                onError("Failed to load candidate.")
+                onError((R.string.error_load_candidate).toString())
             }
         }
     }

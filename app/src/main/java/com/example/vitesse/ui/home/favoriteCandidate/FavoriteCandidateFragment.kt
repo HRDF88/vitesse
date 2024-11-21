@@ -60,7 +60,7 @@ class FavoriteCandidateFragment : Fragment(), FilterableInterface {
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
         // Initialize the adapter with an empty list to start
-        favoriteCandidateAdapter = FavoriteCandidateAdapter(emptyList()){candidate ->
+        favoriteCandidateAdapter = FavoriteCandidateAdapter(emptyList()) { candidate ->
             openDetailFragment(candidate)
         }
         recyclerView.adapter = favoriteCandidateAdapter
@@ -133,8 +133,8 @@ class FavoriteCandidateFragment : Fragment(), FilterableInterface {
             .replace(
                 R.id.main_view,
                 detailFragment
-            ) // Remplacez `R.id.main_view` par l'ID de votre conteneur
-            .addToBackStack(null) // Ajoute à la pile arrière pour permettre le retour en arrière
+            )
+            .addToBackStack(null)
             .commit()
     }
 }

@@ -14,7 +14,7 @@ import dagger.hilt.components.SingletonComponent
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
     @Provides
-    fun provideCurrencyChangeApiService(): CurrencyChangeApiService{
+    fun provideCurrencyChangeApiService(): CurrencyChangeApiService {
         return RetrofitClient.currencyChangeApiService
     }
 }

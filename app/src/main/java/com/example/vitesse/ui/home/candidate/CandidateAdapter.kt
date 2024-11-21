@@ -48,7 +48,7 @@ class CandidateAdapter(
 
         // Set click listener on the item view
         holder.itemView.setOnClickListener {
-            onItemClick(candidate) // Appeler le callback avec le candidat cliqué
+            onItemClick(candidate) // Call the callback with the clicked candidate
         }
     }
 

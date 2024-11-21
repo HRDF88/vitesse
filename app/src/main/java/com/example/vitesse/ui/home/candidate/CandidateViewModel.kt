@@ -4,6 +4,7 @@ import android.content.ContentValues.TAG
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.domain.usecase.AddCandidateUseCase
 import com.example.vitesse.domain.usecase.DeleteCandidateUseCase
@@ -34,10 +35,6 @@ class CandidateViewModel @Inject constructor(
      */
     private val _candidateFlow = MutableStateFlow<List<Candidate>>(emptyList())
     val candidateFlow: StateFlow<List<Candidate>> = _candidateFlow.asStateFlow()
-
-    // SharedFlow pour notifier des événements de mise à jour (ajout, modification, suppression)
-    private val _updateEvent = MutableSharedFlow<Unit>(replay = 0)  // replay=0 car on ne garde pas les événements passés
-    val updateEvent: SharedFlow<Unit> = _updateEvent.asSharedFlow()
 
     /**
      * Ui State of candidate data
@@ -83,7 +80,7 @@ class CandidateViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                onError("Failed to load candidates.")
+                onError((R.string.error_load_candidate).toString())
             }
         }
     }

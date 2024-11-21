@@ -1,7 +1,6 @@
 package com.example.vitesse.domain.model
 
 import com.example.vitesse.data.entity.CandidateDto
-import kotlinx.coroutines.flow.Flow
 import java.time.LocalDateTime
 
 /**
@@ -27,7 +26,7 @@ data class Candidate(
     val expectedSalaryEuros: Int,
     val note: String,
     val profilePicture: ByteArray?,
-    val favorite : Boolean
+    val favorite: Boolean
 ) {
     /**
      * Creates a CandidateDto object from a Candidate object.

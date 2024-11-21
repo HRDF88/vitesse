@@ -6,14 +6,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.example.vitesse.data.dao.CandidateDtoDao
 import com.example.vitesse.data.entity.CandidateDto
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-import kotlin.reflect.KParameter
 
 /**
  * Database class that extends RoomDatabase and represents the local database for the application.
@@ -32,7 +30,7 @@ abstract class AppDataBase : RoomDatabase() {
     abstract fun candidateDtoDao(): CandidateDtoDao
 
     /**
-     * Callback utilisé pour effectuer des actions lors de la création de la base de données.
+     * Callback used to perform actions during database creation.
      */
     private class AppDatabaseCallback(
         private val scope: CoroutineScope
@@ -40,11 +38,11 @@ abstract class AppDataBase : RoomDatabase() {
         override fun onCreate(db: SupportSQLiteDatabase) {
             super.onCreate(db)
 
-            // Lancer une coroutine pour insérer des données par défaut dans la base de données
+            //Launch a coroutine to insert default data into the database
             scope.launch {
                 val testImageByteArray = ByteArray(10) { it.toByte() }
-                // Récupérer le DAO une fois que la base de données est initialisée
-                val candidateDtoDao = INSTANCE?.candidateDtoDao() // Accéder au DAO après la création de la base
+                // Retrieve the DAO once the database is initialized
+                val candidateDtoDao = INSTANCE?.candidateDtoDao()
                 candidateDtoDao?.let {
                     try {
                         val defaultCandidate = CandidateDto(
@@ -58,11 +56,11 @@ abstract class AppDataBase : RoomDatabase() {
                             profilePicture = testImageByteArray,
                             favorite = false
                         )
-                        // Insertion des données par défaut
+                        // Insert default data
                         it.insertCandidate(defaultCandidate)
                     } catch (e: Exception) {
-                        // Gérer toute exception lors de l'insertion des données par défaut
-                        Log.e("AppDatabaseCallback", "Erreur lors de l'insertion des données par défaut", e)
+                        // Handle any exception when inserting default data
+                        Log.e("AppDatabaseCallback", "Error inserting default data", e)
                     }
                 }
             }
@@ -73,15 +71,18 @@ abstract class AppDataBase : RoomDatabase() {
         @Volatile
         private var INSTANCE: AppDataBase? = null
 
-        private val UPGRADE_MIGRATION_V1_V2 = object: Migration(1,2) {
+        // method not used to insert a new field during database migration
+        /*
+        private val UPGRADE_MIGRATION_V1_V2 = object : Migration(1, 2) {
 
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE candidate ADD COLUMN nouveauchamp TEXT DEFAULT 0 NOT NULL")
             }
         }
+        */
 
         /**
-         * Méthode pour obtenir une instance de la base de données.
+         * Method to get a database instance.
          */
         fun getDatabase(context: Context, coroutineScope: CoroutineScope): AppDataBase {
             return INSTANCE ?: synchronized(this) {

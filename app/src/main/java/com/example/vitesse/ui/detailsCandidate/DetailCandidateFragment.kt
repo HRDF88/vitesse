@@ -18,18 +18,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
+import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.example.vitesse.R
 import com.example.vitesse.databinding.FragmentDetailCandidateBinding
 import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.ui.addCandidate.AddCandidateFragment
-import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
@@ -115,8 +115,10 @@ class DetailCandidateFragment : Fragment() {
     }
 
     override fun onDestroyView() {
-        viewLifecycleOwner.lifecycleScope.coroutineContext.cancelChildren() // Cancel all coroutines on view destruction
         super.onDestroyView()
+
+        // Signaler que des changements ont été effectués
+        setFragmentResult("candidate_updated", bundleOf("updated" to true))
     }
 
     /**
@@ -170,14 +172,17 @@ class DetailCandidateFragment : Fragment() {
                         toggleFavorite() // Toggle favorite status
                         true
                     }
+
                     R.id.menu_edit -> {
                         navigateToAddCandidateFragment() // Navigate to edit candidate fragment
                         true
                     }
+
                     R.id.menu_delete -> {
                         showDeleteConfirmationDialog() // Show delete confirmation dialog
                         true
                     }
+
                     else -> false
                 }
             }
@@ -208,12 +213,17 @@ class DetailCandidateFragment : Fragment() {
                     updateCandidateDetails(candidate)
 
                     // Display expected salary in pounds
-                    binding.detailCandidateExpectedSalaryPounds.text = " ${uiState.expectedSalaryPounds}"
+                    binding.detailCandidateExpectedSalaryPounds.text =
+                        " ${uiState.expectedSalaryPounds}"
 
                     // Display the profile picture if it exists
                     if (candidate.profilePicture != null && candidate.profilePicture.isNotEmpty()) {
                         // Convert the profile picture (ByteArray) to Bitmap
-                        val bitmap = BitmapFactory.decodeByteArray(candidate.profilePicture, 0, candidate.profilePicture.size)
+                        val bitmap = BitmapFactory.decodeByteArray(
+                            candidate.profilePicture,
+                            0,
+                            candidate.profilePicture.size
+                        )
                         binding.detailCandidateProfilePicture.setImageBitmap(bitmap)
                     } else {
                         // Set a placeholder if no profile picture is available

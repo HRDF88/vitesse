@@ -11,7 +11,7 @@ class UpdateCandidateUseCase @Inject constructor(private val candidateRepository
     /**
      * Executes the use case to update a candidate.
      */
-    suspend fun execute(candidate: CandidateDto){
+    suspend fun execute(candidate: CandidateDto) {
         candidateRepositoryInterface.updateCandidate(candidate)
     }
 }

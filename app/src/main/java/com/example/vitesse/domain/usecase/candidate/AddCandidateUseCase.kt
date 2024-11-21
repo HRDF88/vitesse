@@ -13,7 +13,7 @@ class AddCandidateUseCase @Inject constructor(private val candidateRepositoryInt
      *
      * @param candidate The Candidate object to be added.
      */
-    suspend fun execute(candidate: Candidate){
+    suspend fun execute(candidate: Candidate) {
         candidateRepositoryInterface.addCandidate(candidate)
     }
 }

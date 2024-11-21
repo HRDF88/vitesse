@@ -21,29 +21,30 @@ class ConvertEurosToGbpUseCase @Inject constructor(
     private val cacheDurationMillis = 24 * 60 * 60 * 1000 // 24 heures
 
     /**
-     * Convertit le montant spécifié d'euros en GBP.
-     * @param amount Le montant en euros à convertir.
-     * @return Le montant converti en GBP.
+     * Converts the specified amount from Euros to GBP.
+     * @param amount The amount in euros to convert.
+     * @return The amount converted to GBP.
      */
     suspend operator fun invoke(amount: Double): Double {
-        // Si le cache est expiré ou vide, recharger le taux de change
+
+        // If the cache is expired or empty, reload the exchange rate
         if (cachedExchangeRate == null || isCacheExpired()) {
             cachedExchangeRate = loadExchangeRate()
         }
 
-        // Si le taux est valide, effectuer la conversion
+        // If the rate is valid, perform the conversion
         return cachedExchangeRate?.let { amount * it } ?: 0.0
     }
 
     /**
-     * Vérifie si le cache du taux de change a expiré (durée : 24 heures).
+     * Checks if the exchange rate cache has expired (duration: 24 hours).
      */
     private fun isCacheExpired(): Boolean {
         return System.currentTimeMillis() - lastFetchedTime > cacheDurationMillis
     }
 
     /**
-     * Charge le taux de change depuis l'API et met à jour le temps de cache.
+     * Loads the exchange rate from the API and updates the cache time.
      */
     private suspend fun loadExchangeRate(): Double? {
         return withContext(Dispatchers.IO) {
@@ -52,7 +53,7 @@ class ConvertEurosToGbpUseCase @Inject constructor(
                 lastFetchedTime = System.currentTimeMillis() // Mettre à jour le temps de cache
                 rate
             } catch (e: Exception) {
-                Log.e("CurrencyExchange", "Erreur lors de la récupération du taux de change", e)
+                Log.e("CurrencyExchange", "Error retrieving exchange rate", e)
                 null
             }
         }

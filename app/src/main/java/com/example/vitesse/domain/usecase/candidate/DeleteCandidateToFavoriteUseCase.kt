@@ -13,7 +13,7 @@ class DeleteCandidateToFavoriteUseCase @Inject constructor(private val candidate
      *
      * @param candidate The favorite Candidate object to be deleted.
      */
-    suspend fun execute(candidate : Candidate){
+    suspend fun execute(candidate: Candidate) {
         candidateRepositoryInterface.deleteCandidateToFavorite(candidate)
     }
 }

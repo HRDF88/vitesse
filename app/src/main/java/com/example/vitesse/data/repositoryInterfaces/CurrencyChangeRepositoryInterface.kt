@@ -1,7 +1,5 @@
 package com.example.vitesse.data.repositoryInterfaces
 
-import com.example.vitesse.domain.model.CurrencyExchangeResponse
-
 /**
  * This interface represents the repository responsible for managing currency exchange operations.
  */

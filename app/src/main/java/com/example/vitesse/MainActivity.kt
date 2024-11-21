@@ -1,5 +1,6 @@
 package com.example.vitesse
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.graphics.PorterDuff
@@ -11,19 +12,18 @@ import android.widget.ImageView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.FragmentContainerView
 import androidx.viewpager2.widget.ViewPager2
 import com.example.vitesse.ui.addCandidate.AddCandidateFragment
+import com.example.vitesse.ui.detailsCandidate.DetailCandidateFragment
 import com.example.vitesse.ui.home.ViewPagerAdapter
 import com.example.vitesse.ui.interfaceUi.FilterableInterface
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
-import android.Manifest
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.fragment.app.FragmentContainerView
-import com.example.vitesse.ui.detailsCandidate.DetailCandidateFragment
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -166,7 +166,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
     /**
-     * Ajuste les dimensions du FragmentContainerView selon le fragment affiché.
+     * Adjusts the dimensions of the FragmentContainerView according to the displayed fragment.
      */
     fun adjustFragmentContainerViewLayout(isDetailFragment: Boolean) {
         val layoutParams = fragmentContainerView.layoutParams as ConstraintLayout.LayoutParams
@@ -176,6 +176,7 @@ class MainActivity : AppCompatActivity() {
         } else {
             // Réinitialiser la hauteur à wrap_content (par défaut)
             layoutParams.height = ConstraintLayout.LayoutParams.WRAP_CONTENT
+
         }
         fragmentContainerView.layoutParams = layoutParams
     }
