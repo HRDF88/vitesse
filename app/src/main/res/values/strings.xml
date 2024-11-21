@@ -12,8 +12,8 @@
     <string name="about">About</string>
     <string name="or">Or £ </string>
     <string name="all">All</string>
-    <string name="favorite">Favorite</string>
-    <string name="search">Search for a candidate</string>
+    <string name="favorite">Favorites</string>
+    <string name="search">Search</string>
     <string name="error_load_favorite_candidate">Unable to load favorite candidates.</string>
     <string name="error_add_favorite_candidate">Impossible to add the candidate to favorites.</string>
     <string name="error_delete_favorite_candidate">Impossible to delete the candidate from favorites.</string>
@@ -29,8 +29,8 @@
     <string name="age_unknown">Age unknown</string>
     <string name="year">%1$d years</string>
     <string name="delete_candidate">Candidate successfully deleted.</string>
-    <string name="confirm_deletion">Confirm deletion</string>
-    <string name="question_delete_candidate">Are you sure you want to delete this candidate?</string>
+    <string name="confirm_deletion">Deletion</string>
+    <string name="question_delete_candidate">Are you sure you want to delete this candidate? This action cannot be undone.</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
     <string name="candidate_not_found">Candidate not found.</string>
@@ -48,5 +48,10 @@
     <string name="all_fiel_error">All fields must be filled</string>
     <string name="success_add_candidate">Candidate added successfully</string>
     <string name="sucess_update_candidate">Candidate updated successfully</string>
+    <string name="no_candidate">No candidate</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="confirm">Confirm</string>
+    <string name="cancel">Cancel</string>
 
 </resources>

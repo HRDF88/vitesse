@@ -114,8 +114,8 @@ class DetailCandidateFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onStop() {
+        super.onStop()
 
         // Signaler que des changements ont été effectués
         setFragmentResult("candidate_updated", bundleOf("updated" to true))
@@ -164,6 +164,26 @@ class DetailCandidateFragment : Fragment() {
                 // Initialize the favorite menu item
                 favoriteMenuItem = menu.findItem(R.id.menu_favorite)
                 updateFavoriteMenuIcon() // Update the favorite icon
+                val deleteMenuItem = menu.findItem(R.id.menu_delete)
+                val editMenuItem = menu.findItem(R.id.menu_edit)
+
+                // Add a long press listener to the delete icon
+                deleteMenuItem?.actionView?.setOnLongClickListener {
+                    Toast.makeText(requireContext(), (R.string.delete).toString(), Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                // Add a long press listener to the edit icon
+                editMenuItem?.actionView?.setOnLongClickListener {
+                    Toast.makeText(requireContext(), (R.string.edit).toString(), Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                // Add a long press listener to the favorite icon
+                favoriteMenuItem?.actionView?.setOnLongClickListener {
+                    Toast.makeText(requireContext(), (R.string.favorite).toString(), Toast.LENGTH_SHORT).show()
+                    true
+                }
             }
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
@@ -307,13 +327,13 @@ class DetailCandidateFragment : Fragment() {
         AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.confirm_deletion))
             .setMessage(getString(R.string.question_delete_candidate))
-            .setPositiveButton(getString(R.string.yes)) { _, _ ->
+            .setPositiveButton(getString(R.string.confirm)) { _, _ ->
                 adjustFragmentContainerViewLayout(false)
                 detailCandidateViewModel.uiState.value.candidate?.let { candidate ->
                     detailCandidateViewModel.deleteCandidate(candidate)
                 }
             }
-            .setNegativeButton(getString(R.string.no), null)
+            .setNegativeButton(getString(R.string.cancel), null)
             .show()
     }
 

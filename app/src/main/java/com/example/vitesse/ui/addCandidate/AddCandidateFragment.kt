@@ -6,6 +6,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -102,8 +103,8 @@ class AddCandidateFragment : Fragment() {
         }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
+    override fun onStop() {
+        super.onStop()
 
         // Report that changes have been made
         setFragmentResult("candidate_updated", bundleOf("updated" to true))
@@ -505,27 +506,34 @@ class AddCandidateFragment : Fragment() {
             profilePicture = currentProfilePicture,
             id = if (candidateId == -1L) 0 else candidateId
         )
-
-        // Save or update candidate
-        if (candidateId == -1L) {
-            addCandidateViewModel.addCandidate(candidate)
+        try {
+            Log.d("AddCandidate", "About to update candidate: $candidate")
+            if (candidateId == -1L) {
+                addCandidateViewModel.addCandidate(candidate)
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.success_add_candidate),
+                    Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                addCandidateViewModel.updateCandidate(candidate)
+                Log.d("AddCandidate", "Candidate updated successfully.")
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.sucess_update_candidate),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        } catch (e: Exception) {
+            Log.e("AddCandidate", "Error updating candidate: ", e)
             Toast.makeText(
                 requireContext(),
-                (R.string.success_add_candidate).toString(),
+                getString(R.string.error_update_candidate),
                 Toast.LENGTH_SHORT
-            )
-                .show()
-        } else {
-            addCandidateViewModel.updateCandidate(candidate)
-            Toast.makeText(
-                requireContext(),
-                (R.string.sucess_update_candidate).toString(),
-                Toast.LENGTH_SHORT
-            )
-                .show()
+            ).show()
+        } finally {
+            requireActivity().onBackPressedDispatcher.onBackPressed()
         }
-
-        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
 

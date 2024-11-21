@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -76,6 +77,7 @@ class FavoriteCandidateFragment : Fragment(), FilterableInterface {
                 favoriteCandidateViewModel.favoriteCandidateFlow.collect { candidates ->
                     // Update the adapter with the new list of candidates
                     favoriteCandidateAdapter.updateData(candidates)
+                    updateUI(candidates)
                 }
             }
 
@@ -136,6 +138,18 @@ class FavoriteCandidateFragment : Fragment(), FilterableInterface {
             )
             .addToBackStack(null)
             .commit()
+    }
+    private fun updateUI(candidates: List<Candidate>) {
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.favorite_candidate_recyclerView)
+        val emptyMessage = view?.findViewById<TextView>(R.id.empty_message)
+
+        if (candidates.isEmpty()) {
+            recyclerView?.visibility = View.GONE
+            emptyMessage?.visibility = View.VISIBLE
+        } else {
+            recyclerView?.visibility = View.VISIBLE
+            emptyMessage?.visibility = View.GONE
+        }
     }
 }
 

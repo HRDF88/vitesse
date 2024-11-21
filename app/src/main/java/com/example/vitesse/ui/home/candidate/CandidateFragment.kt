@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
@@ -87,15 +88,16 @@ class CandidateFragment : Fragment(), FilterableInterface {
 
 
         // Observe candidates
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             candidateViewModel.candidateFlow.collect { candidates ->
                 filteredList = candidates
                 candidateAdapter.updateData(filteredList)
+                updateUI(candidates)
             }
         }
 
         // Observe UI state to handle loading or errors
-        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
+        viewLifecycleOwner.lifecycleScope.launch {
             candidateViewModel.uiState.collect { uiState ->
 
                 if (uiState.isLoading) {
@@ -105,6 +107,7 @@ class CandidateFragment : Fragment(), FilterableInterface {
 
                     if (uiState.error.isNotEmpty()) {
                         Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
+                        candidateViewModel.updateErrorState()
                     }
                 }
             }
@@ -184,5 +187,17 @@ class CandidateFragment : Fragment(), FilterableInterface {
     private fun showLoading(isLoading: Boolean) {
         val progressBar = view?.findViewById<ProgressBar>(R.id.progressBar)
         progressBar?.visibility = if (isLoading) View.VISIBLE else View.GONE
+    }
+    private fun updateUI(candidates: List<Candidate>) {
+        val recyclerView = view?.findViewById<RecyclerView>(R.id.candidate_recyclerView)
+        val emptyMessage = view?.findViewById<TextView>(R.id.empty_message)
+
+        if (candidates.isEmpty()) {
+            recyclerView?.visibility = View.GONE
+            emptyMessage?.visibility = View.VISIBLE
+        } else {
+            recyclerView?.visibility = View.VISIBLE
+            emptyMessage?.visibility = View.GONE
+        }
     }
 }

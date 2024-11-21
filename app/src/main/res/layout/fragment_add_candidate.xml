@@ -12,8 +12,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:visibility="gone"
-        android:indeterminate="true" />
+        android:indeterminate="true"
+        android:visibility="gone" />
 
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
@@ -104,15 +104,15 @@
                             android:id="@+id/add_candidate_surname"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:textAllCaps="true"
-                            android:inputType="textPersonName" />
+                            android:inputType="textPersonName"
+                            android:textAllCaps="true" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
 
 
             </LinearLayout>
-                <!-- Champ Téléphone -->
+            <!-- Champ Téléphone -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -145,6 +145,7 @@
                         android:id="@+id/add_candidate_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:maxLength="10"
                         android:inputType="none" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
@@ -222,8 +223,8 @@
                         android:id="@+id/select_date"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="@string/select_date"
-                        android:background="#F2E7FE"/>
+                        android:background="#F2E7FE"
+                        android:text="@string/select_date" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -242,9 +243,11 @@
                                 android:id="@+id/add_candidate_birth"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:focusable="true"
-                                android:maxLength="10"
-                                android:inputType="date" />
+                                android:clickable="true"
+                                android:focusable="false"
+                                android:focusableInTouchMode="true"
+                                android:inputType="none"
+                                android:maxLength="10" />
 
                         </com.google.android.material.textfield.TextInputLayout>
 
@@ -333,8 +336,8 @@
                         android:layout_height="100dp"
                         android:gravity="top"
                         android:inputType="textMultiLine"
-                        android:maxLines="2"
-                        android:maxLength="100"/>
+                        android:maxLength="100"
+                        android:maxLines="2" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
             <!-- Bouton Sauvegarder -->

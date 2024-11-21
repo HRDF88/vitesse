@@ -1,8 +1,10 @@
 package com.example.vitesse.ui.addCandidate
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.util.Patterns
+import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vitesse.R
@@ -12,6 +14,7 @@ import com.example.vitesse.domain.usecase.GetAllCandidateUseCase
 import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.example.vitesse.domain.usecase.UpdateCandidateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,6 +29,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddCandidateViewModel @Inject constructor(
+    @ApplicationContext private val context: Context,
     private val getCandidateByIdUseCase: GetCandidateByIdUseCase,
     private val addCandidateUseCase: AddCandidateUseCase,
     private val updateCandidateUseCase: UpdateCandidateUseCase,
@@ -74,7 +78,7 @@ class AddCandidateViewModel @Inject constructor(
     fun validateFirstName(firstName: String) {
         val errors = _fieldErrors.value.toMutableMap()
         errors["firstName"] =
-            if (firstName.isBlank()) (R.string.field_error_firstname).toString() else null
+            if (firstName.isBlank()) context.getString(R.string.field_error_firstname) else null
         _fieldErrors.value = errors
     }
 
@@ -87,7 +91,7 @@ class AddCandidateViewModel @Inject constructor(
     fun validateSurname(surname: String) {
         val errors = _fieldErrors.value.toMutableMap()
         errors["surname"] =
-            if (surname.isBlank()) (R.string.field_error_surname).toString() else null
+            if (surname.isBlank()) context.getString(R.string.field_error_surname) else null
         _fieldErrors.value = errors
     }
 
@@ -99,7 +103,8 @@ class AddCandidateViewModel @Inject constructor(
      */
     fun validatePhone(phone: String) {
         val errors = _fieldErrors.value.toMutableMap()
-        errors["phone"] = if (phone.isBlank()) (R.string.field_error_phone).toString() else null
+        errors["phone"] =
+            if (phone.isBlank()) context.getString(R.string.field_error_phone) else null
         _fieldErrors.value = errors
     }
 
@@ -112,8 +117,8 @@ class AddCandidateViewModel @Inject constructor(
     fun validateEmail(email: String) {
         val errors = _fieldErrors.value.toMutableMap()
         when {
-            email.isBlank() -> errors["email"] = (R.string.field_error_email).toString()
-            !isEmailValid(email) -> errors["email"] = (R.string.error_format_email).toString()
+            email.isBlank() -> errors["email"] = context.getString(R.string.field_error_email)
+            !isEmailValid(email) -> errors["email"] = context.getString(R.string.error_format_email)
             else -> errors["email"] = null
         }
         _fieldErrors.value = errors
@@ -140,8 +145,8 @@ class AddCandidateViewModel @Inject constructor(
 
         //Check if date is empty
         errors["dateOfBirth"] = when {
-            dateOfBirth.isNullOrBlank() -> (R.string.field_error_date).toString()
-            !isDateValid(dateOfBirth) -> (R.string.error_format_date).toString()
+            dateOfBirth.isNullOrBlank() -> context.getString(R.string.field_error_date)
+            !isDateValid(dateOfBirth) -> context.getString(R.string.error_format_date)
             else -> null
         }
 

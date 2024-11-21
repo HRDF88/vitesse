@@ -20,4 +20,16 @@
         android:layout_height="wrap_content"
         tools:layout_editor_absoluteX="1dp"
         tools:ignore="MissingConstraints" />
+
+    <TextView
+        android:id="@+id/empty_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:text="@string/no_candidate"
+        android:layout_gravity="center"
+        android:textSize="18sp"
+        android:visibility="gone"
+        tools:ignore="MissingConstraints" />
 </androidx.constraintlayout.widget.ConstraintLayout>
