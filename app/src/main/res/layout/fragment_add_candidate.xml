@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="16dp">
+    android:layout_height="match_parent">
 
     <ProgressBar
         android:id="@+id/progressBar"
@@ -15,18 +13,21 @@
         android:indeterminate="true"
         android:visibility="gone" />
 
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?attr/colorPrimary"
+        android:elevation="4dp"
         android:title="Add Candidate"
         android:titleTextColor="@android:color/white" />
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="16dp">
+        android:layout_height="wrap_content"
+        android:layout_marginTop="?android:attr/actionBarSize"
+        android:padding="8dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -34,8 +35,6 @@
             android:layout_margin="3dp"
             android:gravity="center_horizontal"
             android:orientation="vertical">
-
-            <!-- Champ Prénom -->
 
             <ImageView
                 android:id="@+id/add_candidate_profile_picture"
@@ -59,13 +58,13 @@
                     android:layout_marginEnd="8dp"
                     android:src="@drawable/person"
                     app:tint="#808080" />
-                <!-- Conteneur pour Prénom et Nom -->
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
-                    <!-- Champ Prénom -->
+                    <!-- firstname field -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/add_candidate_firstname_layout"
                         android:layout_width="match_parent"
@@ -86,7 +85,7 @@
                             android:inputType="textPersonName" />
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Champ Nom -->
+                    <!-- surname field -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/add_candidate_surname_layout"
                         android:layout_width="match_parent"
@@ -112,7 +111,7 @@
 
 
             </LinearLayout>
-            <!-- Champ Téléphone -->
+            <!-- phone field -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -145,12 +144,12 @@
                         android:id="@+id/add_candidate_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:maxLength="10"
-                        android:inputType="none" />
+                        android:inputType="none"
+                        android:maxLength="10" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <!-- Champ Email -->
+            <!-- field Email -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -187,7 +186,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <!-- Sélecteur de date -->
+            <!-- date selector -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="175dp"
@@ -264,7 +263,7 @@
 
             </LinearLayout>
 
-            <!-- Champ Prétentions salariales -->
+            <!-- field expected salary -->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -301,7 +300,7 @@
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
-            <!-- Champ Note -->
+            <!-- Note field -->
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -340,23 +339,24 @@
                         android:maxLines="2" />
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
-            <!-- Bouton Sauvegarder -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/add_candidate_save_button"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="12dp"
-                android:layout_marginTop="24dp"
-                android:backgroundTint="#6200EE"
-                android:text="@string/save"
-                android:textAlignment="center"
-                android:textColor="#FFFFFF"
 
-                app:boxCornerRadiusBottomEnd="8dp"
-                app:boxCornerRadiusBottomStart="8dp"
-                app:boxCornerRadiusTopEnd="8dp"
-                app:boxCornerRadiusTopStart="8dp" />
 
         </LinearLayout>
     </ScrollView>
-</LinearLayout>
+    <!-- Save button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/add_candidate_save_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="16dp"
+        android:backgroundTint="#6200EE"
+        android:text="@string/save"
+        android:textAlignment="center"
+        android:textColor="#FFFFFF"
+        app:boxCornerRadiusBottomEnd="25dp"
+        app:boxCornerRadiusBottomStart="25dp"
+        app:boxCornerRadiusTopEnd="25dp"
+        app:boxCornerRadiusTopStart="25dp"
+        tools:ignore="RtlCompat" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

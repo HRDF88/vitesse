@@ -22,6 +22,7 @@
     <string name="error_add_candidate">Impossible d\'ajouter le candidat.</string>
     <string name="error_delete_candidate">Impossible de supprimer le candidat.</string>
     <string name="error_update_candidate">Erreur lors de la mise à jour du candidat.</string>
+    <string name="error_exchange_rate">Impossible de récupéré le taux de change</string>
     <string name="add_candidate">Ajouter un candidat</string>
     <string name="edit_candidate">Editer un candidat</string>
     <string name="save">Sauvegarder</string>
@@ -54,5 +55,7 @@
     <string name="edit">Modifier</string>
     <string name="confirm">Confirmer</string>
     <string name="cancel">Annuler</string>
+    <string name="error_converting">Erreur lors de la conversion du salaire en GBP</string>
+    <string name="invalide_salary">Salaire invalide</string>
 
 </resources>

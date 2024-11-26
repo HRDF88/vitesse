@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.domain.usecase.candidate.GetFavoriteCandidateUseCase
+import com.example.vitesse.ui.utils.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -18,19 +19,20 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class FavoriteCandidateViewModel @Inject constructor(
-    private val getFavoriteCandidateUseCase: GetFavoriteCandidateUseCase
+    private val getFavoriteCandidateUseCase: GetFavoriteCandidateUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
     /**
      * The state flow to all candidates.
      */
     private val _favoriteCandidateFlow = MutableStateFlow<List<Candidate>>(emptyList())
-    val favoriteCandidateFlow : StateFlow<List<Candidate>> = _favoriteCandidateFlow.asStateFlow()
+    val favoriteCandidateFlow: StateFlow<List<Candidate>> = _favoriteCandidateFlow.asStateFlow()
 
     /**
      * Ui State of candidate data
      */
     private val _uiState = MutableStateFlow(FavoriteCandidateUiState())
-    val uiState : StateFlow<FavoriteCandidateUiState> = _uiState.asStateFlow()
+    val uiState: StateFlow<FavoriteCandidateUiState> = _uiState.asStateFlow()
 
     /**
      * update uiState if there is an error.
@@ -57,12 +59,12 @@ class FavoriteCandidateViewModel @Inject constructor(
     /**
      * Loads all favorite candidates using the getFavoriteUseCase and updates the favoriteCandidateFlow.
      */
-    suspend fun loadFavoriteCandidate(){
-        try{
+    suspend fun loadFavoriteCandidate() {
+        try {
             val favoriteCandidate = getFavoriteCandidateUseCase.execute()
-            _favoriteCandidateFlow.value= favoriteCandidate
-        }catch (e:Exception){
-            val errorMessage=(R.string.error_load_favorite_candidate).toString()
+            _favoriteCandidateFlow.value = favoriteCandidate
+        } catch (e: Exception) {
+            val errorMessage = resourceProvider.getString(R.string.error_load_favorite_candidate)
             onError(errorMessage)
         }
     }

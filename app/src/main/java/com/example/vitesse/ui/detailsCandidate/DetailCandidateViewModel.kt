@@ -2,12 +2,14 @@ package com.example.vitesse.ui.detailsCandidate
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.vitesse.R
 import com.example.vitesse.domain.model.Candidate
 import com.example.vitesse.domain.usecase.DeleteCandidateUseCase
 import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.example.vitesse.domain.usecase.candidate.AddCandidateToFavoriteUseCase
 import com.example.vitesse.domain.usecase.candidate.DeleteCandidateToFavoriteUseCase
 import com.example.vitesse.domain.usecase.candidate.currencyConversionUseCase.ConvertEurosToGbpUseCase
+import com.example.vitesse.ui.utils.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -25,6 +27,7 @@ class DetailCandidateViewModel @Inject constructor(
     private val addCandidateToFavoriteUseCase: AddCandidateToFavoriteUseCase,
     private val deleteCandidateToFavoriteUseCase: DeleteCandidateToFavoriteUseCase,
     private val convertEurosToGbpUseCase: ConvertEurosToGbpUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(DetailCandidateUiState())
@@ -48,9 +51,18 @@ class DetailCandidateViewModel @Inject constructor(
 
                     // Convert salary to GBP
                     val salaryInPounds = try {
-                        convertEurosToGbpUseCase(candidate.expectedSalaryEuros.toDouble())
+                        val exchangeRate =
+                            convertEurosToGbpUseCase(candidate.expectedSalaryEuros.toDouble())
+                        if (exchangeRate == 0.0) {
+                            onError(
+                                resourceProvider.getString(R.string.error_exchange_rate).toString()
+                            )
+                            null
+                        } else {
+                            exchangeRate
+                        }
                     } catch (e: Exception) {
-                        onError("Error converting salary to GBP")
+                        onError(resourceProvider.getString(R.string.error_converting))
                         null
                     }
 
@@ -59,16 +71,17 @@ class DetailCandidateViewModel @Inject constructor(
                         it.copy(
                             candidate = candidate,
                             age = age, // Pass calculated age
-                            expectedSalaryPounds = salaryInPounds?.let { "%.2f".format(it) } ?: "Invalid salary",
+                            expectedSalaryPounds = salaryInPounds?.let { "%.2f".format(it) }
+                                ?: resourceProvider.getString(R.string.invalide_salary),
                             profilePicture = candidate.profilePicture,
                             isLoading = false
                         )
                     }
                 } else {
-                    onError("Candidate not found")
+                    onError(resourceProvider.getString(R.string.candidate_not_found))
                 }
             } catch (e: Exception) {
-                onError("Error loading candidate details")
+                onError(resourceProvider.getString(R.string.error_load_candidate))
                 _uiState.update { it.copy(isLoading = false) }
             }
         }
@@ -111,7 +124,7 @@ class DetailCandidateViewModel @Inject constructor(
         try {
             addCandidateToFavoriteUseCase.execute(candidate)
         } catch (e: Exception) {
-            onError("Error adding to favorites")
+            onError(resourceProvider.getString(R.string.error_add_favorite_candidate))
         }
     }
 
@@ -122,7 +135,7 @@ class DetailCandidateViewModel @Inject constructor(
         try {
             deleteCandidateToFavoriteUseCase.execute(candidate)
         } catch (e: Exception) {
-            onError("Error deleting from favorites")
+            onError(resourceProvider.getString(R.string.error_delete_favorite_candidate))
         }
     }
 
@@ -135,7 +148,7 @@ class DetailCandidateViewModel @Inject constructor(
                 deleteCandidateUseCase.execute(candidate)
                 _uiState.update { it.copy(isDeleted = true) }
             } catch (e: Exception) {
-                onError("Error deleting candidate")
+                onError(resourceProvider.getString(R.string.error_delete_candidate))
             }
         }
     }

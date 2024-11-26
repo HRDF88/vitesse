@@ -44,6 +44,7 @@
     <string name="error_format_email">Invalid email format</string>
     <string name="field_error_date">Date of birth is required</string>
     <string name="error_format_date">Invalid date format</string>
+    <string name="error_exchange_rate">Unable to retrieve exchange rate</string>
     <string name="invalid_date">Invalid date</string>
     <string name="all_fiel_error">All fields must be filled</string>
     <string name="success_add_candidate">Candidate added successfully</string>
@@ -53,5 +54,8 @@
     <string name="edit">Edit</string>
     <string name="confirm">Confirm</string>
     <string name="cancel">Cancel</string>
+    <string name="error_converting">Error converting salary to GBP</string>
+    <string name="invalide_salary">Invalid salary</string>
+
 
 </resources>

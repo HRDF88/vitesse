@@ -1,10 +1,8 @@
 package com.example.vitesse.ui.addCandidate
 
-import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
 import android.util.Patterns
-import androidx.core.content.ContextCompat.getString
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.vitesse.R
@@ -13,8 +11,8 @@ import com.example.vitesse.domain.usecase.AddCandidateUseCase
 import com.example.vitesse.domain.usecase.GetAllCandidateUseCase
 import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.example.vitesse.domain.usecase.UpdateCandidateUseCase
+import com.example.vitesse.ui.utils.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,11 +27,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddCandidateViewModel @Inject constructor(
-    @ApplicationContext private val context: Context,
     private val getCandidateByIdUseCase: GetCandidateByIdUseCase,
     private val addCandidateUseCase: AddCandidateUseCase,
     private val updateCandidateUseCase: UpdateCandidateUseCase,
-    private val getAllCandidateUseCase: GetAllCandidateUseCase
+    private val getAllCandidateUseCase: GetAllCandidateUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     private val _candidateFlow = MutableStateFlow<Candidate?>(null)
@@ -78,7 +76,7 @@ class AddCandidateViewModel @Inject constructor(
     fun validateFirstName(firstName: String) {
         val errors = _fieldErrors.value.toMutableMap()
         errors["firstName"] =
-            if (firstName.isBlank()) context.getString(R.string.field_error_firstname) else null
+            if (firstName.isBlank()) resourceProvider.getString(R.string.field_error_firstname) else null
         _fieldErrors.value = errors
     }
 
@@ -91,7 +89,7 @@ class AddCandidateViewModel @Inject constructor(
     fun validateSurname(surname: String) {
         val errors = _fieldErrors.value.toMutableMap()
         errors["surname"] =
-            if (surname.isBlank()) context.getString(R.string.field_error_surname) else null
+            if (surname.isBlank()) resourceProvider.getString(R.string.field_error_surname) else null
         _fieldErrors.value = errors
     }
 
@@ -104,7 +102,7 @@ class AddCandidateViewModel @Inject constructor(
     fun validatePhone(phone: String) {
         val errors = _fieldErrors.value.toMutableMap()
         errors["phone"] =
-            if (phone.isBlank()) context.getString(R.string.field_error_phone) else null
+            if (phone.isBlank()) resourceProvider.getString(R.string.field_error_phone) else null
         _fieldErrors.value = errors
     }
 
@@ -117,8 +115,8 @@ class AddCandidateViewModel @Inject constructor(
     fun validateEmail(email: String) {
         val errors = _fieldErrors.value.toMutableMap()
         when {
-            email.isBlank() -> errors["email"] = context.getString(R.string.field_error_email)
-            !isEmailValid(email) -> errors["email"] = context.getString(R.string.error_format_email)
+            email.isBlank() -> errors["email"] = resourceProvider.getString(R.string.field_error_email)
+            !isEmailValid(email) -> errors["email"] = resourceProvider.getString(R.string.error_format_email)
             else -> errors["email"] = null
         }
         _fieldErrors.value = errors
@@ -145,8 +143,8 @@ class AddCandidateViewModel @Inject constructor(
 
         //Check if date is empty
         errors["dateOfBirth"] = when {
-            dateOfBirth.isNullOrBlank() -> context.getString(R.string.field_error_date)
-            !isDateValid(dateOfBirth) -> context.getString(R.string.error_format_date)
+            dateOfBirth.isNullOrBlank() -> resourceProvider.getString(R.string.field_error_date)
+            !isDateValid(dateOfBirth) -> resourceProvider.getString(R.string.error_format_date)
             else -> null
         }
 
@@ -243,17 +241,17 @@ class AddCandidateViewModel @Inject constructor(
     private fun validateCandidate(candidate: Candidate): Boolean {
         return when {
             candidate.firstName.isBlank() -> {
-                onError((R.string.field_error_firstname).toString())
+                onError(resourceProvider.getString(R.string.field_error_firstname))
                 false
             }
 
             candidate.surName.isBlank() -> {
-                onError((R.string.field_error_surname).toString())
+                onError(resourceProvider.getString(R.string.field_error_surname))
                 false
             }
 
             candidate.phoneNumbers.isBlank() -> {
-                onError((R.string.field_error_phone).toString())
+                onError(resourceProvider.getString(R.string.field_error_phone))
                 false
             }
 
@@ -277,7 +275,7 @@ class AddCandidateViewModel @Inject constructor(
                 getAllCandidateUseCase.execute()
             } catch (e: Exception) {
                 Log.e("AddCandidateViewModel", "Error adding candidate", e)
-                onError((R.string.error_add_candidate.toString()))
+                onError(resourceProvider.getString(R.string.error_add_candidate))
             }
         }
     }
@@ -301,7 +299,7 @@ class AddCandidateViewModel @Inject constructor(
                 Log.d("AddCandidateViewModel", "Candidate updated successfully")
             } catch (e: Exception) {
                 Log.e("AddCandidateViewModel", "Error updating candidate", e)
-                onError((R.string.error_update_candidate).toString())
+                onError(resourceProvider.getString(R.string.error_update_candidate))
             }
         }
     }
@@ -323,7 +321,7 @@ class AddCandidateViewModel @Inject constructor(
                 Log.d("AddCandidateViewModel", "Candidate loaded: $candidate")
             } catch (e: Exception) {
                 Log.e("AddCandidateViewModel", "Error loading candidate", e)
-                onError((R.string.error_load_candidate).toString())
+                onError(resourceProvider.getString(R.string.error_load_candidate))
             }
         }
     }

@@ -8,6 +8,7 @@ import com.example.vitesse.data.repository.CurrencyChangeRepository
 import com.example.vitesse.data.repositoryInterfaces.CandidateRepositoryInterface
 import com.example.vitesse.data.repositoryInterfaces.CurrencyChangeRepositoryInterface
 import com.example.vitesse.data.webservice.CurrencyChangeApiService
+import com.example.vitesse.ui.utils.ResourceProvider
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -74,9 +75,26 @@ class AppModule {
         return CandidateRepository(candidateDtoDao)
     }
 
+    /**
+     * Provides an implementation of the CurrencyChangeRepositoryInterface for retrieving exchange rates.
+     *
+     * @param currencyChangeApiService The API service for accessing currency exchange data.
+     * @return An instance of CurrencyChangeRepositoryInterface.
+     */
     @Provides
     @Singleton
     fun provideCurrencyChangeRepository(currencyChangeApiService: CurrencyChangeApiService): CurrencyChangeRepositoryInterface {
         return CurrencyChangeRepository(currencyChangeApiService)
+    }
+
+    /**
+     * Provides a ResourceProvider instance for accessing application resources, such as strings and drawables.
+     *
+     * @param context The application context required for accessing resources.
+     * @return An instance of ResourceProvider.
+     */
+    @Provides
+    fun provideResourceProvider(@ApplicationContext context: Context): ResourceProvider {
+        return ResourceProvider(context)
     }
 }

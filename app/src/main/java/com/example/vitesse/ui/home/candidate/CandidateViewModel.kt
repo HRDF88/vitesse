@@ -11,6 +11,7 @@ import com.example.vitesse.domain.usecase.DeleteCandidateUseCase
 import com.example.vitesse.domain.usecase.GetAllCandidateUseCase
 import com.example.vitesse.domain.usecase.GetCandidateByIdUseCase
 import com.example.vitesse.domain.usecase.UpdateCandidateUseCase
+import com.example.vitesse.ui.utils.ResourceProvider
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,7 +28,8 @@ import javax.inject.Inject
  */
 @HiltViewModel
 class CandidateViewModel @Inject constructor(
-    private val getAllCandidateUseCase: GetAllCandidateUseCase
+    private val getAllCandidateUseCase: GetAllCandidateUseCase,
+    private val resourceProvider: ResourceProvider
 ) : ViewModel() {
 
     /**
@@ -80,7 +82,7 @@ class CandidateViewModel @Inject constructor(
                     )
                 }
             } catch (e: Exception) {
-                onError((R.string.error_load_candidate).toString())
+                onError(resourceProvider.getString(R.string.error_load_candidate))
             }
         }
     }

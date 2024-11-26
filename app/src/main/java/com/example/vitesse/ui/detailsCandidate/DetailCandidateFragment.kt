@@ -169,19 +169,28 @@ class DetailCandidateFragment : Fragment() {
 
                 // Add a long press listener to the delete icon
                 deleteMenuItem?.actionView?.setOnLongClickListener {
-                    Toast.makeText(requireContext(), (R.string.delete).toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        (R.string.delete).toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     true
                 }
 
                 // Add a long press listener to the edit icon
                 editMenuItem?.actionView?.setOnLongClickListener {
-                    Toast.makeText(requireContext(), (R.string.edit).toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(requireContext(), (R.string.edit).toString(), Toast.LENGTH_SHORT)
+                        .show()
                     true
                 }
 
                 // Add a long press listener to the favorite icon
                 favoriteMenuItem?.actionView?.setOnLongClickListener {
-                    Toast.makeText(requireContext(), (R.string.favorite).toString(), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        requireContext(),
+                        (R.string.favorite).toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
                     true
                 }
             }
@@ -249,14 +258,14 @@ class DetailCandidateFragment : Fragment() {
                         // Set a placeholder if no profile picture is available
                         binding.detailCandidateProfilePicture.setImageResource(R.drawable.photo_camera)
                     }
-                }
 
-                // If there's an error message, display it
-                if (uiState.error.isNotBlank()) {
-                    Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
-                    detailCandidateViewModel.updateErrorState() // Reset the error state
-                }
 
+                    // If there's an error message, display it
+                    if (uiState.error.isNotBlank()) {
+                        Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
+                        detailCandidateViewModel.updateErrorState() // Reset the error state
+                    }
+                }
                 // If candidate has been deleted, show a success message and navigate back
                 if (uiState.isDeleted) {
                     showDeletionSuccess()

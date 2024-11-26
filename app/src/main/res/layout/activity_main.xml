@@ -65,8 +65,11 @@
         android:layout_height="wrap_content"
         android:contentDescription="Add_candidate"
         android:src="@drawable/add"
+        app:backgroundTint="@color/gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Corner.None"
         android:layout_margin="16dp" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

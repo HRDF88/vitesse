@@ -17,8 +17,8 @@ class ConvertEurosToGbpUseCase @Inject constructor(
     private var cachedExchangeRate: Double? = null
     private var lastFetchedTime: Long = 0
 
-    // Durée de cache de 24 heures (en millisecondes)
-    private val cacheDurationMillis = 24 * 60 * 60 * 1000 // 24 heures
+    // cache duration, parameters in CacheDurationConstant
+    private val cacheDurationMillis = CacheDurationConstant.DURATION_CACHE
 
     /**
      * Converts the specified amount from Euros to GBP.
@@ -50,7 +50,7 @@ class ConvertEurosToGbpUseCase @Inject constructor(
         return withContext(Dispatchers.IO) {
             try {
                 val rate = currencyChangeRepositoryInterface.getExchangeRate()
-                lastFetchedTime = System.currentTimeMillis() // Mettre à jour le temps de cache
+                lastFetchedTime = System.currentTimeMillis() // Update cache time
                 rate
             } catch (e: Exception) {
                 Log.e("CurrencyExchange", "Error retrieving exchange rate", e)

@@ -10,7 +10,12 @@
         <item name="searchViewStyle">@style/SearchViewStyle</item>
     </style>
     <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
-        <item name="android:textColorHint">@color/black</item> <!-- Placeholder -->
-        <item name="android:textColor">@color/black</item> <!-- Texte entré -->
+        <item name="android:textColorHint">@color/black</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:iconifiedByDefault">false</item>
+        <item name="android:queryHint">@string/search</item>
+    </style>
+    <style name="ShapeAppearance.App.Corner.None" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="cornerFamily">cut</item>
     </style>
 </resources>

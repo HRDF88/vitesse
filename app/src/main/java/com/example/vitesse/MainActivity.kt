@@ -102,10 +102,12 @@ class MainActivity : AppCompatActivity() {
         // Request necessary permissions at runtime
         requestPermissionsIfNeeded()
     }
+
     override fun onResume() {
         super.onResume()
         adjustFragmentContainerViewLayout(false)
     }
+
     /**
      * Checks and requests necessary permissions at runtime.
      * Handles permissions for reading and writing to external storage or media files.
@@ -150,21 +152,34 @@ class MainActivity : AppCompatActivity() {
      * Handles the result of the permission request.
      * Displays a toast message depending on whether the permission was granted or denied.
      */
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 
         if (requestCode == PERMISSIONS_REQUEST_CODE) {
             for (i in permissions.indices) {
                 if (grantResults[i] == PackageManager.PERMISSION_GRANTED) {
                     // Permission granted
-                    Toast.makeText(this, "Permission granted for ${permissions[i]}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Permission granted for ${permissions[i]}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     // Permission denied
-                    Toast.makeText(this, "Permission denied for ${permissions[i]}", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        "Permission denied for ${permissions[i]}",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
     }
+
     /**
      * Adjusts the dimensions of the FragmentContainerView according to the displayed fragment.
      */
@@ -180,24 +195,46 @@ class MainActivity : AppCompatActivity() {
         }
         fragmentContainerView.layoutParams = layoutParams
     }
+
     /**
      * Customizes the SearchView component for better usability.
      * Changes text color, hint color, and search icon color.
      */
     private fun setupSearchView() {
-        // Access the EditText inside the SearchView
+        // Access to SearchView
+        val searchView = findViewById<SearchView>(R.id.searchView)
+
+        // Access to EditText inside SearchView
         val searchEditText: EditText =
             searchView.findViewById(androidx.appcompat.R.id.search_src_text)
 
-        // Set text color to black
+        // change text color
         searchEditText.setTextColor(ContextCompat.getColor(this, android.R.color.black))
 
-        // Set hint color to black as well
-        searchEditText.setHintTextColor(ContextCompat.getColor(this, android.R.color.black))
+        // config text hint
+        searchEditText.hint= getString(R.string.search)
 
-        // Change the search icon color to black
+        // Change hint text color
+        searchEditText.setHintTextColor(ContextCompat.getColor(this, R.color.gray))
+
+        // Change edit tex color background
+        searchEditText.setBackgroundColor(
+            ContextCompat.getColor(
+                this,
+                android.R.color.darker_gray
+            )
+        )
+
+        // Change search color icon
         val searchIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_button)
         searchIcon.setColorFilter(
+            ContextCompat.getColor(this, android.R.color.black),
+            PorterDuff.Mode.SRC_IN
+        )
+
+        // Change color icon (X)
+        val closeIcon = searchView.findViewById<ImageView>(androidx.appcompat.R.id.search_close_btn)
+        closeIcon.setColorFilter(
             ContextCompat.getColor(this, android.R.color.black),
             PorterDuff.Mode.SRC_IN
         )
