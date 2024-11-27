@@ -25,7 +25,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:visibility="gone"
-        android:indeterminate="true" />
+        android:indeterminate="true"
+        android:contentDescription="@string/accessibility_progressbar"/>
 
     <!-- Section Fixe avec le nom et les actions -->
     <LinearLayout
@@ -44,7 +45,8 @@
             android:layout_gravity="center"
             android:layout_marginBottom="16dp"
             android:layout_margin="12dp"
-            tools:srcCompat="@tools:sample/avatars"/>
+            tools:srcCompat="@tools:sample/avatars"
+            android:contentDescription="@string/accessibility_profile_picture"/>
 
         <!-- Boutons d'actions (Appel, SMS, Email) -->
 
@@ -70,7 +72,8 @@
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/phone"
-                    app:tint="#6200EE" />
+                    app:tint="#6200EE"
+                    android:contentDescription="@string/accessibility_call_button"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -92,7 +95,8 @@
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/sms"
-                    app:tint="#6200EE" />
+                    app:tint="#6200EE"
+                    android:contentDescription="@string/accessibility_sms_button"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -113,7 +117,8 @@
                     android:layout_height="48dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/mail_outline"
-                    app:tint="#6200EE" />
+                    app:tint="#6200EE"
+                    android:contentDescription="@string/accessibility_email_button"/>
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -162,7 +167,8 @@
                     android:paddingBottom="8dp"
                     android:text="@string/about"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:contentDescription="@string/about"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -190,6 +196,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/birthday"
                     android:textSize="14sp"
+                    android:contentDescription="@string/birthday"
                     />
 
             </LinearLayout>
@@ -215,7 +222,8 @@
                     android:text="@string/salary"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:paddingBottom="8dp" />
+                    android:paddingBottom="8dp"
+                    android:contentDescription="@string/salary"/>
 
                 <TextView
                     android:id="@+id/detail_candidate_expected_salary_euros"
@@ -233,7 +241,9 @@
                         android:layout_height="wrap_content"
                         android:textColor="#808080"
                         android:text="@string/or"
-                        android:textSize="12sp" />
+                        android:textSize="12sp"
+                        android:contentDescription="@string/or"
+                        />
 
                     <TextView
                         android:id="@+id/detail_candidate_expected_salary_pounds"
@@ -268,7 +278,8 @@
                     android:paddingBottom="8dp"
                     android:text="@string/notes"
                     android:textSize="16sp"
-                    android:textStyle="bold" />
+                    android:textStyle="bold"
+                    android:contentDescription="@string/notes"/>
 
                 <TextView
                     android:id="@+id/detail_candidate_note"

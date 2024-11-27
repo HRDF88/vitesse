@@ -45,6 +45,8 @@ class FavoriteCandidateAdapter(
         holder.tvLastName.text = favoriteCandidate.surName
         holder.tvNote.text = favoriteCandidate.note
 
+        holder.itemView.contentDescription = "${favoriteCandidate.firstName} ${favoriteCandidate.surName}, note : ${favoriteCandidate.note}"
+
         favoriteCandidate.profilePicture?.let { byteArray ->
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
             holder.profilePicture.setImageBitmap(bitmap)
@@ -52,7 +54,7 @@ class FavoriteCandidateAdapter(
 
         // Set click listener on the item view
         holder.itemView.setOnClickListener {
-            onItemClick(favoriteCandidate) // Appeler le callback avec le candidat cliqué
+            onItemClick(favoriteCandidate)
         }
 
     }
@@ -78,7 +80,7 @@ class FavoriteCandidateAdapter(
     @SuppressLint("NotifyDatasetChanged")
     fun updateData(newFavoriteCandidate: List<Candidate>) {
         favoriteCandidate = newFavoriteCandidate
-        filteredFavoriteCandidates = newFavoriteCandidate // Réinitialiser la liste filtrée
+        filteredFavoriteCandidates = newFavoriteCandidate
         notifyDataSetChanged()
     }
 
@@ -87,7 +89,7 @@ class FavoriteCandidateAdapter(
      */
     fun filter(query: String) {
         filteredFavoriteCandidates = if (query.isEmpty()) {
-            favoriteCandidate // Réinitialiser à la liste complète des favoris si la recherche est vide
+            favoriteCandidate
         } else {
             favoriteCandidate.filter {
                 it.firstName.contains(query, ignoreCase = true) || it.surName.contains(
@@ -96,6 +98,6 @@ class FavoriteCandidateAdapter(
                 )
             }
         }
-        notifyDataSetChanged() // Notifier l'adapter que la liste filtrée a changé
+        notifyDataSetChanged()
     }
 }

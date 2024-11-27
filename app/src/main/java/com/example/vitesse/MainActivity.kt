@@ -60,8 +60,16 @@ class MainActivity : AppCompatActivity() {
 
         // Link TabLayout with ViewPager and set tab names dynamically
         TabLayoutMediator(tabLayout, viewPager) { tab, position ->
-            tab.text = if (position == 0) getString(R.string.all) else getString(R.string.favorite)
+            if (position == 0) {
+                tab.text = getString(R.string.all)
+                tab.contentDescription = getString(R.string.tab_all_content_description)
+            } else {
+                tab.text = getString(R.string.favorite)
+                tab.contentDescription = getString(R.string.tab_favorite_content_description)
+            }
         }.attach()
+
+
 
         // Set up Floating Action Button (FAB) click listener to navigate to AddCandidateFragment
         fab.setOnClickListener {

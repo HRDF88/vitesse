@@ -57,5 +57,58 @@
     <string name="error_converting">Error converting salary to GBP</string>
     <string name="invalide_salary">Invalid salary</string>
 
+    <!-- Content description Add Fragment -->
+    <string name="add_title">Add Candidate</string>
+    <string name="progress_bar_desc">Loading</string>
+    <string name="save_button_desc">Button to save candidate information</string>
+    <string name="profile_picture_desc">Candidate profile photo. Click to add or edit</string>
+    <string name="toolbar_title_desc">Toolbar with page title</string>
+    <string name="firstname_desc">Enter the candidate\'s first name</string>
+    <string name="lastname_desc">Enter the candidate\'s last name</string>
+    <string name="phone_desc">Enter the candidate\'s phone number</string>
+    <string name="email_desc">Enter the candidate\'s email address</string>
+    <string name="birthdate_field_desc">Field for candidate\'s date of birth</string>
+    <string name="select_date_desc">Select a date for date of birth</string>
+    <string name="date_picker_icon_desc">Icon to open the date picker</string>
+    <string name="salary_desc">Enter the expected salary in euros</string>
+    <string name="note_desc">Enter a rating or comment about the candidate</string>
+
+    <!-- Content description Detail candidate -->
+    <string name="accessibility_profile_picture">Candidate profile photo</string>
+    <string name="accessibility_call_button">Call the candidate</string>
+    <string name="accessibility_sms_button">Send an SMS to the candidate</string>
+    <string name="accessibility_email_button">Send an email to the candidate</string>
+    <string name="accessibility_progressbar">Loading</string>
+    <string name="accessibility_toolbar">Toolbar with page title, favorite icon, edit icon and delete icon</string>
+
+    <!-- Dynamic content description Detail candidate-->
+    <string name="content_description_profile_picture_of">Profile picture of %1$s %2$s</string>
+    <string name="content_description_no_profile_picture">No profile photo available</string>
+    <string name="content_description_candidate_age">Age : %1$d years old</string>
+    <string name="content_description_age_unknown">Age unknown</string>
+    <string name="content_description_note">Note : %1$s</string>
+    <string name="content_description_expected_salary">Expected salary : %1$s €</string>
+    <string name="content_description_favorite">Marked as favorite</string>
+    <string name="content_description_not_favorite">Not marked as favorite</string>
+
+    <!-- Content Descriptions activity main -->
+    <string name="content_description_main_view">Main container displaying the details of a candidate or the form to create one.</string>
+    <string name="content_description_search_view">Search box to find candidates.</string>
+    <string name="content_description_tab_layout">Tabs to navigate between different sections.</string>
+    <string name="content_description_view_pager">Paginated content corresponding to the selected tab.</string>
+    <string name="content_description_add_candidate">Button to add a new candidate.</string>
+    <string name="search_hint">Search for a candidate…</string>
+
+    <!-- Tab items content description -->
+    <string name="tab_all_content_description">Afficher tous les candidats</string>
+    <string name="tab_favorite_content_description">Afficher les candidats favoris</string>
+
+
+    <!-- Content Descriptions item candidate-->
+    <string name="content_description_candidate_item">Element displaying candidate information.</string>
+    <string name="content_description_profile_picture">Candidate profile photo.</string>
+    <string name="content_description_candidate_details">Candidate details, including first name, last name and grade.</string>
+    <string name="content_description_candidate_name">Full name of candidate.</string>
+    <string name="content_description_candidate_note">Candidate note</string>
 
 </resources>

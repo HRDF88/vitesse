@@ -41,6 +41,9 @@ class CandidateAdapter(
         holder.tvLastName.text = candidate.surName
         holder.tvNote.text = candidate.note
 
+        //Update accessibility description
+        holder.itemView.contentDescription = "${candidate.firstName} ${candidate.surName}, note : ${candidate.note}"
+
         candidate.profilePicture?.let { byteArray ->
             val bitmap = BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
             holder.profilePicture.setImageBitmap(bitmap)

@@ -58,4 +58,58 @@
     <string name="error_converting">Erreur lors de la conversion du salaire en GBP</string>
     <string name="invalide_salary">Salaire invalide</string>
 
+    <!-- Content description Add Fragment -->
+    <string name="add_title">Ajoutter candidat</string>
+    <string name="progress_bar_desc">Chargement en cours</string>
+    <string name="save_button_desc">Bouton pour enregistrer les informations du candidat</string>
+    <string name="profile_picture_desc">Photo de profil du candidat. Cliquez pour ajouter ou modifier</string>
+    <string name="toolbar_title_desc">Barre d\'outils avec le titre de la page</string>
+    <string name="firstname_desc">Saisir le prénom du candidat</string>
+    <string name="lastname_desc">Saisir le nom de famille du candidat</string>
+    <string name="phone_desc">Saisir le numéro de téléphone du candidat</string>
+    <string name="email_desc">Saisir l\'adresse e-mail du candidat</string>
+    <string name="birthdate_field_desc">Champ pour la date de naissance du candidat</string>
+    <string name="select_date_desc">Sélectionnez une date pour la date de naissance</string>
+    <string name="date_picker_icon_desc">Icône pour ouvrir le sélecteur de date</string>
+    <string name="salary_desc">Saisir le salaire attendu en euros</string>
+    <string name="note_desc">Saisir une note ou un commentaire sur le candidat</string>
+
+    <!-- Content description Detail candidate -->
+    <string name="accessibility_profile_picture">Photo de profil du candidat</string>
+    <string name="accessibility_call_button">Appeler le candidat</string>
+    <string name="accessibility_sms_button">Envoyer un SMS au candidat</string>
+    <string name="accessibility_email_button">Envoyer un e-mail au candidat</string>
+    <string name="accessibility_progressbar">Chargement en cours</string>
+    <string name="accessibility_toolbar">Barre d\'outils avec titre de page, icône de favori, icône de modification et icône de suppression</string>
+
+    <!-- Dynamic content description Detail candidate-->
+    <string name="content_description_profile_picture_of">Photo de profil de %1$s %2$s</string>
+    <string name="content_description_no_profile_picture">Aucune photo de profil disponible</string>
+    <string name="content_description_candidate_age">Âge : %1$d ans</string>
+    <string name="content_description_age_unknown">Âge inconnu</string>
+    <string name="content_description_note">Note : %1$s</string>
+    <string name="content_description_expected_salary">Salaire attendu : %1$s €</string>
+    <string name="content_description_favorite">Marqué comme favori</string>
+    <string name="content_description_not_favorite">Non marqué comme favori</string>
+
+    <!-- Content Descriptions activity main  -->
+    <string name="content_description_main_view">Conteneur principal affichant le détail d\'un candidat ou le formulaire pour en créer un.</string>
+    <string name="content_description_search_view">Champ de recherche pour trouver des candidats.</string>
+    <string name="content_description_tab_layout">Onglets pour naviguer entre les différentes sections.</string>
+    <string name="content_description_view_pager">Contenu paginé correspondant à l\'onglet sélectionné.</string>
+    <string name="content_description_add_candidate">Bouton pour ajouter un nouveau candidat.</string>
+    <string name="search_hint">Rechercher un candidat…</string>
+
+    <!-- Tab items content description -->
+    <string name="tab_all_content_description">Afficher tous les candidats</string>
+    <string name="tab_favorite_content_description">Afficher les candidatss favoris</string>
+
+    <!-- Content Descriptions item candidate-->
+    <string name="content_description_candidate_item">Élément affichant les informations du candidat.</string>
+    <string name="content_description_profile_picture">Photo de profil du candidat.</string>
+    <string name="content_description_candidate_details">Détails sur le candidat, incluant le nom, le prénom et la note.</string>
+    <string name="content_description_candidate_name">Nom complet du candidat.</string>
+    <string name="content_description_candidate_note">Note du candidat.</string>
+
+
 </resources>

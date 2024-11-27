@@ -31,5 +31,6 @@
         android:layout_gravity="center"
         android:textSize="18sp"
         android:visibility="gone"
-        tools:ignore="MissingConstraints" />
+        tools:ignore="MissingConstraints"
+        android:contentDescription="@string/no_candidate"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

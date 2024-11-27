@@ -11,7 +11,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:indeterminate="true"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:contentDescription="@string/progress_bar_desc"/>
 
 
     <androidx.appcompat.widget.Toolbar
@@ -21,7 +22,8 @@
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
         android:title="Add Candidate"
-        android:titleTextColor="@android:color/white" />
+        android:titleTextColor="@android:color/white"
+        android:contentDescription="@string/toolbar_title_desc"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -42,7 +44,8 @@
                 android:layout_height="203dp"
                 android:layout_margin="12dp"
                 android:src="@drawable/photo_camera"
-                tools:srcCompat="@tools:sample/avatars" />
+                tools:srcCompat="@tools:sample/avatars"
+                android:contentDescription="@string/profile_picture_desc"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -82,7 +85,8 @@
                             android:id="@+id/add_candidate_firstname"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textPersonName" />
+                            android:inputType="textPersonName"
+                            android:contentDescription="@string/firstname_desc"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <!-- surname field -->
@@ -104,7 +108,8 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:inputType="textPersonName"
-                            android:textAllCaps="true" />
+                            android:textAllCaps="true"
+                            android:contentDescription="@string/lastname_desc"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
                 </LinearLayout>
@@ -144,8 +149,9 @@
                         android:id="@+id/add_candidate_phone"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="none"
-                        android:maxLength="10" />
+                        android:inputType="numberDecimal"
+                        android:maxLength="10"
+                        android:contentDescription="@string/phone_desc"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -182,7 +188,8 @@
                         android:id="@+id/add_candidate_mail"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="textEmailAddress" />
+                        android:inputType="textEmailAddress"
+                        android:contentDescription="@string/email_desc"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -223,7 +230,8 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:background="#F2E7FE"
-                        android:text="@string/select_date" />
+                        android:text="@string/select_date"
+                        android:contentDescription="@string/select_date_desc"/>
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -255,7 +263,8 @@
                             android:layout_height="24dp"
                             android:layout_marginStart="8dp"
                             android:src="@drawable/today"
-                            app:tint="#808080" />
+                            app:tint="#808080"
+                            android:contentDescription="@string/date_picker_icon_desc"/>
 
                     </LinearLayout>
 
@@ -296,7 +305,8 @@
                         android:id="@+id/add_candidate_salary"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:inputType="numberDecimal" />
+                        android:inputType="numberDecimal"
+                        android:contentDescription="@string/salary_desc"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -336,7 +346,8 @@
                         android:gravity="top"
                         android:inputType="textMultiLine"
                         android:maxLength="100"
-                        android:maxLines="2" />
+                        android:maxLines="2"
+                        android:contentDescription="@string/note_desc"/>
                 </com.google.android.material.textfield.TextInputLayout>
             </LinearLayout>
 
@@ -358,5 +369,6 @@
         app:boxCornerRadiusBottomStart="25dp"
         app:boxCornerRadiusTopEnd="25dp"
         app:boxCornerRadiusTopStart="25dp"
-        tools:ignore="RtlCompat" />
+        tools:ignore="RtlCompat"
+        android:contentDescription="@string/save_button_desc"/>
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <!-- FragmentContainerView pour gérer le contenu des fragments dynamiquement -->
+    <!-- FragmentContainerView  -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/main_view"
         android:layout_width="match_parent"
@@ -17,7 +17,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@id/searchView"
         android:layout_margin="0dp"
-        tools:layout="@layout/fragment_add_candidate" />
+        tools:layout="@layout/fragment_add_candidate"
+        android:contentDescription="@string/content_description_main_view"/>
 
     <!-- Search Bar -->
     <androidx.appcompat.widget.SearchView
@@ -31,7 +32,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:textColorHint="#808080"
         android:layout_margin="16dp"
-        app:theme="@style/SearchViewStyle"/>
+        app:theme="@style/SearchViewStyle"
+        android:contentDescription="@string/content_description_search_view"/>
 
     <!-- Tab Layout -->
     <com.google.android.material.tabs.TabLayout
@@ -45,7 +47,8 @@
         android:background="?attr/colorPrimary"
         app:tabSelectedTextColor="@android:color/black"
         app:tabIndicatorColor="@android:color/black"
-        app:tabTextColor="@android:color/darker_gray" />
+        app:tabTextColor="@android:color/darker_gray"
+        android:contentDescription="@string/content_description_tab_layout"/>
 
     <!-- ViewPager2 -->
     <androidx.viewpager2.widget.ViewPager2
@@ -56,20 +59,21 @@
         app:layout_constraintBottom_toTopOf="@id/main_add_candidate_button"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        android:contentDescription="@string/content_description_view_pager"/>
 
     <!-- Floating Action Button -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/main_add_candidate_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:contentDescription="Add_candidate"
         android:src="@drawable/add"
         app:backgroundTint="@color/gray"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Corner.None"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        android:contentDescription="@string/content_description_add_candidate"/>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

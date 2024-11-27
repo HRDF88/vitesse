@@ -1,5 +1,6 @@
 package com.example.vitesse.ui.detailsCandidate
 
+import android.annotation.SuppressLint
 import android.content.ContentValues.TAG
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -265,6 +266,7 @@ class DetailCandidateFragment : Fragment() {
                         Toast.makeText(requireContext(), uiState.error, Toast.LENGTH_LONG).show()
                         detailCandidateViewModel.updateErrorState() // Reset the error state
                     }
+                    setupContentDescriptions(candidate, uiState)
                 }
                 // If candidate has been deleted, show a success message and navigate back
                 if (uiState.isDeleted) {
@@ -367,6 +369,53 @@ class DetailCandidateFragment : Fragment() {
                 .commit()
         }
     }
+
+    /**
+     * Sets content descriptions for UI elements to improve accessibility.
+     *
+     * This method is used to describe the visual elements in a way that screen readers
+     * can interpret, allowing visually impaired users to understand the context of the data.
+     *
+     * @param candidate The candidate whose details are displayed.
+     * @param uiState The current UI state containing calculated or additional data.
+     */
+    @SuppressLint("StringFormatMatches")
+    private fun setupContentDescriptions(candidate: Candidate, uiState: DetailCandidateUiState) {
+        // Set content description for profile picture
+        binding.detailCandidateProfilePicture.contentDescription =
+            if (!candidate.profilePicture?.isEmpty()!!) {
+                getString(
+                    R.string.content_description_profile_picture_of,
+                    candidate.firstName,
+                    candidate.surName
+                )
+            } else {
+                getString(R.string.content_description_no_profile_picture)
+            }
+
+        // Set content description for age
+        binding.detailCandidateAge.contentDescription = uiState.age?.let { age ->
+            getString(R.string.content_description_candidate_age, age)
+        } ?: getString(R.string.content_description_age_unknown)
+
+        // Set content description for the candidate's note
+        binding.detailCandidateNote.contentDescription =
+            getString(R.string.content_description_note, candidate.note)
+
+        // Set content description for expected salary
+        binding.detailCandidateExpectedSalaryEuros.contentDescription = getString(
+            R.string.content_description_expected_salary,
+            candidate.expectedSalaryEuros
+        )
+
+        // Set content description for the favorite button
+        favoriteMenuItem.contentDescription = if (candidate.favorite) {
+            getString(R.string.content_description_favorite)
+        } else {
+            getString(R.string.content_description_not_favorite)
+        }
+    }
+
 
     companion object {
         private const val ARG_CANDIDATE_ID = "candidate_id"
