@@ -31,21 +31,19 @@ class CurrencyChangeRepository @Inject constructor(private val currencyChangeApi
                 foreign = CurrencyConstants.FOREIGN_CURRENCY
             )
 
-            Log.d("CurrencyExchange", "API Response : $response")
+
 
             // Check if the exchange rate is valid.
             val exchangeRate = response.foreign.rate
 
             if (exchangeRate.isNaN() || exchangeRate <= 0) {
-                Log.e("CurrencyExchange", "Invalid exchange rate : $exchangeRate")
                 throw RuntimeException("The retrieved exchange rate is invalid")
             }
 
-            Log.d("CurrencyExchange", "Exchange rate recovered : $exchangeRate")
+
             return exchangeRate
 
         } catch (e: Exception) {
-            Log.e("CurrencyExchange", "Error retrieving exchange rate", e)
             throw RuntimeException("Failed to recover exchange rate", e)
         }
     }

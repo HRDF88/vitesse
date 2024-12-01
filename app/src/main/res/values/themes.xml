@@ -1,21 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
-    <style name="Theme.vitesse" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="android:colorPrimary">@color/primary</item>
-        <item name="android:colorActivatedHighlight">@color/primary_variant</item>
+    <!-- Main theme -->
+    <style name="Theme.vitesse" parent="Theme.MaterialComponents.Light.NoActionBar" tools:ignore="DuplicateDefinition">
+        <!-- Main colors -->
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorPrimaryVariant">@color/primary_variant</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="colorOnSecondary">@color/on_secondary</item>
+        <item name="buttonStyle">@style/CustomButtonStyleWithNoCorners</item>
+        <!-- Global text colors -->
         <item name="android:textColorPrimary">@color/black</item>
-        <item name="android:colorControlActivated">@color/secondary_variant</item>
         <item name="android:textColorSecondary">@color/on_secondary</item>
+
+        <!-- Interactive controls colors -->
+        <item name="android:colorControlActivated">@color/secondary_variant</item>
+        <item name="android:colorActivatedHighlight">@color/primary_variant</item>
+
+        <!-- Default styles -->
         <item name="searchViewStyle">@style/SearchViewStyle</item>
+        <item name="toolbarStyle">@style/CustomToolbarStyle</item>
+
     </style>
+
+    <!-- Styling for SearchView -->
     <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
         <item name="android:textColorHint">@color/black</item>
         <item name="android:textColor">@color/black</item>
         <item name="android:iconifiedByDefault">false</item>
         <item name="android:queryHint">@string/search</item>
     </style>
-    <style name="ShapeAppearance.App.Corner.None" parent="Theme.MaterialComponents.Light.NoActionBar">
-        <item name="cornerFamily">cut</item>
+
+    <!-- Styling for Toolbar -->
+    <style name="CustomToolbarStyle" parent="Widget.MaterialComponents.Toolbar">
+        <item name="android:background">@color/primary</item>
+        <item name="titleTextColor">@color/on_primary</item>
+        <item name="subtitleTextColor">@color/on_primary</item>
+        <item name="navigationIconTint">@color/on_primary</item>
+    </style>
+
+    <!-- Styling for Button -->
+    <style name="CustomButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:backgroundTint">@color/secondary</item>
+        <item name="android:textColor">@color/on_secondary</item>
+    </style>
+    <!-- Defining a shape without rounded corners -->
+    <style name="ShapeAppearance.App.Corner.None" parent="ShapeAppearance.MaterialComponents">
+        <item name="cornerSize">0dp</item> <!-- Coins carrés -->
+    </style>
+
+    <!-- Style for square buttons -->
+    <style name="CustomButtonStyleWithNoCorners" parent="CustomButtonStyle">
+        <item name="shapeAppearance">@style/ShapeAppearance.App.Corner.None</item>
+    </style>
+
+    <style name="CustomFabStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="shapeAppearanceOverlay">@style/ShapeAppearance.App.Corner.None</item>
+        <item name="android:layout_width">56dp</item>
+        <item name="android:layout_height">56dp</item>
+        <item name="android:backgroundTint">@color/secondary</item>
+        <item name="android:contentDescription">@string/content_description_add_candidate</item>
     </style>
 </resources>

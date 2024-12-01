@@ -113,6 +113,8 @@ dependencies {
     implementation(kotlin("script-runtime"))
     testImplementation("org.mockito.kotlin:mockito-kotlin:5.0.0")
     testImplementation("androidx.arch.core:core-testing:2.2.0")
+    implementation(kotlin("test"))
+    testImplementation ("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
 }
 kapt {
     correctErrorTypes = true

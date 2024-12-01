@@ -100,8 +100,8 @@
     <string name="search_hint">Search for a candidate…</string>
 
     <!-- Tab items content description -->
-    <string name="tab_all_content_description">Afficher tous les candidats</string>
-    <string name="tab_favorite_content_description">Afficher les candidats favoris</string>
+    <string name="tab_all_content_description">Show all candidate</string>
+    <string name="tab_favorite_content_description">Show favorite candidate</string>
 
 
     <!-- Content Descriptions item candidate-->

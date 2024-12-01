@@ -94,6 +94,7 @@ class AppModule {
      * @return An instance of ResourceProvider.
      */
     @Provides
+    @Singleton //watch Context thread safety
     fun provideResourceProvider(@ApplicationContext context: Context): ResourceProvider {
         return ResourceProvider(context)
     }

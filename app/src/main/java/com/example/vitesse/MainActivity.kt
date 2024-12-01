@@ -70,7 +70,6 @@ class MainActivity : AppCompatActivity() {
         }.attach()
 
 
-
         // Set up Floating Action Button (FAB) click listener to navigate to AddCandidateFragment
         fab.setOnClickListener {
             supportFragmentManager.beginTransaction()
@@ -220,16 +219,16 @@ class MainActivity : AppCompatActivity() {
         searchEditText.setTextColor(ContextCompat.getColor(this, android.R.color.black))
 
         // config text hint
-        searchEditText.hint= getString(R.string.search)
+        searchEditText.hint = getString(R.string.search)
 
         // Change hint text color
-        searchEditText.setHintTextColor(ContextCompat.getColor(this, R.color.gray))
+        searchEditText.setHintTextColor(ContextCompat.getColor(this, R.color.on_primary))
 
         // Change edit tex color background
         searchEditText.setBackgroundColor(
             ContextCompat.getColor(
                 this,
-                android.R.color.darker_gray
+                R.color.primary_variant
             )
         )
 

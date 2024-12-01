@@ -55,7 +55,6 @@ class CandidateRepository @Inject constructor(private val candidateDao: Candidat
      */
     override suspend fun addCandidate(candidate: Candidate) {
         candidateDao.insertCandidate(candidate.toDto())
-        Log.d("CandidateRepository", "Adding the candidate : $candidate")
     }
 
     /**

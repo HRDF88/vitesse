@@ -6,6 +6,7 @@
         android:id="@+id/menu_favorite"
         android:title="Favorite"
         android:icon="@drawable/star"
+        android:iconTint="@color/primary_variant"
         app:showAsAction="ifRoom" />
 
     <!-- Edit button -->
@@ -13,6 +14,7 @@
         android:id="@+id/menu_edit"
         android:title="Edit"
         android:icon="@drawable/create"
+        android:iconTint="@color/primary_variant"
         app:showAsAction="ifRoom" />
 
     <!-- Delete button -->
@@ -20,6 +22,7 @@
         android:id="@+id/menu_delete"
         android:title="Delete"
         android:icon="@drawable/delete"
+        android:iconTint="@color/primary_variant"
         app:showAsAction="ifRoom"/>
 
 </menu>
