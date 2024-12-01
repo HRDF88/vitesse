@@ -90,7 +90,7 @@ class CandidateFragment : Fragment(), FilterableInterface {
         // Observe candidates
         viewLifecycleOwner.lifecycleScope.launch {
             candidateViewModel.candidateFlow.collect { candidates ->
-                filteredList = candidates
+                filteredList = candidates.sortedBy { it.surName }
                 candidateAdapter.updateData(filteredList)
                 updateUI(candidates)
             }
@@ -151,7 +151,7 @@ class CandidateFragment : Fragment(), FilterableInterface {
      */
     override fun filter(query: String) {
         filteredList = if (query.isEmpty()) {
-            candidateViewModel.candidateFlow.value // Liste complète si le filtre est vide
+            candidateViewModel.candidateFlow.value
         } else {
             candidateViewModel.candidateFlow.value.filter {
                 it.firstName.contains(query, ignoreCase = true) || it.surName.contains(

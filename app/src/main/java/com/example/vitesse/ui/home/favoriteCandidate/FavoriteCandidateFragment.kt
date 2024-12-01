@@ -75,8 +75,9 @@ class FavoriteCandidateFragment : Fragment(), FilterableInterface {
             launch {
                 // Collect the list of favorite candidates
                 favoriteCandidateViewModel.favoriteCandidateFlow.collect { candidates ->
+                    val sortedCandidates = candidates.sortedBy { it.surName }
                     // Update the adapter with the new list of candidates
-                    favoriteCandidateAdapter.updateData(candidates)
+                    favoriteCandidateAdapter.updateData(sortedCandidates)
                     updateUI(candidates)
                 }
             }
