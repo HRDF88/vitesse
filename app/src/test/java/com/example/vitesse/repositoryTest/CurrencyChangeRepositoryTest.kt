@@ -14,24 +14,35 @@ class CurrencyChangeRepositoryTest {
 
     @Before
     fun setUp() {
-        // Mock l'API
+        // Mock API
         currencyChangeRepository = mock(CurrencyChangeRepository::class.java)
 
     }
 
     @Test
     fun `should return exchange rate of 0,85 when API responds successfully`() = runBlocking {
-        // Créer une réponse valide simulée
+
         val validRateResponse = 0.85
 
-
-        // Mock l'appel API pour qu'il retourne la réponse simulée
+        // Mock the API call so that it returns the mock response
         `when`(currencyChangeRepository.getExchangeRate()).thenReturn(validRateResponse)
 
-        // Appel de la méthode pour récupérer le taux de change
+        // Call the method to retrieve the exchange rate
         val result = currencyChangeRepository.getExchangeRate()
 
-        // Vérifier que le taux de change récupéré est bien de 0.85
-        assertEquals(0.85, result, "Le taux de change retourné doit être égal à 0.85")
+        // Check that the recovered exchange rate is indeed 0.85
+        assertEquals(0.85, result, "The returned exchange rate must be equal to 0.85")
     }
+
+    @Test
+    fun `should accept when API response is 0`() = runBlocking {
+
+        val inValidRateResponse = 0.00
+        `when`(currencyChangeRepository.getExchangeRate()).thenReturn(inValidRateResponse)
+
+        val result = currencyChangeRepository.getExchangeRate()
+
+        assertEquals(0.00, result, 0.00)
+    }
+
 }

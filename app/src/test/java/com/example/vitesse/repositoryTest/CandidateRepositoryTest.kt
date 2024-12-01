@@ -31,29 +31,51 @@ class CandidateRepositoryTest {
 
     @Before
     fun setUp() {
-        // Initialisation des mocks avant l'utilisation
+        //Initializing mocks before use
         MockitoAnnotations.openMocks(this)
 
-        // Initialisation du repository avec le mock de CandidateDtoDao
+        //Initializing the repository with the CandidateDtoDao mock
         candidateRepository = CandidateRepository(candidateDtoDao)
     }
 
-    // Test de la méthode getAllCandidate
+    // Testing the getAllCandidate method
     @Test
     fun `test getAllCandidate should return list of candidates`() = runTest {
-        // Création de données fictives pour les candidats
+        //Creation of fictitious data for candidates
         val candidateList = listOf(
-            CandidateDto(1L, "John", "Doe", "123456789", "john.doe@example.com", testDate, 50000, "Good", null, false),
-            CandidateDto(2L, "Jane", "Smith", "987654321", "jane.smith@example.com", testDate, 60000, "Excellent", null, true)
+            CandidateDto(
+                1L,
+                "John",
+                "Doe",
+                "123456789",
+                "john.doe@example.com",
+                testDate,
+                50000,
+                "Good",
+                null,
+                false
+            ),
+            CandidateDto(
+                2L,
+                "Jane",
+                "Smith",
+                "987654321",
+                "jane.smith@example.com",
+                testDate,
+                60000,
+                "Excellent",
+                null,
+                true
+            )
         )
 
-        // Simulation du retour du DAO avec flowOf
+        //Simulation of the return of the DAO with flowOf
         Mockito.`when`(candidateDtoDao.getAllCandidate()).thenReturn(flowOf(candidateList))
 
-        // Appel de la méthode à tester
+        //Calling the method to test
         val result = candidateRepository.getAllCandidate()
 
-        // Assertions pour vérifier les résultats
+        //Assertions to check results
         assertEquals(2, result.size) // Vérifier que deux candidats sont retournés
         assertEquals("John", result[0].firstName) // Vérifier le prénom du premier candidat
         assertEquals("Doe", result[0].surName)  // Vérifier le nom du premier candidat
@@ -62,17 +84,28 @@ class CandidateRepositoryTest {
     }
 
 
-    // Test de la méthode getCandidateById
+    // Testing the getCandidateById method
     @Test
-    fun `test getCandidateById should return a specific candidate`() = runTest{
-        val candidate = Candidate(1L, "John", "Doe", "123456789", "john.doe@example.com", testDate, 50000, "Good", null, false)
+    fun `test getCandidateById should return a specific candidate`() = runTest {
+        val candidate = Candidate(
+            1L,
+            "John",
+            "Doe",
+            "123456789",
+            "john.doe@example.com",
+            testDate,
+            50000,
+            "Good",
+            null,
+            false
+        )
 
-        // Simuler le retour du DAO pour un candidat spécifique
+        // Simulate the return of the DAO for a specific candidate
         Mockito.`when`(candidateDtoDao.getCandidateById(1L)).thenReturn(flowOf(candidate.toDto()))
 
         val result = candidateRepository.getCandidateById(1L)
 
-        // Vérifier les résultats
+        // Check results
         if (result != null) {
             assertEquals("John", result.firstName)
         }
@@ -96,15 +129,15 @@ class CandidateRepositoryTest {
             favorite = false
         )
 
-        // Appel de la méthode pour ajouter aux favoris
+        // Call method to add to favorites
         candidateRepository.addCandidateToFavorite(candidate)
 
-        // Vérifier que la méthode du DAO a bien été appelée avec l'ID du candidat
+        // Check that the DAO method was called with the candidate ID
         Mockito.verify(candidateDtoDao).addCandidateToFavorite(candidate.id)
     }
 
 
-    // Test de suppression d'un candidat
+    // Test to delete a candidate
     @Test
     fun `test deleteCandidateById should delete the candidate by ID`() = runTest {
         val candidateId = 1L
@@ -121,10 +154,10 @@ class CandidateRepositoryTest {
             favorite = false
         )
 
-        // Appel de la méthode pour supprimer un candidat
+        //Calling the method to delete a candidate
         candidateRepository.deleteCandidate(candidate)
 
-        // Vérifier que la méthode du DAO a bien été appelée
+        //Check that the DAO method has been called
         Mockito.verify(candidateDtoDao).deleteCandidateById(candidateId)
     }
 }

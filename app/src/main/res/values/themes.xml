@@ -47,7 +47,7 @@
     </style>
     <!-- Defining a shape without rounded corners -->
     <style name="ShapeAppearance.App.Corner.None" parent="ShapeAppearance.MaterialComponents">
-        <item name="cornerSize">0dp</item> <!-- Coins carrés -->
+        <item name="cornerSize">0dp</item>
     </style>
 
     <!-- Style for square buttons -->
